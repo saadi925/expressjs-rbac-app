@@ -13,7 +13,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/mongoose": "^5.11.97",
     "@types/node": "^20.9.0",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
@@ -29,6 +32,11 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "dotenv": "^16.3.1"
+    "bcrypt": "^5.1.1",
+    "casbin": "^5.27.1",
+    "dotenv": "^16.3.1",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.0.0"
   }
 }

@@ -1,0 +1,2 @@
+p, lawyer, /auth/lawyer, GET
+p, client, /auth/client, GET
