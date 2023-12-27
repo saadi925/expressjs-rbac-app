@@ -6,16 +6,19 @@ interface RequestWithUser extends Request {
   userRole?: 'lawyer' | 'client';
 }
 
-export const RBACMiddleware = async (req: RequestWithUser, res: Response, next: NextFunction) => {
-  const enforcer= await newEnforcer(rbacConfig.model, rbacConfig.policy);  
-  const { userRole } = req; 
+export const RBACMiddleware = async (
+  req: RequestWithUser,
+  res: Response,
+  next: NextFunction,
+) => {
+  const enforcer = await newEnforcer(rbacConfig.model, rbacConfig.policy);
+  const { userRole } = req;
   const path = req.originalUrl;
   const method = req.method;
+  console.log(userRole, method, path);
 
   if (!(await enforcer.enforce(userRole, path, method))) {
     return res.status(403).send('Forbidden');
   }
   next();
 };
-
-

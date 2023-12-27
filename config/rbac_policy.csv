@@ -1,2 +1,1 @@
-p, lawyer, /auth/lawyer, GET
-p, client, /auth/client, GET
+p, CLIENT, /client/case, POST
