@@ -1,30 +1,41 @@
-import { prisma } from '.';
-
-import { Case } from '@prisma/client';
-type CaseData = Omit<Case, 'id'>;
-export const createCase = async (data: CaseData) => {
-  const createdCase = await prisma.case.create({
-    data,
-  });
-  return createdCase;
-};
-
-const updateCase = async (id: number, data: Case) => {
-  return await prisma.case.update({
-    where: { id },
-    data,
-  });
-};
-const deleteCase = async (id: number) => {
-  return await prisma.case.delete({
-    where: { id },
-  });
-};
-const getCases = async () => {
-  return await prisma.case.findMany();
-};
-const getCase = async (id: number) => {
-  return await prisma.case.findUnique({
-    where: { id },
-  });
-};
+import { Case, PrismaClient } from '@prisma/client';
+export type CaseData = Omit<Case, 'id'>;
+export class PrismaCase {
+  #prisma;
+  constructor() {
+    this.#prisma = new PrismaClient();
+  }
+  async createCase(data: CaseData): Promise<Case> {
+    const createdCase = await this.#prisma.case.create({
+      data,
+    });
+    return createdCase;
+  }
+  async updateCase(data: Case, caseID: bigint) {
+    return await this.#prisma.case.update({
+      where: { id: caseID, clientId: data.clientId },
+      data,
+    });
+  }
+  async deleteCase(id: bigint, clientId: string) {
+    return await this.#prisma.case.delete({
+      where: { id, clientId },
+    });
+  }
+  async getCases() {
+    return await this.#prisma.case.findMany();
+  }
+  async getCaseByID(id: bigint) {
+    return await this.#prisma.case.findUnique({
+      where: { id },
+    });
+  }
+  async addLawyerToCase(lawyerId: string, clientId: string, caseId: bigint) {
+    return await this.#prisma.case.update({
+      data: {
+        lawyerId,
+      },
+      where: { id: caseId, clientId },
+    });
+  }
+}

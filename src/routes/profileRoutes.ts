@@ -3,12 +3,14 @@ import {
   createProfile,
   updateProfileHandler,
   getUserProfile,
+  deleteUserProfile,
 } from '../handlers/profileHandler';
 import { authMiddleware } from '../middleware/authMiddleware';
 
 const r = express.Router();
-r.get('/', authMiddleware, getUserProfile);
+r.get('/:id', authMiddleware, getUserProfile);
 r.post('/', authMiddleware, createProfile);
-r.put('/', authMiddleware, updateProfileHandler);
+r.put('/:id', authMiddleware, updateProfileHandler);
+r.delete('/:id', authMiddleware, deleteUserProfile);
 
 export { r as profileRoutes };

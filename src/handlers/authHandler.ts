@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { createUser, findUserByEmail } from '../../prisma';
+import bcrypt from 'bcrypt';
+import { generateToken } from '../utils/generateToken';
+
 export const signupHandler = async (req: Request, res: Response) => {
   const { name, email, password, role } = req.body;
   const errors = validationResult(req);
@@ -25,11 +28,8 @@ export const signupHandler = async (req: Request, res: Response) => {
   user = await createUser(data);
 
   const token = generateToken(user);
-  res.json({ token });
+  return res.status(201).json({ token });
 };
-
-import bcrypt from 'bcrypt';
-import { generateToken } from '../utils/generateToken';
 
 export const signinHandler = async (req: Request, res: Response) => {
   try {
@@ -39,22 +39,28 @@ export const signinHandler = async (req: Request, res: Response) => {
       return res.status(400).json({ errors: errors.array() });
     }
     const user = await findUserByEmail(email);
+    console.log(user);
 
     if (!user) {
+      // if user is not found .
       return res.status(400).json({ errors: [{ msg: 'Invalid Credentials' }] });
     }
     if (!user.verified)
+      //  if user is not verified .
       return res.status(401).json({
         errors: [{ msg: 'Sorry ! User is Not Verified, Please Verify first!' }],
       });
     const passwordCompare = await bcrypt.compare(password, user.password);
     if (!passwordCompare) {
+      //  incase , if password is incorrect
       return res.status(400).json({ errors: [{ msg: 'Invalid Credentials' }] });
     }
     const token = generateToken(user);
-    res.json({ token });
+    return res.status(200).json({ token });
   } catch (error) {
     console.error(error);
     res.status(500).send('Server error');
   }
 };
+export const emailVerification = (req: Request, res: Response) => {};
+export const resendConfirmation = (req: Request, res: Response) => {};

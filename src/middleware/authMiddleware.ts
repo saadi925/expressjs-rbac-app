@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt, { Secret } from 'jsonwebtoken';
+import { Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 import { KEYS } from '../../config/keys';
 import { RequestWithUser } from 'types/profile';
 interface DecodedToken {
@@ -14,7 +14,7 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  const token = req.headers['authorization'] as string;
+  const token = req.headers['authorization'];
 
   if (!token) {
     return res.status(403).send({ auth: false, message: 'No token provided.' });
@@ -34,9 +34,10 @@ export const authMiddleware = (
         .status(500)
         .send({ auth: false, message: 'Failed to authenticate token.' });
     }
-
     const { role, id } = decoded as DecodedToken;
-
+    if (!role || !id) {
+      return res.status(401).send({ auth: false, message: 'Not authorized.' });
+    }
     if (!['LAWYER', 'CLIENT'].includes(role)) {
       return res.status(401).send({ auth: false, message: 'Not authorized.' });
     }

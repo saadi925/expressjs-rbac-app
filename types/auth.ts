@@ -1,15 +1,9 @@
-import { User } from '@prisma/client';
-import { Request } from 'express';
+import { User, $Enums } from '@prisma/client';
 export type IUser = User;
 export type userCredentials = {
   name: string;
   email: string;
   password: string;
-  role?: Role | any;
+  role?: $Enums.Role;
   verified: boolean;
 };
-
-enum Role {
-  LAWYER,
-  CLIENT,
-}

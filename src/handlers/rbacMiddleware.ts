@@ -3,7 +3,7 @@ import { newEnforcer } from 'casbin';
 import { rbacConfig } from '../../config/keys';
 interface RequestWithUser extends Request {
   userId?: string;
-  userRole?: 'lawyer' | 'client';
+  userRole?: 'LAWYER' | 'CLIENT';
 }
 
 export const RBACMiddleware = async (
@@ -15,10 +15,18 @@ export const RBACMiddleware = async (
   const { userRole } = req;
   const path = req.originalUrl;
   const method = req.method;
-  console.log(userRole, method, path);
 
   if (!(await enforcer.enforce(userRole, path, method))) {
     return res.status(403).send('Forbidden');
   }
   next();
 };
+//  if request has an id , it will return true otherwise it will return error
+export function checkForUser(req: RequestWithUser, res: Response): boolean {
+  const { userId } = req;
+  if (!userId) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return false;
+  }
+  return true;
+}

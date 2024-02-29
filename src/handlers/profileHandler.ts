@@ -1,19 +1,22 @@
-import e, { Request, Response } from 'express';
-import { getProfile, saveProfile, updateProfile } from '../../prisma';
+import { Response } from 'express';
 import {
   ProfileCredentials,
   RequestWithProfile,
   RequestWithUser,
 } from 'types/profile';
 import { validateProfileCredentials } from '../middleware/validateProfile';
+import { checkForUser } from './rbacMiddleware';
+import { PrismaProfile } from 'prisma';
 
+const primsaProfile = new PrismaProfile();
 // creates a profile for a user
 //  req.body: { location, bio, avatar, displayname }
 export const createProfile = async (req: RequestWithProfile, res: Response) => {
   try {
     const { location, bio, avatar, displayname } = req.body;
-    if (!req.userId) {
-      res.status(401).json({ error: 'Unauthorized' });
+    const { userId } = req;
+    const ok = checkForUser(req, res);
+    if (!ok) {
       return;
     }
     const error = validateProfileCredentials(req.body);
@@ -28,12 +31,11 @@ export const createProfile = async (req: RequestWithProfile, res: Response) => {
       avatar,
       displayname,
     };
-
-    const profile = await saveProfile(data, req.userId);
+    const profile = await primsaProfile.createProfile(data, userId!);
     res.status(201).json(profile);
   } catch (error) {
-    console.log('error in createProfile: ', error);
-    throw new Error('Internal Server Error');
+    res.status(500).send({ error: 'Internal Server Error' });
+    console.log(error);
   }
 };
 
@@ -45,8 +47,8 @@ export const updateProfileHandler = async (
 ) => {
   try {
     const { location, bio, avatar, displayname } = req.body;
-    if (!req.userId) {
-      res.status(401).json({ error: 'Unauthorized' });
+    const ok = checkForUser(req, res);
+    if (!ok) {
       return;
     }
     const error = validateProfileCredentials(req.body);
@@ -61,11 +63,14 @@ export const updateProfileHandler = async (
       avatar,
       displayname,
     };
-    const profile = await updateProfile(req.userId, data);
+    const profile = await primsaProfile.updateProfile(
+      req.userId as string,
+      data,
+    );
     res.status(201).json(profile);
   } catch (error) {
-    console.log('error in updateProfileHandler: ', error);
-    throw new Error('Internal Server Error');
+    res.status(500).send({ error: 'Internal Server Error' });
+    console.log(error);
   }
 };
 
@@ -73,14 +78,30 @@ export const updateProfileHandler = async (
 export const getUserProfile = async (req: RequestWithUser, res: Response) => {
   try {
     const { userId } = req;
-    if (!userId) {
-      res.status(401).json({ error: 'Unauthorized' });
+    const ok = checkForUser(req, res);
+    if (!ok) {
       return;
     }
-    const profile = await getProfile(userId);
+    const profile = await primsaProfile.getProfile(userId as string);
     res.status(200).json(profile);
   } catch (error) {
-    console.log('error in getProfileHandler: ', error);
-    throw new Error('Internal Server Error');
+    res.status(500).send({ error: 'Internal Server Error' });
+    console.log(error);
+  }
+};
+
+export const deleteUserProfile = async (
+  req: RequestWithUser,
+  res: Response,
+) => {
+  try {
+    const { userId } = req;
+    const deletedProfile = await primsaProfile.deleteProfile(userId as string);
+    res.status(200).json({
+      message: `the profile has been deleted successfully with the user id ${deletedProfile.id.toString()}`,
+    });
+  } catch (error) {
+    res.status(500).send({ error: 'Internal Server Error' });
+    console.log(error);
   }
 };

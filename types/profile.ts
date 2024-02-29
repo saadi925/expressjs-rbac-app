@@ -4,7 +4,6 @@ export interface RequestWithUser extends Request {
   userId?: string;
   userRole?: 'LAWYER' | 'CLIENT';
 }
-
 export interface ProfileCredentials {
   location: string | null;
   bio: string | null;
