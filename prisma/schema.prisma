@@ -81,6 +81,7 @@ model EmailVerification {
   email             String      @unique
   verificationToken String
   code              Int
+  userId String @unique
 }
 
 
@@ -91,6 +92,13 @@ model CaseDetail {
   progress        String
   updateTime      DateTime  @default(now())
   notes           String?
+}
+model Notification {
+  id          String    @id @default(uuid())
+  userId      String    // ID of the user associated with this notification
+  message     String    // Message content of the notification
+  createdAt   DateTime  @default(now())
+  read        Boolean   @default(false) // Indicates whether the notification has been read
 }
 
 model Attachment {

@@ -10,3 +10,13 @@ export const generateToken = (user: IUser) => {
     },
   );
 };
+
+export function generateVerificationToken(user: IUser, code: number) {
+  return jwt.sign(
+    { id: user.id, role: user.role, code },
+    process.env.JWT_SECRET || 'fA*&%23sha#@#',
+    {
+      expiresIn: '10h',
+    },
+  );
+}

@@ -1,4 +1,4 @@
-import { Case, PrismaClient } from '@prisma/client';
+import { Case, CaseStatus, PrismaClient } from '@prisma/client';
 export type CaseData = Omit<Case, 'id'>;
 export class PrismaCase {
   #prisma;
@@ -30,12 +30,21 @@ export class PrismaCase {
       where: { id },
     });
   }
-  async addLawyerToCase(lawyerId: string, clientId: string, caseId: bigint) {
-    return await this.#prisma.case.update({
+  async addLawyerToCase(
+    lawyerId: string,
+    clientId: string,
+    caseId: bigint,
+    status: CaseStatus,
+  ) {
+    const updatedCase = await this.#prisma.case.update({
       data: {
         lawyerId,
+        status,
       },
       where: { id: caseId, clientId },
+      include: { lawyer: { select: { name: true } } },
     });
+
+    return updatedCase;
   }
 }

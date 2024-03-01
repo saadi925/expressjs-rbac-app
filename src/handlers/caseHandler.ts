@@ -50,7 +50,6 @@ export const updateCaseHandler = async (
   if (!ok) {
     return;
   }
-  const { userId } = req;
   const data = req.body;
   const { id } = req.params;
   const BigIntId = BigInt(id);
