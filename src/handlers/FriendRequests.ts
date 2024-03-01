@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
 import { PrismaFriendRequest } from '../../prisma/queries/FriendRequest';
 import { RequestWithUser } from 'types/profile';
+import { Notifications } from '../../notifications/Notifications'; // Import Notifications class
 
 const prismaFriendRequest = new PrismaFriendRequest();
+const notifications = new Notifications(); // Instantiate Notifications class
 
 export async function sendFriendRequestHandler(
   req: RequestWithUser,
@@ -27,12 +29,17 @@ export async function sendFriendRequestHandler(
       userId as string,
       receiverId,
     );
+
+    // Create notification for sender
+    await notifications.friendRequestSent(receiverId, userId as string);
+
     res.status(201).json(friendRequest);
   } catch (error) {
     console.error('Error sending friend request:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+
 export async function acceptFriendRequestHandler(
   req: RequestWithUser,
   res: Response,
@@ -40,6 +47,16 @@ export async function acceptFriendRequestHandler(
   try {
     const requestId = BigInt(req.params.requestId);
     await prismaFriendRequest.acceptFriendRequest(requestId);
+
+    // Get senderId of the friend request
+    const senderId = await prismaFriendRequest.getSenderId(requestId);
+
+    // Create notification for sender
+    await notifications.friendRequestAcceptedNotify(
+      req.userId as string,
+      senderId,
+    );
+
     res.status(204).send();
   } catch (error) {
     console.error('Error accepting friend request:', error);
@@ -48,12 +65,22 @@ export async function acceptFriendRequestHandler(
 }
 
 export async function rejectFriendRequestHandler(
-  req: Request,
+  req: RequestWithUser,
   res: Response,
 ): Promise<void> {
   try {
     const requestId = BigInt(req.params.requestId);
     await prismaFriendRequest.rejectFriendRequest(requestId);
+
+    // Get senderId of the friend request
+    const senderId = await prismaFriendRequest.getSenderId(requestId);
+
+    // Create notification for sender
+    await notifications.friendRequestRejectedNotify(
+      req.userId as string,
+      senderId,
+    );
+
     res.status(204).send();
   } catch (error) {
     console.error('Error rejecting friend request:', error);
@@ -68,6 +95,16 @@ export async function cancelFriendRequestHandler(
   try {
     const requestId = BigInt(req.params.requestId);
     await prismaFriendRequest.cancelFriendRequest(requestId);
+
+    // Get receiverId of the friend request
+    const receiverId = await prismaFriendRequest.getReceiverId(requestId);
+
+    // Create notification for receiver
+    await notifications.friendRequestCancelledNotify(
+      req.userId as string,
+      receiverId,
+    );
+
     res.status(204).send();
   } catch (error) {
     console.error('Error canceling friend request:', error);

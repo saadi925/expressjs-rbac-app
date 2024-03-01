@@ -8,7 +8,24 @@ export class PrismaFriendRequest {
   constructor() {
     this.#prisma = new PrismaClient();
   }
-
+  async getSenderId(requestId: bigint): Promise<string> {
+    const request = await this.#prisma.friendRequest.findUnique({
+      where: { id: requestId },
+    });
+    if (!request) {
+      throw new Error('Friend request not found');
+    }
+    return request.senderId;
+  }
+  async getReceiverId(requestId: bigint): Promise<string> {
+    const request = await this.#prisma.friendRequest.findUnique({
+      where: { id: requestId },
+    });
+    if (!request) {
+      throw new Error('Friend request not found');
+    }
+    return request.receiverId;
+  }
   async sendFriendRequest(
     senderId: string,
     receiverId: string,

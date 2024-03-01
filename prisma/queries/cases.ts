@@ -47,4 +47,10 @@ export class PrismaCase {
 
     return updatedCase;
   }
+  updateCaseStatus(status: CaseStatus, caseId: bigint, clientId: string) {
+    return this.#prisma.case.update({
+      data: { status },
+      where: { id: caseId, clientId },
+    });
+  }
 }

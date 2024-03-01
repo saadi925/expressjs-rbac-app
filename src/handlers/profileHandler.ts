@@ -6,9 +6,9 @@ import {
 } from 'types/profile';
 import { validateProfileCredentials } from '../middleware/validateProfile';
 import { checkForUser } from './rbacMiddleware';
-import { PrismaProfile } from 'prisma';
+import { PrismaDBProfile } from '../../prisma/queries/profile';
 
-const primsaProfile = new PrismaProfile();
+const primsaProfile = new PrismaDBProfile();
 // creates a profile for a user
 //  req.body: { location, bio, avatar, displayname }
 export const createProfile = async (req: RequestWithProfile, res: Response) => {

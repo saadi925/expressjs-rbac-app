@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { prisma } from '.';
 import { ProfileCredentials } from 'types/profile';
-export class PrismaProfile {
+export class PrismaDBProfile {
   #prisma;
   constructor() {
     this.#prisma = new PrismaClient();

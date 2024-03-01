@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { PrismaCase } from '../../prisma/queries/cases';
 import { RequestWithUser } from 'types/profile';
-import { CaseNotifications } from 'notifications/CaseNotifications';
+import { CaseNotifications } from '../../notifications/CaseNotifications';
 
 const prismaCase = new PrismaCase();
 

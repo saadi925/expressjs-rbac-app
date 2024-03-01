@@ -9,7 +9,17 @@ export class CaseNotifications extends Notifications {
     lawyerName: string,
     userId: string,
   ): Promise<string> {
-    const message = `Your case "${caseTitle}" has been assigned to ${lawyerName}.`;
+    const message = `Your case "${caseTitle}..." has been assigned to ${lawyerName}.`;
+    await this.createNotfication(message, userId);
+    return message;
+  }
+  async caseCreation(caseTitle: string, userId: string): Promise<string> {
+    const message = `Your case "${caseTitle}..." has been created Successfully.`;
+    await this.createNotfication(message, userId);
+    return message;
+  }
+  async caseDeletion(caseTitle: string, userId: string): Promise<string> {
+    const message = `Your case "${caseTitle}..." has been deleted Successfully.`;
     await this.createNotfication(message, userId);
     return message;
   }
@@ -18,7 +28,7 @@ export class CaseNotifications extends Notifications {
     clientName: string,
     userId: string,
   ): Promise<string> {
-    const message = `You have been assigned to ${caseTitle} , Mr ${clientName}'s case`;
+    const message = `You have been assigned to ${caseTitle}... , Mr ${clientName}'s case`;
     await this.createNotfication(message, userId);
     return message;
   }
@@ -28,13 +38,13 @@ export class CaseNotifications extends Notifications {
     status: string,
     userId: string,
   ): Promise<string> {
-    const message = `The status of your case "${caseTitle}" has been updated to "${status}".`;
+    const message = `The status of your case "${caseTitle}..." has been updated to "${status}".`;
 
     await this.createNotfication(message, userId);
-    return `The status of your case "${caseTitle}" has been updated to "${status}".`;
+    return `The status of your case "${caseTitle}..." has been updated to "${status}".`;
   }
   async caseRequestNotify(lawyerName: string, userId: string): Promise<string> {
-    const message = `Mr . ${lawyerName} (lawyer) wants to handle your case.Do you want him to handle your case .`;
+    const message = `Mr . ${lawyerName} (lawyer) wants to handle your case.Do you want him to handle your case?.`;
     await this.createNotfication(message, userId);
     return message;
   }
@@ -42,7 +52,7 @@ export class CaseNotifications extends Notifications {
     lawyerName: string,
     userId: string,
   ): Promise<string> {
-    const message = `Your case requested has been rejected by Mr ${lawyerName}. `;
+    const message = `Your case request has been rejected by Mr ${lawyerName}. `;
     await this.createNotfication(message, userId);
     return message;
   }

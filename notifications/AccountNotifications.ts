@@ -1,4 +1,3 @@
-import { PrismaNotification } from 'prisma/queries/Notifications';
 import { Notifications } from './Notifications';
 
 export class AccountNotifications extends Notifications {

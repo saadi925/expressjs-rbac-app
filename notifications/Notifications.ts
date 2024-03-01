@@ -1,4 +1,4 @@
-import { PrismaNotification } from 'prisma/queries/Notifications';
+import { PrismaNotification } from '../prisma/queries/Notifications';
 
 export class Notifications {
   prismaNotification;
@@ -20,7 +20,24 @@ export class Notifications {
     await this.createNotfication(message, userId);
     return message;
   }
-
+  async friendRequestSent(requestSentTo: string, userId: string) {
+    const message = `Your friend request has been sent to ${requestSentTo}`;
+    await this.createNotfication(message, userId);
+    return message;
+  }
+  async friendRequestRecieve(userName: string, userId: string) {
+    const message = `${userName} has sent you a friend request`;
+    await this.createNotfication(message, userId);
+    return message;
+  }
+  async friendRequestCancelledNotify(
+    userName: string,
+    userId: string,
+  ): Promise<string> {
+    const message = `Your friend request to ${userName} has been cancelled.`;
+    await this.createNotfication(message, userId);
+    return message;
+  }
   async friendRequestRejectedNotify(
     userName: string,
     userId: string,

@@ -5,7 +5,9 @@ import { Case } from '@prisma/client';
 import { validateCaseData } from '../../src/middleware/validateCaseData';
 import { checkForUser } from './rbacMiddleware';
 import { RequestWithUser } from 'types/profile';
+import { CaseNotifications } from '../../notifications/CaseNotifications';
 const prismaCase = new PrismaCase();
+const notifier = new CaseNotifications();
 //  this is the case creation handler , only 'CLIENT' can create the case,
 export const createCaseHandler = async (
   req: RequestWithCase,
@@ -34,6 +36,10 @@ export const createCaseHandler = async (
   };
   try {
     const createdCase = await prismaCase.createCase(data);
+    await notifier.caseCreation(
+      createdCase.title.slice(0, 32),
+      req.userId as string,
+    );
 
     res.status(201).json({ ...createdCase, id: createdCase.id.toString() });
   } catch (error) {
@@ -121,3 +127,23 @@ export const getCaseByID = async (req: RequestWithUser, res: Response) => {
     console.log(error);
   }
 };
+
+export async function updateCaseStatus(req: RequestWithCase, res: Response) {
+  const ok = checkForUser(req, res);
+  if (!ok) {
+    return;
+  }
+  const { id } = req.params;
+  const { status } = req.body;
+  try {
+    const updatedCase = await prismaCase.updateCaseStatus(
+      status,
+      BigInt(id),
+      req.userId as string,
+    );
+    res.status(201).json({ ...updatedCase, id: updatedCase.id.toString() });
+  } catch (error) {
+    res.status(500).send({ error: 'Internal Server Error' });
+    console.log(error);
+  }
+}
