@@ -43,7 +43,10 @@ export class CaseNotifications extends Notifications {
     await this.createNotfication(message, userId);
     return `The status of your case "${caseTitle}..." has been updated to "${status}".`;
   }
-  async caseRequestNotify(lawyerName: string, userId: string): Promise<string> {
+  async caseRequestNotifyClient(
+    lawyerName: string,
+    userId: string,
+  ): Promise<string> {
     const message = `Mr . ${lawyerName} (lawyer) wants to handle your case.Do you want him to handle your case?.`;
     await this.createNotfication(message, userId);
     return message;

@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { CaseData, PrismaCase } from '../../prisma';
+import { CaseData, PrismaCase, prisma } from '../../prisma';
 import { RequestWithCase } from 'types/case';
 import { Case } from '@prisma/client';
 import { validateCaseData } from '../../src/middleware/validateCaseData';
@@ -47,7 +47,19 @@ export const createCaseHandler = async (
     console.log(error);
   }
 };
+export async function getAllOpenCases(): Promise<Case[]> {
+  return prisma.case.findMany({
+    where: {
+      status: 'OPEN',
+    },
+    orderBy: {
+      createdAt: 'desc', // Sort by creation time in descending order
+    },
+  });
+}
 //  update Case ('CLIENT' req)
+// 'id' in params
+// 'case in body
 export const updateCaseHandler = async (
   req: RequestWithCase,
   res: Response,
@@ -127,7 +139,8 @@ export const getCaseByID = async (req: RequestWithUser, res: Response) => {
     console.log(error);
   }
 };
-
+//  body 'status'
+// params 'id'
 export async function updateCaseStatus(req: RequestWithCase, res: Response) {
   const ok = checkForUser(req, res);
   if (!ok) {

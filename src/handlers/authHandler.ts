@@ -6,6 +6,9 @@ import {
   generateToken,
   generateVerificationToken,
 } from '../utils/generateToken';
+import jwt from 'jsonwebtoken';
+import { KEYS } from '../../config/keys';
+import { sendVerificationEmail } from './sendVerificationEmail';
 import { EmailVerification } from '../../prisma/queries/EmailVerification';
 export const signupHandler = async (req: Request, res: Response) => {
   try {
@@ -40,7 +43,7 @@ export const signupHandler = async (req: Request, res: Response) => {
       code,
       userId: user.id,
     });
-    //  send this token to the user's email
+    await sendVerificationEmail(email, verificationToken, code);
 
     return res.status(201).json({ token });
   } catch (error) {
@@ -80,8 +83,7 @@ export const signinHandler = async (req: Request, res: Response) => {
     res.status(500).send('Server error');
   }
 };
-import jwt from 'jsonwebtoken';
-import { KEYS } from '../../config/keys';
+
 export const resendConfirmation = async (req: Request, res: Response) => {
   try {
     const { email } = req.body;

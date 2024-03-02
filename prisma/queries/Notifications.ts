@@ -32,15 +32,23 @@ export class PrismaNotification {
     return notifications;
   }
 
-  async markNotificationAsRead(notificationId: string): Promise<void> {
+  async markNotificationAsRead(
+    notificationId: string,
+    userId: string,
+  ): Promise<void> {
     await this.#prisma.notification.update({
-      where: { id: notificationId },
+      where: { id: notificationId, userId },
       data: { read: true },
     });
   }
 
-  async deleteNotification(notificationId: string): Promise<void> {
-    await this.#prisma.notification.delete({ where: { id: notificationId } });
+  async deleteNotification(
+    notificationId: string,
+    userId: string,
+  ): Promise<void> {
+    await this.#prisma.notification.delete({
+      where: { id: notificationId, userId },
+    });
   }
 
   async deleteAllUserNotifications(userId: string): Promise<void> {

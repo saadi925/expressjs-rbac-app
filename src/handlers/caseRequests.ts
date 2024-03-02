@@ -1,17 +1,16 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { PrismaCaseRequest } from '../../prisma/queries/CaseRequests';
 import { RequestWithUser } from 'types/profile';
 
 const prismaCaseRequest = new PrismaCaseRequest();
-
 export async function createCaseRequestHandler(
   req: RequestWithUser,
   res: Response,
 ) {
   try {
     const { userId, userRole } = req;
-    let clientId;
-    let lawyerId;
+    let clientId: string | undefined;
+    let lawyerId: string | undefined;
     const {
       caseId,
       clientId: requestBodyClientId,
@@ -44,10 +43,13 @@ export async function createCaseRequestHandler(
       return res.status(400).json({ error: 'caseId is required' });
     }
 
+    // Convert caseId to BigInt
+    const bigintCaseId = BigInt(caseId);
+
     const caseRequest = await prismaCaseRequest.createCaseRequest({
-      clientId,
-      lawyerId,
-      caseId,
+      clientId: clientId!,
+      lawyerId: lawyerId!,
+      caseId: bigintCaseId,
     });
 
     res.status(201).json(caseRequest);
@@ -64,7 +66,24 @@ export async function acceptCaseRequestHandler(
   try {
     const requestId = BigInt(req.params.requestId);
     await prismaCaseRequest.acceptCaseRequest(requestId);
-    res.status(204).send();
+
+    // Update lawyer's cases
+    await prismaCaseRequest.updateLawyerCases(req.userId as string, requestId);
+
+    // Update client's cases if the user is a lawyer
+    if (req.userRole === 'LAWYER') {
+      const caseRequest = await prismaCaseRequest.getCaseRequestById(requestId);
+      if (caseRequest) {
+        await prismaCaseRequest.updateClientCases(
+          caseRequest.clientId,
+          requestId,
+        );
+      }
+    }
+
+    res.status(204).json({
+      message: `you have accepted the case request`,
+    });
   } catch (error) {
     console.error('Error accepting case request:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -85,19 +104,31 @@ export async function rejectCaseRequestHandler(
   }
 }
 
-//  if lawyer
 export async function getPendingCaseRequestsHandler(
   req: RequestWithUser,
   res: Response,
 ): Promise<void> {
   try {
     const { userId } = req; // userId is lawyer id here
-    const pendingRequests = await prismaCaseRequest.getPendingCaseRequests(
-      userId as string,
-    );
+    const pendingRequests =
+      await prismaCaseRequest.getPendingCaseRequestsByLawyer(userId as string);
     res.status(200).json(pendingRequests);
   } catch (error) {
     console.error('Error getting pending case requests:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+export async function cancelCaseRequestHandler(
+  req: RequestWithUser,
+  res: Response,
+): Promise<void> {
+  try {
+    const requestId = BigInt(req.params.requestId);
+    await prismaCaseRequest.cancelCaseRequest(requestId);
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error cancelling case request:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }

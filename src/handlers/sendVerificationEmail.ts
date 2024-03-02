@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { promisify } from 'util';
-import { KEYS } from 'config/keys';
+import { KEYS } from '../../config/keys';
 import nodemailer from 'nodemailer';
 
 const readFileAsync = promisify(fs.readFile);

@@ -16,7 +16,7 @@ export class Notifications {
     userName: string,
     userId: string,
   ): Promise<String> {
-    const message = `Your friend request from ${userName} has been accepted.`;
+    const message = `Your friend request to ${userName} has been accepted.`;
     await this.createNotfication(message, userId);
     return message;
   }

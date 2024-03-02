@@ -6,11 +6,16 @@ import {
   lawyerRoutes,
 } from './routes';
 import bodyParser from 'body-parser';
-const app = express();
+import { notificationRoutes } from './routes/notificationRoutes';
+import { friendRequestsRoutes } from './routes/friendRequestRoutes';
+export const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/user/profile', profileRoutes);
+app.use('/notifications', notificationRoutes);
+app.use('/friend_requests', friendRequestsRoutes);
+
 app.use('/client', clientRoutes);
 app.use('/lawyer', lawyerRoutes);
 const port = process.env.PORT || 8080;

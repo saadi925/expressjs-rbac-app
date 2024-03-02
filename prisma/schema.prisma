@@ -6,6 +6,9 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
 }
+// schema.prisma
+
+
 
 model Profile {
   id          String    @id @default(uuid())
@@ -18,23 +21,57 @@ model Profile {
   bio         String?
   location    String?
 }
+// schema.prisma
 
 model User {
-  id                       String              @id @default(uuid())
-  email                    String              @unique
-  name                     String?
-  createdAt                DateTime            @default(now())
-  updatedAt                DateTime            @updatedAt
-  role                     Role                @default(CLIENT)
-  password                 String
-  verified                 Boolean             @default(false)
-  profile                  Profile?
-  clientCases              Case[]              @relation("ClientCases")
-  lawyerCases              Case[]              @relation("LawyerCases")
-  sentFriendRequests       FriendRequest[]     @relation("SentFriendRequests")
-  receivedFriendRequests   FriendRequest[]     @relation("ReceivedFriendRequests")
-  sentCaseRequests         CaseRequest[]       @relation("SentCaseRequests")
-  receivedCaseRequests     CaseRequest[]       @relation("ReceivedCaseRequests")
+  id                        String      @id @default(uuid())
+  email                     String      @unique
+  name                      String?
+  createdAt                 DateTime    @default(now())
+  updatedAt                 DateTime    @updatedAt
+  role                      Role        @default(CLIENT)
+  password                  String
+  verified                  Boolean     @default(false)
+  profile                   Profile?
+  clientCases               Case[]      @relation("ClientCases")
+  lawyerCases               Case[]      @relation("LawyerCases")
+  sentFriendRequests        FriendRequest[] @relation("SentFriendRequests")
+  receivedFriendRequests    FriendRequest[] @relation("ReceivedFriendRequests")
+  sentCaseRequests          CaseRequest[]   @relation("SentCaseRequests")
+  receivedCaseRequests      CaseRequest[]   @relation("ReceivedCaseRequests")
+  user1Friendships          Friendship[]   @relation("User1Friendships")
+  user2Friendships          Friendship[]   @relation("User2Friendships")
+  
+  // Add the senderId field
+  senderId                  String?
+  
+  // Define the opposite relation for sent messages
+  sentMessages              Message[]    @relation("SentMessages")
+  receivedMessages          Message[]    @relation("ReceivedMessages")
+}
+
+
+
+model Message {
+  id          String    @id @default(uuid())
+  content     String
+  senderId    String
+  receiverId  String
+  createdAt   DateTime  @default(now())
+
+  sender      User      @relation("SentMessages", fields: [senderId], references: [id])
+  receiver    User      @relation("ReceivedMessages", fields: [receiverId], references: [id])
+}
+model Friendship {
+  id         String     @id @default(uuid())
+  user1Id    String
+  user2Id    String
+  createdAt  DateTime   @default(now())
+
+  user1      User       @relation("User1Friendships", fields: [user1Id], references: [id])
+  user2      User       @relation("User2Friendships", fields: [user2Id], references: [id])
+
+  @@unique([user1Id, user2Id])
 }
 
 model FriendRequest {
@@ -46,6 +83,14 @@ model FriendRequest {
   updatedAt     DateTime            @updatedAt
   sender        User                @relation("SentFriendRequests", fields: [senderId], references: [id])
   receiver      User                @relation("ReceivedFriendRequests", fields: [receiverId], references: [id])
+}
+model CaseDetail {
+  id              BigInt    @id @default(autoincrement())
+  caseId          BigInt
+  case            Case      @relation(fields: [caseId], references: [id])
+  progress        String
+  updateTime      DateTime  @default(now())
+  notes           String?
 }
 model Case {
   id            BigInt              @id @default(autoincrement())
@@ -62,7 +107,6 @@ model Case {
   attachments     Attachment[]
   caseRequests    CaseRequest[]  // Add the opposite relation field referencing the CaseRequest model
 }
-
 model CaseRequest {
   id            BigInt              @id @default(autoincrement())
   clientId      String
@@ -76,6 +120,8 @@ model CaseRequest {
   case          Case                @relation(fields: [caseId], references: [id]) // Ensure the type matches `id` in the `Case` model
 }
 
+
+
 model EmailVerification {
   id                BigInt      @id @default(autoincrement())
   email             String      @unique
@@ -85,14 +131,6 @@ model EmailVerification {
 }
 
 
-model CaseDetail {
-  id              BigInt    @id @default(autoincrement())
-  caseId          BigInt
-  case            Case      @relation(fields: [caseId], references: [id])
-  progress        String
-  updateTime      DateTime  @default(now())
-  notes           String?
-}
 model Notification {
   id          String    @id @default(uuid())
   userId      String    // ID of the user associated with this notification

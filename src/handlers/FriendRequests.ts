@@ -6,13 +6,14 @@ import { Notifications } from '../../notifications/Notifications'; // Import Not
 const prismaFriendRequest = new PrismaFriendRequest();
 const notifications = new Notifications(); // Instantiate Notifications class
 
+// params 'recieverId'
 export async function sendFriendRequestHandler(
   req: RequestWithUser,
   res: Response,
 ) {
   try {
     const { userId } = req;
-    const { receiverId } = req.body;
+    const { receiverId } = req.params;
 
     // Validate receiverId
     if (!receiverId || typeof receiverId !== 'string') {
@@ -39,7 +40,7 @@ export async function sendFriendRequestHandler(
     res.status(500).json({ error: 'Internal server error' });
   }
 }
-
+// params 'requestId'
 export async function acceptFriendRequestHandler(
   req: RequestWithUser,
   res: Response,
@@ -63,6 +64,7 @@ export async function acceptFriendRequestHandler(
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+// params 'requestId'
 
 export async function rejectFriendRequestHandler(
   req: RequestWithUser,
@@ -87,6 +89,7 @@ export async function rejectFriendRequestHandler(
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+// params 'requestId'
 
 export async function cancelFriendRequestHandler(
   req: RequestWithUser,
