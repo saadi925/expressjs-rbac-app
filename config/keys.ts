@@ -6,9 +6,9 @@ export const KEYS = {
 
   host: process.env.HOST || 'localhost',
   port: process.env.PORT || 3000,
-  server: process.env.SERVER || 'http://localhost:3000',
-  email: process.env.G_EMAIL || '',
-  password: process.env.G_PASSWORD,
+  server: process.env.SERVER || 'http://localhost:8080',
+  email: process.env.G_EMAIL || 'userid925925@gmail.com',
+  password: process.env.G_PASSWORD || 'kxyd aijd mmhi zjoi',
 };
 
 export const rbacConfig = {

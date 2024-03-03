@@ -16,7 +16,7 @@ router.post('/signup', validateUserCred, signupHandler);
 
 // sign in route
 router.post('/signin', validateLoginCredentials, signinHandler);
-router.post('/email-verify', emailVerificationHandler);
-router.post('/resend-email-verify', resendConfirmation);
+router.get('/email_verify', emailVerificationHandler);
+router.post('/resend_email_verify', resendConfirmation);
 
 export { router as authRoutes };

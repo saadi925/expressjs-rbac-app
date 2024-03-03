@@ -1,5 +1,14 @@
 import { authRoutes } from './authRoutes';
 import { clientRoutes } from './clientRoutes';
+import { commonRoutes } from './commonRoutes';
 import { lawyerRoutes } from './lawyerRoutes';
+import { notificationRoutes } from './notificationRoutes';
 import { profileRoutes } from './profileRoutes';
-export { authRoutes, profileRoutes, clientRoutes, lawyerRoutes };
+export {
+  commonRoutes,
+  notificationRoutes,
+  authRoutes,
+  profileRoutes,
+  clientRoutes,
+  lawyerRoutes,
+};

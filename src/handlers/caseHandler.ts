@@ -3,7 +3,7 @@ import { CaseData, PrismaCase, prisma } from '../../prisma';
 import { RequestWithCase } from 'types/case';
 import { Case } from '@prisma/client';
 import { validateCaseData } from '../../src/middleware/validateCaseData';
-import { checkForUser } from './rbacMiddleware';
+import { checkForUser } from '../middleware/rbacMiddleware';
 import { RequestWithUser } from 'types/profile';
 import { CaseNotifications } from '../../notifications/CaseNotifications';
 const prismaCase = new PrismaCase();
@@ -14,7 +14,6 @@ export const createCaseHandler = async (
   res: Response,
 ) => {
   const { title, description, status } = req.body;
-
   const ok = checkForUser(req, res);
   if (!ok) {
     return;
@@ -76,6 +75,12 @@ export const updateCaseHandler = async (
     if (error) {
       return res.status(403).json({ error: error.message });
     }
+    const exists = await prismaCase.caseExists(BigIntId);
+    if (!exists) {
+      return res.status(404).json({
+        error: 'Case Not Found',
+      });
+    }
     //  ready to be updated
     const newData: Case = {
       id: BigIntId,
@@ -102,6 +107,12 @@ export const deleteCaseHandler = async (
     return;
   }
   try {
+    const exists = await prismaCase.caseExists(BigInt(id));
+    if (!exists) {
+      return res.status(404).json({
+        error: 'Case Not Found',
+      });
+    }
     const deletedCase = await prismaCase.deleteCase(
       BigInt(id),
       req.userId as string,
@@ -116,11 +127,13 @@ export const deleteCaseHandler = async (
 };
 export const getCasesHandler = async (req: RequestWithUser, res: Response) => {
   try {
-    const getAllCases = await prismaCase.getCases();
+    const getAllCases = await prismaCase.getCases(req.userId as string);
+    const serialized = getAllCases.map((caseItem) => ({
+      ...caseItem,
+      id: String(caseItem.id),
+    }));
 
-    res.status(201).json({
-      getAllCases,
-    });
+    res.status(200).json(serialized);
   } catch (error) {
     res.status(500).send({ error: 'Internal Server Error' });
     console.log(error);
@@ -130,6 +143,12 @@ export const getCasesHandler = async (req: RequestWithUser, res: Response) => {
 export const getCaseByID = async (req: RequestWithUser, res: Response) => {
   try {
     const { id } = req.params;
+    const exists = await prismaCase.caseExists(BigInt(id));
+    if (!exists) {
+      return res.status(404).json({
+        error: 'Case Not Found',
+      });
+    }
     const caseByID = await prismaCase.getCaseByID(BigInt(id));
     res.status(201).json({
       caseByID,
@@ -149,6 +168,12 @@ export async function updateCaseStatus(req: RequestWithCase, res: Response) {
   const { id } = req.params;
   const { status } = req.body;
   try {
+    const exists = await prismaCase.caseExists(BigInt(id));
+    if (!exists) {
+      return res.status(404).json({
+        error: 'Case Not Found',
+      });
+    }
     const updatedCase = await prismaCase.updateCaseStatus(
       status,
       BigInt(id),

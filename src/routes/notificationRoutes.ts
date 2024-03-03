@@ -10,9 +10,9 @@ import {
 
 const router = express.Router();
 
-router.get('/', authMiddleware, getUnReadNotifications);
-router.get('/all', authMiddleware, getNotifications);
-router.put('/', authMiddleware, markNotificationAsRead);
+router.get('/unread', authMiddleware, getUnReadNotifications);
+router.get('/', authMiddleware, getNotifications);
+router.put('/:notification_id', authMiddleware, markNotificationAsRead);
 router.delete('/:notification_id', authMiddleware, removeNotification);
 router.delete('/', authMiddleware, deleteAllUserNotifications);
 

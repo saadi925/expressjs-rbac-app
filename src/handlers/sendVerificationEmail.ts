@@ -2,6 +2,7 @@ import fs from 'fs';
 import { promisify } from 'util';
 import { KEYS } from '../../config/keys';
 import nodemailer from 'nodemailer';
+import path from 'path';
 
 const readFileAsync = promisify(fs.readFile);
 
@@ -13,14 +14,15 @@ async function sendVerificationEmail(
   try {
     // Read the HTML template file
     const htmlTemplate = await readFileAsync(
-      'verification_email_template.html',
+      path.resolve(__dirname, './verification_email_template.html'),
       'utf8',
     );
 
     // Replace placeholders in the template with actual values
     const replacedHtml = htmlTemplate
       .replace('{{code}}', code.toString())
-      .replace('{{verificationToken}}', verificationToken);
+      .replace('{{verificationToken}}', verificationToken)
+      .replace('{{server}}', KEYS.server);
 
     // Create a Nodemailer transporter
     const transporter = nodemailer.createTransport({

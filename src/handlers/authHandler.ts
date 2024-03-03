@@ -10,6 +10,7 @@ import jwt from 'jsonwebtoken';
 import { KEYS } from '../../config/keys';
 import { sendVerificationEmail } from './sendVerificationEmail';
 import { EmailVerification } from '../../prisma/queries/EmailVerification';
+import { AccountNotifications } from '../../notifications/AccountNotifications';
 export const signupHandler = async (req: Request, res: Response) => {
   try {
     const { name, email, password, role } = req.body;
@@ -109,6 +110,7 @@ export const resendConfirmation = async (req: Request, res: Response) => {
       code,
       verificationToken,
     });
+    await sendVerificationEmail(email, verificationToken, code);
 
     return res
       .status(200)
@@ -121,12 +123,15 @@ export const resendConfirmation = async (req: Request, res: Response) => {
 
 export const emailVerificationHandler = async (req: Request, res: Response) => {
   try {
-    const token = req.headers.authorization;
-    if (!token) {
+    const one_time_token = req.query.one_time_token;
+    if (!one_time_token || typeof one_time_token !== 'string') {
       return res.status(400).json({ error: 'Missing verification token' });
     }
 
-    const decodedToken: any = jwt.verify(token, KEYS.JWT_SECRET);
+    const decodedToken: any = jwt.verify(
+      one_time_token as string,
+      KEYS.JWT_SECRET,
+    );
     const { id, code } = decodedToken;
 
     // Validate if the decoded token contains the necessary information
@@ -149,9 +154,10 @@ export const emailVerificationHandler = async (req: Request, res: Response) => {
     // Update the user's verified status in the database
     await emailVerification.updateUserVerifyStatus(email.userId, true);
 
+    const notifier = new AccountNotifications();
+    await notifier.emailVerifyNotification(email.email, email.userId);
     // Delete the email verification record from the database
     await emailVerification.deleteEmailVerification(email.email, id);
-
     return res.status(200).json({ message: 'Email verification successful' });
   } catch (error) {
     console.error('Error in emailVerificationHandler:', error);

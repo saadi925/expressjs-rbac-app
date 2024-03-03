@@ -5,6 +5,12 @@ export class PrismaCase {
   constructor() {
     this.#prisma = new PrismaClient();
   }
+  async caseExists(caseId: bigint): Promise<boolean> {
+    const found = await this.#prisma.case.findUnique({
+      where: { id: caseId },
+    });
+    return !!found;
+  }
   async createCase(data: CaseData): Promise<Case> {
     const createdCase = await this.#prisma.case.create({
       data,
@@ -22,8 +28,12 @@ export class PrismaCase {
       where: { id, clientId },
     });
   }
-  async getCases() {
-    return await this.#prisma.case.findMany();
+  async getCases(clientId: string) {
+    return await this.#prisma.case.findMany({
+      where: {
+        clientId,
+      },
+    });
   }
   async getCaseByID(id: bigint) {
     return await this.#prisma.case.findUnique({
@@ -42,7 +52,12 @@ export class PrismaCase {
         status,
       },
       where: { id: caseId, clientId },
-      include: { lawyer: { select: { name: true } } },
+      include: {
+        lawyer: { select: { name: true } },
+        client: {
+          select: { name: true },
+        },
+      },
     });
 
     return updatedCase;

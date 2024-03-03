@@ -40,9 +40,26 @@ export const assignCaseToLawyer = async (
       caseId,
       status,
     );
-
+    let message;
+    // notify lawyer that case has been assigned to him
+    const lawyerNotification = await notifier.caseAssignedNotifyLawyer(
+      updatedCase.title,
+      updatedCase.client.name ?? 'Anonymous',
+      lawyerId,
+    );
+    // notify client that case has been assigned to lawyer
+    const clientNotification = await notifier.caseAssignedNotifyClient(
+      updatedCase.title,
+      updatedCase.lawyer?.name ?? 'Anonymous',
+      clientId,
+    );
+    if (userRole == 'LAWYER') {
+      message = lawyerNotification;
+    } else {
+      message = clientNotification;
+    }
     res.status(200).json({
-      message: 'Case assigned to lawyer successfully',
+      message,
       case: updatedCase,
     });
   } catch (error) {

@@ -5,7 +5,7 @@ import {
   RequestWithUser,
 } from 'types/profile';
 import { validateProfileCredentials } from '../middleware/validateProfile';
-import { checkForUser } from './rbacMiddleware';
+import { checkForUser } from '../middleware/rbacMiddleware';
 import { PrismaDBProfile } from '../../prisma/queries/profile';
 
 const primsaProfile = new PrismaDBProfile();

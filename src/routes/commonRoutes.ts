@@ -1,22 +1,55 @@
 import express from 'express';
 import {
-  getAllFriendshipsByUserId,
+  // getAllFriendshipsByUserId,
   getCaseStatuses,
 } from '../../src/handlers/api';
 import { authMiddleware } from '../../src/middleware/authMiddleware';
-import { RBACMiddleware } from 'src/handlers/rbacMiddleware';
-import { assignCaseToLawyer } from 'src/handlers/caseAssign';
+import {
+  cancelCaseRequestHandler,
+  getPendingCaseRequestsHandler,
+  rejectCaseRequestHandler,
+} from '../../src/handlers/clientCaseRequest';
+import { upload } from '../../src/utils/attachments';
+import {
+  downloadingCaseAttachments,
+  uploadingCaseAttachments,
+} from '../../src/handlers/attachmentsHandler';
 
 const router = express.Router();
+
+// POST endpoint for uploading case attachments
+router.post(
+  '/cases/:caseId/attachments',
+  authMiddleware,
+  upload.single('file'),
+  uploadingCaseAttachments,
+);
+
+// GET endpoint for downloading case attachments
+router.get(
+  '/cases/:caseId/attachments/:filename',
+  authMiddleware,
+  downloadingCaseAttachments,
+);
+
 //  get the statuses available for case
 router.get('/case_statuses', authMiddleware, getCaseStatuses);
 
-// get all the friendships for a user
-router.get('/friends', authMiddleware, getAllFriendshipsByUserId);
+router.get(
+  '/case_request/pending',
+  authMiddleware,
+  getPendingCaseRequestsHandler,
+);
 
 router.put(
-  '/assign_case_to_lawyer',
+  '/case_request/reject/:requestId',
   authMiddleware,
-  RBACMiddleware,
-  assignCaseToLawyer,
+  rejectCaseRequestHandler,
 );
+router.put(
+  '/case_request/cancel/:requestId',
+  authMiddleware,
+  cancelCaseRequestHandler,
+);
+
+export { router as commonRoutes };

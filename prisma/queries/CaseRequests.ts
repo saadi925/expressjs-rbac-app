@@ -1,6 +1,7 @@
 import {
   PrismaClient,
   CaseRequest as PrismaCaseRequestModel,
+  CaseRequest,
 } from '@prisma/client';
 
 interface CaseRequestData {
@@ -15,19 +16,73 @@ export class PrismaCaseRequest {
   constructor() {
     this.#prisma = new PrismaClient();
   }
+  async removeRequestFromSenderSent(caseRequestId: bigint, userId: string) {
+    await this.#prisma.user.update({
+      where: { id: userId },
+      data: {
+        sentCaseRequests: {
+          disconnect: { id: caseRequestId },
+        },
+      },
+    });
+  }
+  async addToSenderSentRequests(caseRequestId: bigint, senderId: string) {
+    await this.#prisma.user.update({
+      where: { id: senderId },
+      data: {
+        sentCaseRequests: {
+          connect: { id: caseRequestId },
+        },
+      },
+    });
+  }
+  async addToRecieverRecieveRequests(
+    caseRequestId: bigint,
+    receiverId: string,
+  ) {
+    await this.#prisma.user.update({
+      where: { id: receiverId },
+      data: {
+        receivedCaseRequests: {
+          connect: { id: caseRequestId },
+        },
+      },
+    });
+  }
 
+  async #removeFromRecieverRequests(caseRequest: CaseRequest, userId: string) {
+    await this.#prisma.user.update({
+      where: { id: userId },
+      data: {
+        receivedCaseRequests: {
+          disconnect: { id: caseRequest.id },
+        },
+      },
+    });
+  }
   async createCaseRequest(data: CaseRequestData) {
     const createdCaseRequest = await this.#prisma.caseRequest.create({
       data,
+      include: {
+        lawyer: {
+          select: { name: true },
+        },
+        client: {
+          select: { name: true },
+        },
+      },
     });
+
     return createdCaseRequest;
   }
 
-  async getCaseRequestById(
-    requestId: bigint,
-  ): Promise<PrismaCaseRequestModel | null> {
+  async getCaseRequestById(requestId: bigint) {
     const caseRequest = await this.#prisma.caseRequest.findUnique({
       where: { id: requestId },
+      include: {
+        lawyer: { select: { name: true } },
+        client: { select: { name: true } },
+      },
     });
     return caseRequest;
   }
@@ -46,10 +101,9 @@ export class PrismaCaseRequest {
   async updateLawyerCases(lawyerId: string, caseId: bigint) {
     // Update lawyer's cases
     await this.#prisma.user.update({
-      where: { id: lawyerId },
+      where: { id: lawyerId, role: 'LAWYER' },
       data: {
         lawyerCases: {
-          // Use the correct relation field name
           connect: { id: caseId },
         },
       },
@@ -58,7 +112,7 @@ export class PrismaCaseRequest {
   async updateClientCases(clientId: string, caseId: bigint) {
     // Update client's cases
     await this.#prisma.user.update({
-      where: { id: clientId },
+      where: { id: clientId, role: 'CLIENT' },
       data: {
         clientCases: {
           // Use the correct relation field name
@@ -85,12 +139,6 @@ export class PrismaCaseRequest {
     return pendingRequests;
   }
   async cancelCaseRequest(requestId: bigint): Promise<void> {
-    // check if the request is still pending and it exists
-    const request = await this.getCaseRequestById(requestId);
-    if (!request || request.status !== 'PENDING') {
-      throw new Error('Invalid request');
-    }
-
     await this.#prisma.caseRequest.update({
       where: { id: requestId },
       data: { status: 'CANCELLED' },

@@ -30,7 +30,7 @@
       <p style="color: #333">Verification Code: <strong>{{code}}</strong></p>
       <p style="color: #333">Click on the link below to verify your email:</p>
       <a
-        href="{{verificationToken}}"
+        href="{{server}}/auth/email_verify?one_time_token={{verificationToken}}"
         style="
           display: inline-block;
           padding: 10px 20px;

@@ -24,7 +24,7 @@ export const RBACMiddleware = async (
 //  if request has an id , it will return true otherwise it will return error
 export function checkForUser(req: RequestWithUser, res: Response): boolean {
   const { userId } = req;
-  if (!userId) {
+  if (!userId || typeof userId !== 'string') {
     res.status(401).json({ error: 'Unauthorized' });
     return false;
   }

@@ -1,5 +1,5 @@
 import { RequestWithUser } from 'types/profile';
-import { checkForUser } from './rbacMiddleware';
+import { checkForUser } from '../middleware/rbacMiddleware';
 import { Response } from 'express';
 import { PrismaNotification } from '../../prisma/queries/Notifications';
 
