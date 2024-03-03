@@ -11,6 +11,17 @@ export class PrismaCase {
     });
     return !!found;
   }
+  async getAllOpenCases(userId: string) {
+    const cases = await this.#prisma.case.findMany({
+      where: {
+        lawyerId: null,
+        clientId: userId,
+        status: 'OPEN',
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    return cases;
+  }
   async createCase(data: CaseData): Promise<Case> {
     const createdCase = await this.#prisma.case.create({
       data,

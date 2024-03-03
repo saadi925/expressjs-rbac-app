@@ -1,57 +1,127 @@
 import { Request, Response } from 'express';
 import { PrismaMessages } from '../prisma/queries/PrismaMessages';
 import { Server, Socket } from 'socket.io';
+import { prisma } from '../prisma';
+import xss from 'xss';
+import emojiRegex from 'emoji-regex';
+import { SocketWithUser, isAuthorizedSocket } from './middleware/isAuthorized';
+import { authMiddleware } from './middleware/socketAuth';
 
-export const socketHandler = (io: Server) => (socket: Socket) => {
-  console.log('A user connected');
-  async (req: Request, res: Response) => {
+interface SendMessageData {
+  senderId: string;
+  receiverId: string;
+  content: string;
+}
+
+class MessageHandler {
+  private prismaMessages: PrismaMessages;
+  private io: Server;
+
+  constructor(io: Server) {
+    this.prismaMessages = new PrismaMessages();
+    this.io = io;
+  }
+
+  fetchOlderMessages = async (req: Request, res: Response) => {
     try {
-      const prismaMessages = new PrismaMessages();
-      const { userId, pageNumber = 1, pageSize = 30 } = req.query;
-      // Calculate skip based on page number and page size
+      const { userId, pageNumber = '1', pageSize = '30' } = req.query;
       if (!userId || typeof userId !== 'string') {
-        throw new Error('Unauthorized User');
+        throw new Error('Invalid user ID');
       }
       const skip = (Number(pageNumber) - 1) * Number(pageSize);
-
-      // Fetch older messages from the database based on pagination parameters
-      const olderMessages = await prismaMessages.getMessages(
+      const olderMessages = await this.prismaMessages.getMessages(
         userId,
         Number(pageSize),
         skip,
       );
-
       res.status(200).json(olderMessages);
     } catch (error) {
       console.error('Error fetching older messages:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ error: 'Failed to fetch older messages' });
     }
   };
-  socket.on('sendMessage', async ({ senderId, receiverId, content }) => {
+
+  sendMessage = async ({ senderId, receiverId, content }: SendMessageData) => {
     try {
-      const prismaMessages = new PrismaMessages();
-      const message = await prismaMessages.sendMessage(
+      const [sender, receiver] = await Promise.all([
+        prisma.user.findUnique({ where: { id: senderId } }),
+        prisma.user.findUnique({ where: { id: receiverId } }),
+      ]);
+      if (!sender || !receiver) {
+        throw new Error('Sender or receiver does not exist');
+      }
+      // Sanitize the message content to prevent XSS attacks
+      const sanitizedContent = xss(content);
+      const emojiRegexPattern = emojiRegex();
+      const isValidEmoji = emojiRegexPattern.test(sanitizedContent);
+      // Validate message length
+      if (sanitizedContent.length > 1000) {
+        throw new Error('Message exceeds maximum length');
+      }
+      if (isValidEmoji) {
+        throw new Error('Invalid emoji');
+      }
+
+      const message = await this.prismaMessages.sendMessage(
         senderId,
         receiverId,
-        content,
+        sanitizedContent,
       );
-
-      // Emit the message to the receiver
-      io.to(receiverId).emit('message', message);
+      await Promise.all([
+        prisma.user.update({
+          where: { id: senderId },
+          data: { sentMessages: { connect: { id: message.id } } },
+        }),
+        prisma.user.update({
+          where: { id: receiverId },
+          data: { receivedMessages: { connect: { id: message.id } } },
+        }),
+      ]);
+      this.io.to(receiverId).emit('message', message);
     } catch (error) {
       console.error('Error sending message:', error);
     }
-  });
+  };
 
-  socket.on('markMessageAsSeen', async (messageId) => {
+  markMessageAsSeen = async (messageId: string) => {
     try {
-      const prismaMessages = new PrismaMessages();
-      await prismaMessages.markMessageAsSeen(messageId);
+      await this.prismaMessages.markMessageAsSeen(messageId);
     } catch (error) {
       console.error('Error marking message as seen:', error);
     }
+  };
+}
+
+export const socketHandler = (io: Server) => (socket: Socket) => {
+  console.log('A user connected');
+  const messageHandler = new MessageHandler(io);
+  socket.use((packet, next) => {
+    authMiddleware(socket as SocketWithUser, (err) => {
+      if (err) {
+        console.error('Error in authMiddleware:', err);
+        return next(err);
+      }
+      next();
+    });
   });
 
+  // Apply isAuthorized middleware to specific socket events
+  socket.use((packet, next) => {
+    const authorizedEvents = [
+      'fetchOlderMessages',
+      'sendMessage',
+      'markMessageAsSeen',
+    ];
+    if (authorizedEvents.includes(packet[0])) {
+      isAuthorizedSocket(socket, next);
+    } else {
+      next();
+    }
+  });
+
+  socket.on('fetchOlderMessages', messageHandler.fetchOlderMessages);
+  socket.on('sendMessage', messageHandler.sendMessage);
+  socket.on('markMessageAsSeen', messageHandler.markMessageAsSeen);
   socket.on('disconnect', () => {
     console.log('A user disconnected');
   });

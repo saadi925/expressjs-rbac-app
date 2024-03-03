@@ -19,7 +19,7 @@ const router = express.Router();
 
 // POST endpoint for uploading case attachments
 router.post(
-  '/cases/:caseId/attachments',
+  '/case/:caseId/attachments',
   authMiddleware,
   upload.single('file'),
   uploadingCaseAttachments,
@@ -27,7 +27,7 @@ router.post(
 
 // GET endpoint for downloading case attachments
 router.get(
-  '/cases/:caseId/attachments/:filename',
+  '/case/:caseId/attachments/:filename',
   authMiddleware,
   downloadingCaseAttachments,
 );

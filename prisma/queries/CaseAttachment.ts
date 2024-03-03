@@ -34,36 +34,45 @@ export class PrismaCaseAttachment {
 
   async getCaseAttachmentById(
     attachmentId: bigint,
+    userId: string,
   ): Promise<Attachment | null> {
     const attachment = await this.#prisma.attachment.findUnique({
-      where: { id: attachmentId },
+      where: { id: attachmentId, userId },
     });
     return attachment;
   }
 
   async updateCaseAttachment(
     attachmentId: bigint,
+    userId: string,
     data: AttachmentData,
   ): Promise<Attachment | null> {
     const attachment = await this.#prisma.attachment.update({
-      where: { id: attachmentId },
+      where: { id: attachmentId, userId },
       data,
     });
     return attachment;
   }
 
-  async getCaseAttachments(caseId: bigint): Promise<Attachment[]> {
+  async getCaseAttachments(
+    caseId: bigint,
+    userId: string,
+  ): Promise<Attachment[]> {
     const attachments = await this.#prisma.attachment.findMany({
       where: {
         caseId,
+        userId,
       },
     });
     return attachments;
   }
 
-  async deleteCaseAttachment(attachmentId: bigint): Promise<Attachment | null> {
+  async deleteCaseAttachment(
+    attachmentId: bigint,
+    userId: string,
+  ): Promise<Attachment | null> {
     const attachment = await this.#prisma.attachment.delete({
-      where: { id: attachmentId },
+      where: { id: attachmentId, userId },
     });
     return attachment;
   }

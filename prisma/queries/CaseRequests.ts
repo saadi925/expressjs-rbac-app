@@ -76,6 +76,27 @@ export class PrismaCaseRequest {
     return createdCaseRequest;
   }
 
+  async getCaseRequestByCaseAndLawyer(caseId: bigint, lawyerId: string) {
+    const caseRequest = await this.#prisma.caseRequest.findFirst({
+      where: {
+        caseId: caseId,
+        lawyerId: lawyerId,
+      },
+      include: { case: { select: { clientId: true, lawyerId: true } } },
+    });
+    return caseRequest;
+  }
+
+  async getCaseRequestByCaseAndClient(caseId: bigint, clientId: string) {
+    const caseRequest = await this.#prisma.caseRequest.findFirst({
+      where: {
+        caseId: caseId,
+        clientId: clientId,
+      },
+      include: { case: { select: { clientId: true, lawyerId: true } } },
+    });
+    return caseRequest;
+  }
   async getCaseRequestById(requestId: bigint) {
     const caseRequest = await this.#prisma.caseRequest.findUnique({
       where: { id: requestId },
@@ -143,5 +164,17 @@ export class PrismaCaseRequest {
       where: { id: requestId },
       data: { status: 'CANCELLED' },
     });
+  }
+  async isInvolvementInCase(userId: string, caseId: bigint) {
+    const isInvolvedInCase = await this.#prisma.caseRequest.findFirst({
+      where: {
+        OR: [
+          { clientId: userId, caseId },
+          { lawyerId: userId, caseId },
+        ],
+      },
+    });
+
+    return isInvolvedInCase;
   }
 }
