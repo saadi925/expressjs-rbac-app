@@ -6,8 +6,9 @@
     "outDir": "./build",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "strict": true
+    "strict": true,
+    "baseUrl": "."
   },
-  "include": ["src/**/*", "src/server.ts"],
+  "include": ["."],
   "exclude": ["node_modules"]
 }

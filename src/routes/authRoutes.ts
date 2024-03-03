@@ -1,30 +1,22 @@
 import express from 'express';
-import { check } from 'express-validator';
-import { signinHandler, signupHandler } from './../handlers/authHandler';
-import { validateLoginCredentials, validateUserCred } from '../controllers/validator';
-import {authMiddleware} from '../middleware/authMiddleware';
-import { RBACMiddleware } from '../handlers/rbacMiddleware';
+import {
+  emailVerificationHandler,
+  resendConfirmation,
+  signinHandler,
+  signupHandler,
+} from './../handlers/authHandler';
+import {
+  validateLoginCredentials,
+  validateUserCred,
+} from '../middleware/validator';
 
 const router = express.Router();
 // create user route (sign up)
-router.post('/signup',
-validateUserCred,
- signupHandler);
+router.post('/signup', validateUserCred, signupHandler);
 
 // sign in route
-router.post(
-    '/signin',validateLoginCredentials,
-    signinHandler
-  );
-router.get(
-    '/lawyer',authMiddleware,RBACMiddleware,(req,res)=>{
-        res.send("hello lawyer")
-    }
-  );
-router.get(
-    '/client',authMiddleware,RBACMiddleware,(req,res)=>{
-        res.send("hello client")
-    }
-  );
-export default router;
+router.post('/signin', validateLoginCredentials, signinHandler);
+router.get('/email_verify', emailVerificationHandler);
+router.post('/resend_email_verify', resendConfirmation);
 
+export { router as authRoutes };

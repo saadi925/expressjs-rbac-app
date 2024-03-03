@@ -1,2 +1,12 @@
-p, lawyer, /auth/lawyer, GET
-p, client, /auth/client, GET
+p, CLIENT, /client/case, POST
+p, CLIENT, /client/case/:id, DELETE
+p, CLIENT, /client/case/:id, PUT
+p, CLIENT, /client/cases, GET
+p, CLIENT, /client/case/:id, GET
+p, CLIENT, /client/case_request, POST
+p, CLIENT, /client/case_request/accept/:requestId, PUT
+
+p, LAWYER, /lawyer/case_request, POST
+p, LAWYER, /lawyer/case_request/accept/:requestId, PUT
+
+
