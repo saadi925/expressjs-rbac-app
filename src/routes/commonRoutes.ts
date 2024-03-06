@@ -16,25 +16,10 @@ import {
 } from '../../src/handlers/attachmentsHandler';
 
 const router = express.Router();
-
-// POST endpoint for uploading case attachments
-router.post(
-  '/cases/:caseId/attachments',
-  authMiddleware,
-  upload.single('file'),
-  uploadingCaseAttachments,
-);
-
-// GET endpoint for downloading case attachments
-router.get(
-  '/cases/:caseId/attachments/:filename',
-  authMiddleware,
-  downloadingCaseAttachments,
-);
-
 //  get the statuses available for case
-router.get('/case_statuses', authMiddleware, getCaseStatuses);
 
+router.get('/case_statuses', authMiddleware, getCaseStatuses);
+// CaseRequests Routes
 router.get(
   '/case_request/pending',
   authMiddleware,
@@ -51,5 +36,20 @@ router.put(
   authMiddleware,
   cancelCaseRequestHandler,
 );
+// FRIEND REQUEST ROUTES
 
+// POST endpoint for uploading case attachments
+router.post(
+  '/case/:caseId/attachments',
+  authMiddleware,
+  upload.single('file'),
+  uploadingCaseAttachments,
+);
+
+// GET endpoint for downloading case attachments
+router.get(
+  '/case/:caseId/attachments/:filename',
+  authMiddleware,
+  downloadingCaseAttachments,
+);
 export { router as commonRoutes };

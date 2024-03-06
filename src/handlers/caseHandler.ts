@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { CaseData, PrismaCase, prisma } from '../../prisma';
+import { PrismaCase, prisma } from '../../prisma';
 import { RequestWithCase } from 'types/case';
 import { Case } from '@prisma/client';
 import { validateCaseData } from '../../src/middleware/validateCaseData';
@@ -46,15 +46,29 @@ export const createCaseHandler = async (
     console.log(error);
   }
 };
-export async function getAllOpenCases(): Promise<Case[]> {
-  return prisma.case.findMany({
-    where: {
-      status: 'OPEN',
-    },
-    orderBy: {
-      createdAt: 'desc', // Sort by creation time in descending order
-    },
-  });
+export async function getAllOpenCases(req: RequestWithUser, res: Response) {
+  try {
+    const { userId } = req;
+    if (!userId) {
+      return res.status(401).json({
+        error: 'Unauthorized',
+      });
+    }
+    const cases = await prismaCase.getAllOpenCases(userId as string);
+    if (cases.length === 0) {
+      return res.status(404).json({
+        error: 'No Open Cases Found',
+      });
+    }
+    const serialized = cases.map((caseItem) => ({
+      ...caseItem,
+      id: String(caseItem.id),
+    }));
+    res.status(200).json(serialized);
+  } catch (error) {
+    res.status(500).send({ error: 'Internal Server Error' });
+    console.log(error);
+  }
 }
 //  update Case ('CLIENT' req)
 // 'id' in params

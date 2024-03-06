@@ -8,7 +8,7 @@ PUT
 http://localhost:8080/auth/email_verify
 
 POST
-http://localhost:8080/auth//resend_email_verify
+http://localhost:8080/auth/email_verify/resend
 
 POST
 http://localhost:8080/client/case

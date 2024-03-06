@@ -5,6 +5,10 @@ import {
   acceptCaseRequestLawyerHandler,
   createCaseRequestLawyerHandler,
 } from '../../src/handlers/LawyerCaseRequests';
+import {
+  createOrUpdateLawyerProfile,
+  getLawyerProfile,
+} from '../../src/handlers/LawyerProfileHandler';
 
 const r = express.Router();
 // GET ALL PENDING CASE REQUESTS
@@ -21,5 +25,6 @@ r.put(
   RBACMiddleware,
   acceptCaseRequestLawyerHandler,
 );
-
+r.post('/profile', authMiddleware, RBACMiddleware, createOrUpdateLawyerProfile);
+r.get('/profile', authMiddleware, RBACMiddleware, getLawyerProfile);
 export { r as lawyerRoutes };

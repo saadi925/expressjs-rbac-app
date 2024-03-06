@@ -17,23 +17,127 @@ model Profile {
   location    String?
 }
 model User {
-  id                        String      @id @default(uuid())
-  email                     String      @unique
+  id                        String          @id @default(uuid())
+  email                     String          @unique
   name                      String?
-  createdAt                 DateTime    @default(now())
-  updatedAt                 DateTime    @updatedAt
-  role                      Role        @default(CLIENT)
+  createdAt                 DateTime        @default(now())
+  updatedAt                 DateTime        @updatedAt
+  role                      Role            @default(CLIENT)
   password                  String
-  verified                  Boolean     @default(false)
+  verified                  Boolean         @default(false)
   profile                   Profile?
-  clientCases               Case[]      @relation("ClientCases")
-  lawyerCases               Case[]      @relation("LawyerCases")
+  clientCases               Case[]          @relation("ClientCases")
+  lawyerCases               Case[]          @relation("LawyerCases")
   sentCaseRequests          CaseRequest[]   @relation("SentCaseRequests")
   receivedCaseRequests      CaseRequest[]   @relation("ReceivedCaseRequests")
+  sentFriendRequests          FriendRequest[]   @relation("SentFriendRequests")
+  receivedFriendRequests      FriendRequest[]   @relation("ReceivedFriendRequests")
   senderId                  String?
-  attachments         Attachment[] @relation("UserAttachments") 
-  sentMessages              Message[]    @relation("SentMessages")
-  receivedMessages          Message[]    @relation("ReceivedMessages")
+  attachments               Attachment[]    @relation("UserAttachments") 
+  sentMessages              Message[]       @relation("SentMessages")
+  receivedMessages          Message[]       @relation("ReceivedMessages")
+  lawyerProfile             LawyerProfile?
+  comments                  Comment[]       @relation("userComments") // Change the relation name to 'userComments'
+}
+model Friendship {
+  id       String @id @default(uuid())
+  userId   String
+  friendId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model FriendRequest {
+  id            BigInt        @id @default(autoincrement())
+  userId        String
+  receiverId    String
+  status        RequestStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  sender        User          @relation("SentFriendRequests", fields: [userId], references: [id])
+  receiver      User          @relation("ReceivedFriendRequests", fields: [receiverId], references: [id])
+}
+
+model Comment {
+  id          String   @id @default(uuid())
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  case        Case     @relation("caseComments", fields: [caseId], references: [id]) // Add the relation name 'caseComments' here
+  caseId      BigInt
+  user        User     @relation("userComments", fields: [userId], references: [id]) 
+  userId      String
+}
+model Case {
+  id            BigInt              @id @default(autoincrement())
+  status        CaseStatus
+  title         String
+  description   String
+  clientId      String
+  lawyerId      String?
+  client        User        @relation("ClientCases", fields: [clientId], references: [id])
+  lawyer        User?       @relation("LawyerCases", fields: [lawyerId], references: [id])
+  updatedAt     DateTime    @updatedAt
+  createdAt     DateTime    @default(now())
+  caseDetails   CaseDetail[]
+  attachments   Attachment[]
+  caseRequests  CaseRequest[]  
+  comments      Comment[]   @relation("caseComments") // Add the relation name 'caseComments' here
+}
+
+model LawyerProfile {
+  id          String         @id @default(uuid())
+  user        User           @relation(fields: [userId], references: [id])
+  userId      String         @unique
+  isVerified Boolean @default(false)
+  description String?
+  bio         String?
+  experience  String?
+  education   String?
+  phoneNumber String?
+  facebook    String?
+  linkedin    String?
+  instagram   String?
+  phone       String?
+  verification LawyerVerification?
+  email       String?
+  specialization String?
+  status  AvailabilityStatus @default(AVAILABLE)
+  reviews     LawyerReview[] 
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+model LawyerVerification {
+  id          String         @id @default(uuid())
+  lawyerId    String         @unique
+  lawyer      LawyerProfile  @relation(fields: [lawyerId], references: [id])
+  cnic        String
+  verified   Boolean        @default(false)
+  barCouncilRegistrationNumber String
+  certificateVerificationId String
+  lawGatPass  Boolean
+  verifiedBy  String?
+  verifiedAt  DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  // Additional fields
+  licenseNumber String? // License number if applicable
+  licenseExpiryDate DateTime? // Expiry date of the license
+  practiceArea String? // Area of legal practice
+}
+
+
+enum AvailabilityStatus {
+  AVAILABLE
+  BUSY
+  OFFLINE
+}
+model LawyerReview {
+  id          String         @id @default(uuid())
+  lawyer      LawyerProfile  @relation(fields: [lawyerId], references: [id])
+  lawyerId    String
+  // Add other fields for review details like rating, comments, etc.
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 }
 model Message {
   id          String    @id @default(uuid())
@@ -45,8 +149,6 @@ model Message {
   sender      User      @relation("SentMessages", fields: [senderId], references: [id])
   receiver    User      @relation("ReceivedMessages", fields: [receiverId], references: [id])
 }
-
-
 model CaseDetail {
   id              BigInt    @id @default(autoincrement())
   caseId          BigInt
@@ -55,21 +157,7 @@ model CaseDetail {
   updateTime      DateTime  @default(now())
   notes           String?
 }
-model Case {
-  id            BigInt              @id @default(autoincrement())
-  status          CaseStatus
-  title           String
-  description     String
-  clientId        String
-  lawyerId        String?
-  client          User        @relation("ClientCases", fields: [clientId], references: [id])
-  lawyer          User?       @relation("LawyerCases", fields: [lawyerId], references: [id])
-  updatedAt       DateTime    @updatedAt
-  createdAt       DateTime    @default(now())
-  caseDetails     CaseDetail[]
-  attachments     Attachment[]
-  caseRequests    CaseRequest[]  // Add the opposite relation field referencing the CaseRequest model
-}
+
 model Attachment {
   id              BigInt    @id @default(autoincrement())
   caseId          BigInt

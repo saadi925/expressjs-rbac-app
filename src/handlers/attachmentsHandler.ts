@@ -91,8 +91,10 @@ export async function GetCaseAttachmentById(
 ) {
   try {
     const attachmentId = BigInt(req.params.attachmentId);
-    const attachment =
-      await prismaCaseAttachment.getCaseAttachmentById(attachmentId);
+    const attachment = await prismaCaseAttachment.getCaseAttachmentById(
+      attachmentId,
+      req.userId!,
+    );
     if (!attachment) {
       return res.status(404).json({ error: 'Attachment not found' });
     }
@@ -112,6 +114,7 @@ export async function updateCaseAttachment(
     const { data } = req.body as { data: AttachmentData };
     const attachment = await prismaCaseAttachment.updateCaseAttachment(
       attachmentId,
+      req.userId as string,
       data,
     );
     if (!attachment) {
@@ -129,8 +132,11 @@ export async function deleteCaseAttachment(
 ) {
   try {
     const attachmentId = BigInt(req.params.attachmentId);
-    const attachment =
-      await prismaCaseAttachment.deleteCaseAttachment(attachmentId);
+
+    const attachment = await prismaCaseAttachment.deleteCaseAttachment(
+      attachmentId,
+      req.userId as string,
+    );
     if (!attachment) {
       return res.status(404).json({ error: 'Attachment not found' });
     }

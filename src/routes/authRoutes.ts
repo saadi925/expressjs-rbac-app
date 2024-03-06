@@ -4,6 +4,7 @@ import {
   resendConfirmation,
   signinHandler,
   signupHandler,
+  verifyWithCode,
 } from './../handlers/authHandler';
 import {
   validateLoginCredentials,
@@ -17,6 +18,7 @@ router.post('/signup', validateUserCred, signupHandler);
 // sign in route
 router.post('/signin', validateLoginCredentials, signinHandler);
 router.get('/email_verify', emailVerificationHandler);
-router.post('/resend_email_verify', resendConfirmation);
+router.put('/email_verify_code', verifyWithCode);
+router.put('/email_verify/resend', resendConfirmation);
 
 export { router as authRoutes };

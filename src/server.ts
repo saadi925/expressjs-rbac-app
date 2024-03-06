@@ -13,14 +13,19 @@ import {
 import { socketHandler } from './socketIO';
 
 const app = express();
+import ngrok from '@ngrok/ngrok';
+import { KEYS } from '../config/keys';
+import { friendRequestRoutes } from './routes/friendRequestRoutes';
+
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: '*',
   },
 });
-
-// Configure middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -34,6 +39,7 @@ app.use('/notifications', notificationRoutes);
 app.use('/client', clientRoutes);
 app.use('/lawyer', lawyerRoutes);
 app.use('/common', commonRoutes);
+app.use('/user', friendRequestRoutes);
 
 // Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
@@ -42,4 +48,6 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 const port = process.env.PORT || 8080;
-server.listen(port, () => console.log(`Server is running on port ${port}`));
+server.listen(port, () => {
+  console.log(`server is running on port ${port}`);
+});
