@@ -60,12 +60,20 @@ export async function acceptCaseRequestClientHandler(
   res: Response,
 ) {
   try {
+    const userId = req.userId;
+    if (!userId || typeof userId !== 'string') {
+      res.status(401).send({
+        error: `Unauthorized`,
+      });
+      return;
+    }
     const requestId = BigInt(req.params.requestId);
     const caseRequest = await prismaCaseRequest.getCaseRequestById(requestId);
     if (!caseRequest || caseRequest.status !== 'PENDING') {
-      return res.status(404).send({
+      res.status(404).send({
         error: `case request is Not there anymore`,
       });
+      return;
     }
     await prismaCaseRequest.acceptCaseRequest(requestId);
     if (req.userRole == 'LAWYER') {

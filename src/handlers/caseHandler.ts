@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { CaseData, PrismaCase, prisma } from '../../prisma';
+import { PrismaCase, prisma } from '../../prisma';
 import { RequestWithCase } from 'types/case';
 import { Case } from '@prisma/client';
 import { validateCaseData } from '../../src/middleware/validateCaseData';

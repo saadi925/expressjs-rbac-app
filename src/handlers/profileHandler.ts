@@ -34,7 +34,7 @@ export const createProfile = async (req: RequestWithProfile, res: Response) => {
     const profile = await primsaProfile.createProfile(data, userId!);
     res.status(201).json(profile);
   } catch (error) {
-    res.status(500).send({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Internal Server Error' });
     console.log(error);
   }
 };
@@ -69,12 +69,11 @@ export const updateProfileHandler = async (
     );
     res.status(201).json(profile);
   } catch (error) {
-    res.status(500).send({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Internal Server Error' });
     console.log(error);
   }
 };
 
-// gets a profile for an authenticated user
 export const getUserProfile = async (req: RequestWithUser, res: Response) => {
   try {
     const { userId } = req;
@@ -85,7 +84,7 @@ export const getUserProfile = async (req: RequestWithUser, res: Response) => {
     const profile = await primsaProfile.getProfile(userId as string);
     res.status(200).json(profile);
   } catch (error) {
-    res.status(500).send({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Internal Server Error' });
     console.log(error);
   }
 };
@@ -101,7 +100,7 @@ export const deleteUserProfile = async (
       message: `the profile has been deleted successfully with the user id ${deletedProfile.id.toString()}`,
     });
   } catch (error) {
-    res.status(500).send({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Internal Server Error' });
     console.log(error);
   }
 };

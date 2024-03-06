@@ -63,7 +63,7 @@ router.put(
   uploadingCaseAttachments,
 );
 router.delete(
-  '/attachments/::attachmentId',
+  '/attachments/:attachmentId',
   authMiddleware,
   RBACMiddleware,
   uploadingCaseAttachments,

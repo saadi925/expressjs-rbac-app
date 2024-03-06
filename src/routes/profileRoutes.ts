@@ -7,8 +7,8 @@ import {
 import { authMiddleware } from '../middleware/authMiddleware';
 
 const r = express.Router();
-r.get('/:id', authMiddleware, getUserProfile);
+r.get('/', authMiddleware, getUserProfile);
 r.post('/', authMiddleware, createProfile);
-r.put('/:id', authMiddleware, updateProfileHandler);
+r.put('/', authMiddleware, updateProfileHandler);
 
 export { r as profileRoutes };
