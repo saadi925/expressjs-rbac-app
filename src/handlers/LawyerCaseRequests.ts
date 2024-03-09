@@ -3,6 +3,7 @@ import { PrismaCaseRequest } from '../../prisma/queries/CaseRequests';
 import { RequestWithUser } from 'types/profile';
 import { CaseNotifications } from '../../notifications/CaseNotifications';
 import { PrismaCase } from '../../prisma';
+import { NotificationData } from 'prisma/queries/Notifications';
 
 const prismaCaseRequest = new PrismaCaseRequest();
 const notifier = new CaseNotifications();
@@ -16,12 +17,9 @@ export async function createCaseRequestLawyerHandler(
     let clientId: string | undefined;
     let lawyerId: string | undefined;
     const { caseId, clientId: requestBodyClientId } = req.body;
-
-    // Check if clientId is provided in the request body
     if (requestBodyClientId) {
       clientId = requestBodyClientId;
     }
-
     lawyerId = userId;
     if (!requestBodyClientId) {
       return res.status(400).json({
@@ -32,7 +30,6 @@ export async function createCaseRequestLawyerHandler(
       return res.status(400).json({ error: 'caseId is required' });
     }
 
-    // Convert caseId to BigInt
     const bigintCaseId = BigInt(caseId);
 
     const caseRequest = await prismaCaseRequest.createCaseRequest({
@@ -51,12 +48,14 @@ export async function createCaseRequestLawyerHandler(
       caseRequest.id,
       clientId as string,
     );
+    const notifyClientData: Omit<NotificationData, 'message'> = {
+      userId: caseRequest.clientId,
+      avatarUrl: caseRequest.lawyer?.profile?.avatar || '',
+      name: caseRequest.lawyer?.name ?? 'Anonymous',
+    };
     // Notifying
     // we notify client when lawyer sent a case request
-    await notifier.caseRequestNotifyClient(
-      caseRequest.lawyer?.name ?? 'Anonymous',
-      clientId as string,
-    );
+    await notifier.caseRequestNotifyClient(notifyClientData);
     res.status(201).json(caseRequest);
   } catch (error) {
     console.error('Error creating case request:', error);
@@ -100,15 +99,23 @@ export async function acceptCaseRequestLawyerHandler(
       caseRequest.caseId,
       status,
     );
+    const notifyLawyerData: Omit<NotificationData, 'message'> = {
+      userId: caseRequest.lawyerId,
+      avatarUrl: caseRequest.client?.profile?.avatar || '',
+      name: caseRequest.client?.name ?? 'Anonymous',
+    };
+    const notifyClientData: Omit<NotificationData, 'message'> = {
+      userId: caseRequest.clientId,
+      avatarUrl: caseRequest.lawyer?.profile?.avatar || '',
+      name: caseRequest.lawyer?.name ?? 'Anonymous',
+    };
     await notifier.caseAssignedNotifyLawyer(
       updatedCase.title,
-      updatedCase.client.name ?? 'Anonymous',
-      req.userId as string,
+      notifyLawyerData,
     );
     await notifier.caseAssignedNotifyClient(
       updatedCase.title,
-      updatedCase.lawyer?.name ?? 'Anonymous',
-      updatedCase.clientId,
+      notifyClientData,
     );
 
     res.status(204).json({

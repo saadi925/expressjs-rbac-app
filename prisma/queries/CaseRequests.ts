@@ -65,10 +65,10 @@ export class PrismaCaseRequest {
       data,
       include: {
         lawyer: {
-          select: { name: true },
+          select: { name: true, profile: { select: { avatar: true } } },
         },
         client: {
-          select: { name: true },
+          select: { name: true, profile: { select: { avatar: true } } },
         },
       },
     });
@@ -101,8 +101,12 @@ export class PrismaCaseRequest {
     const caseRequest = await this.#prisma.caseRequest.findUnique({
       where: { id: requestId },
       include: {
-        lawyer: { select: { name: true } },
-        client: { select: { name: true } },
+        lawyer: {
+          select: { name: true, profile: { select: { avatar: true } } },
+        },
+        client: {
+          select: { name: true, profile: { select: { avatar: true } } },
+        },
       },
     });
     return caseRequest;

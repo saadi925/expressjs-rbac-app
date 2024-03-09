@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { PrismaCase } from '../../prisma/queries/cases';
 import { RequestWithUser } from 'types/profile';
 import { CaseNotifications } from '../../notifications/CaseNotifications';
+import { NotificationData } from 'prisma/queries/Notifications';
 
 const prismaCase = new PrismaCase();
 // LAWYER caseId, clientId, status
@@ -40,18 +41,28 @@ export const assignCaseToLawyer = async (
       caseId,
       status,
     );
+
     let message;
+    const lawyerData = {
+      name: updatedCase.client.name ?? 'Anonymous',
+      userId: lawyerId,
+      avatarUrl: updatedCase.lawyer?.profile?.avatar || '',
+    };
+    const clientData = {
+      name: updatedCase.lawyer?.name ?? 'Anonymous',
+      userId: clientId,
+      avatarUrl: updatedCase.client?.profile?.avatar || '',
+    };
+
     // notify lawyer that case has been assigned to him
     const lawyerNotification = await notifier.caseAssignedNotifyLawyer(
       updatedCase.title,
-      updatedCase.client.name ?? 'Anonymous',
-      lawyerId,
+      lawyerData,
     );
     // notify client that case has been assigned to lawyer
     const clientNotification = await notifier.caseAssignedNotifyClient(
       updatedCase.title,
-      updatedCase.lawyer?.name ?? 'Anonymous',
-      clientId,
+      clientData,
     );
     if (userRole == 'LAWYER') {
       message = lawyerNotification;

@@ -29,6 +29,11 @@ export class PrismaDBProfile {
   async getProfile(userId: string) {
     return await this.#prisma.profile.findUnique({
       where: { userId },
+      include: {
+        user: {
+          select: { role: true },
+        },
+      },
     });
   }
   async setDisplayName(userId: string, displayname: string) {

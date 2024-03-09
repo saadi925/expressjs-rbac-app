@@ -3,6 +3,7 @@ import { PrismaCaseRequest } from '../../prisma/queries/CaseRequests';
 import { RequestWithUser } from 'types/profile';
 import { CaseNotifications } from '../../notifications/CaseNotifications';
 import { PrismaCase } from '../../prisma';
+import { NotificationData } from 'prisma/queries/Notifications';
 
 const prismaCaseRequest = new PrismaCaseRequest();
 const notifier = new CaseNotifications();
@@ -16,26 +17,17 @@ export async function createCaseRequestClientHandler(
     let clientId: string | undefined;
     let lawyerId: string | undefined;
     const { caseId, lawyerId: requestBodyLawyerId } = req.body;
-
-    // If the user role is CLIENT, assign userId as clientId and lawyerId from the request body
     clientId = userId;
     lawyerId = requestBodyLawyerId;
-
-    // Validate that caseId is provided in the request body
     if (!caseId) {
       return res.status(400).json({ error: 'caseId is required' });
     }
-
-    // Convert caseId to BigInt
     const bigintCaseId = BigInt(caseId);
-
     const caseRequest = await prismaCaseRequest.createCaseRequest({
       clientId: clientId!,
       lawyerId: lawyerId!,
       caseId: bigintCaseId,
     });
-    // we notify lawyer when client sent a case request
-    // here sender is client
     await prismaCaseRequest.addToSenderSentRequests(
       caseRequest.id,
       clientId as string, // client id is sender's id
@@ -44,10 +36,12 @@ export async function createCaseRequestClientHandler(
       caseRequest.id,
       lawyerId as string,
     );
-    await notifier.caseRequestNotifyLawyer(
-      caseRequest.client?.name ?? 'Anonymous',
-      lawyerId as string,
-    );
+    const notifyData: Omit<NotificationData, 'message'> = {
+      userId: caseRequest.lawyerId,
+      avatarUrl: caseRequest.client?.profile?.avatar || '',
+      name: caseRequest.client?.name ?? 'Anonymous',
+    };
+    await notifier.caseRequestNotifyLawyer(notifyData);
     res.status(201).json(caseRequest);
   } catch (error) {
     console.error('Error creating case request:', error);
@@ -75,6 +69,16 @@ export async function acceptCaseRequestClientHandler(
       });
       return;
     }
+    const notifyLawyerData: Omit<NotificationData, 'message'> = {
+      userId: caseRequest.lawyerId,
+      avatarUrl: caseRequest.client?.profile?.avatar || '',
+      name: caseRequest.client?.name ?? 'Anonymous',
+    };
+    const notifyClientData: Omit<NotificationData, 'message'> = {
+      userId: caseRequest.clientId,
+      avatarUrl: caseRequest.lawyer?.profile?.avatar || '',
+      name: caseRequest.lawyer?.name ?? 'Anonymous',
+    };
     await prismaCaseRequest.acceptCaseRequest(requestId);
     if (req.userRole == 'LAWYER') {
       // Update lawyer's cases
@@ -108,13 +112,11 @@ export async function acceptCaseRequestClientHandler(
       );
       await notifier.caseAssignedNotifyLawyer(
         updatedCase.title,
-        updatedCase.client.name ?? 'Anonymous',
-        req.userId as string,
+        notifyLawyerData,
       );
       await notifier.caseAssignedNotifyClient(
         updatedCase.title,
-        updatedCase.lawyer?.name ?? 'Anonymous',
-        updatedCase.clientId,
+        notifyLawyerData,
       );
     } else {
       await prismaCaseRequest.updateLawyerCases(
@@ -143,13 +145,11 @@ export async function acceptCaseRequestClientHandler(
       );
       await notifier.caseAssignedNotifyLawyer(
         updatedCase.title,
-        updatedCase.client.name ?? 'Anonymous',
-        req.userId as string,
+        notifyLawyerData,
       );
       await notifier.caseAssignedNotifyClient(
         updatedCase.title,
-        updatedCase.lawyer?.name ?? 'Anonymous',
-        updatedCase.clientId,
+        notifyClientData,
       );
     }
 
@@ -174,18 +174,22 @@ export async function rejectCaseRequestHandler(
         error: `case request is not there anymore`,
       });
     }
+    const notifyLawyerData: Omit<NotificationData, 'message'> = {
+      userId: caseRequest.lawyerId,
+      avatarUrl: caseRequest.client?.profile?.avatar || '',
+      name: caseRequest.client?.name ?? 'Anonymous',
+    };
+    const notifyClientData: Omit<NotificationData, 'message'> = {
+      userId: caseRequest.clientId,
+      avatarUrl: caseRequest.lawyer?.profile?.avatar || '',
+      name: caseRequest.lawyer?.name ?? 'Anonymous',
+    };
     await prismaCaseRequest.rejectCaseRequest(requestId);
     if (req.userRole == 'LAWYER') {
       //  here req is rejected by lawyer so we are notifying the client
-      await notifier.caseRequestRejectedNotify(
-        caseRequest.client?.name ?? 'Anonymous',
-        caseRequest.clientId,
-      );
+      await notifier.caseRequestRejectedNotify(notifyClientData);
     } else {
-      await notifier.caseRequestRejectedNotify(
-        caseRequest.lawyer?.name ?? 'Anonymous',
-        caseRequest.lawyerId,
-      );
+      await notifier.caseRequestRejectedNotify(notifyLawyerData);
     }
     res.status(204).send(caseRequest);
   } catch (error) {

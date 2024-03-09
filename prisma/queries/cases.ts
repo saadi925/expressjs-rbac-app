@@ -64,15 +64,18 @@ export class PrismaCase {
       },
       where: { id: caseId, clientId },
       include: {
-        lawyer: { select: { name: true } },
+        lawyer: {
+          select: { name: true, profile: { select: { avatar: true } } },
+        },
         client: {
-          select: { name: true },
+          select: { name: true, profile: { select: { avatar: true } } },
         },
       },
     });
 
     return updatedCase;
   }
+
   updateCaseStatus(status: CaseStatus, caseId: bigint, clientId: string) {
     return this.#prisma.case.update({
       data: { status },

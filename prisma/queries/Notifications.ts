@@ -3,9 +3,11 @@ import {
   Notification as PrismaNotificationModel,
 } from '@prisma/client';
 
-interface NotificationData {
+export interface NotificationData {
   userId: string;
   message: string;
+  avatarUrl?: string;
+  name?: string;
 }
 
 export class PrismaNotification {

@@ -1,49 +1,43 @@
-import { PrismaNotification } from '../prisma/queries/Notifications';
+import {
+  NotificationData,
+  PrismaNotification,
+} from '../prisma/queries/Notifications';
 
 export class Notifications {
   prismaNotification;
   constructor() {
     this.prismaNotification = new PrismaNotification();
   }
-  async createNotfication(message: string, userId: string) {
+  async createNotfication(data: NotificationData) {
     try {
-      await this.prismaNotification.createNotification({ message, userId });
+      await this.prismaNotification.createNotification(data);
     } catch (error) {
       throw new Error('Error at creating notification :' + error);
     }
   }
-  async friendRequestAcceptedNotify(
-    userName: string,
-    userId: string,
-  ): Promise<String> {
-    const message = `Your friend request to ${userName} has been accepted.`;
-    await this.createNotfication(message, userId);
+  async friendRequestAcceptedNotify(data: NotificationData): Promise<String> {
+    const message = `Your friend request to ${data.name} has been accepted.`;
+    await this.createNotfication(data);
     return message;
   }
-  async friendRequestSent(requestSentTo: string, userId: string) {
-    const message = `Your friend request has been sent to ${requestSentTo}`;
-    await this.createNotfication(message, userId);
+  async friendRequestSent(data: NotificationData) {
+    const message = `Your friend request has been sent to ${data.name}`;
+    await this.createNotfication(data);
     return message;
   }
-  async friendRequestRecieve(userName: string, userId: string) {
-    const message = `${userName} has sent you a friend request`;
-    await this.createNotfication(message, userId);
+  async friendRequestRecieve(data: NotificationData) {
+    const message = `${data.name} has sent you a friend request`;
+    await this.createNotfication(data);
     return message;
   }
-  async friendRequestCancelledNotify(
-    userName: string,
-    userId: string,
-  ): Promise<string> {
-    const message = `Your friend request to ${userName} has been cancelled.`;
-    await this.createNotfication(message, userId);
+  async friendRequestCancelledNotify(data: NotificationData): Promise<string> {
+    const message = `Your friend request to ${data.name} has been cancelled.`;
+    await this.createNotfication(data);
     return message;
   }
-  async friendRequestRejectedNotify(
-    userName: string,
-    userId: string,
-  ): Promise<string> {
-    const message = `Your friend request from ${userName} has been rejected.`;
-    await this.createNotfication(message, userId);
+  async friendRequestRejectedNotify(data: NotificationData): Promise<string> {
+    const message = `Your friend request from ${data.name} has been rejected.`;
+    await this.createNotfication(data);
     return message;
   }
 }

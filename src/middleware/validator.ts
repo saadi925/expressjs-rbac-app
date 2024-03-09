@@ -14,7 +14,7 @@ export const validateLoginCredentials = [
   check('email', 'Please include a valid email').isEmail(),
   check(
     'password',
-    'Please enter a password with 8 or more characters and special characters',
+    'Please enter a password with 8 or more characters and special characters, \n e.g Plasma51a&',
   ).matches(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/),
 ];
 // Validator middleware for checking URLs

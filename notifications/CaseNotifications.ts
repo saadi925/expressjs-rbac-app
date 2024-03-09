@@ -1,3 +1,4 @@
+import { NotificationData } from 'prisma/queries/Notifications';
 import { Notifications } from './Notifications';
 
 export class CaseNotifications extends Notifications {
@@ -6,70 +7,71 @@ export class CaseNotifications extends Notifications {
   }
   async caseAssignedNotifyClient(
     caseTitle: string,
-    lawyerName: string,
-    clientId: string,
+    data: Omit<NotificationData, 'message'>,
   ): Promise<string> {
-    const message = `Your case "${caseTitle}..." has been assigned to ${lawyerName}.`;
-    await this.createNotfication(message, clientId);
+    const message = `Your case "${caseTitle}..." has been assigned to ${data.name}.`;
+    await this.createNotfication({ ...data, message });
     return message;
   }
   // CLIENT specific
-  async caseCreation(caseTitle: string, clientId: string): Promise<string> {
+  async caseCreation(
+    caseTitle: string,
+    data: Omit<NotificationData, 'message'>,
+  ): Promise<string> {
     const message = `Your case "${caseTitle}..." has been created Successfully.`;
-    await this.createNotfication(message, clientId);
+    await this.createNotfication({ ...data, message });
     return message;
   }
   // CLIENT specific
-  async caseDeletion(caseTitle: string, clientId: string): Promise<string> {
+  async caseDeletion(
+    caseTitle: string,
+    data: Omit<NotificationData, 'message'>,
+  ): Promise<string> {
     const message = `Your case "${caseTitle}..." has been deleted Successfully.`;
-    await this.createNotfication(message, clientId);
+    await this.createNotfication({ ...data, message });
     return message;
   }
   // LAWYER specific
   async caseAssignedNotifyLawyer(
     caseTitle: string,
-    clientName: string,
-    lawyerId: string,
+    data: Omit<NotificationData, 'message'>,
   ): Promise<string> {
-    const message = `You have been assigned to ${caseTitle}... , Mr ${clientName}'s case`;
-    await this.createNotfication(message, lawyerId);
+    const message = `You have been assigned to ${caseTitle}... , Mr ${data.name}'s case`;
+    await this.createNotfication({ ...data, message });
     return message;
   }
   //  CLIENT specific
   async caseStatusUpdatedNotify(
     caseTitle: string,
     status: string,
-    clientId: string,
+    data: Omit<NotificationData, 'message'>,
   ): Promise<string> {
     const message = `The status of your case "${caseTitle}..." has been updated to "${status}".`;
 
-    await this.createNotfication(message, clientId);
+    await this.createNotfication({ ...data, message });
     return message;
   }
   //  CLIENT specific , on lawyer req creation
   async caseRequestNotifyClient(
-    lawyerName: string,
-    clientId: string,
+    data: Omit<NotificationData, 'message'>,
   ): Promise<string> {
-    const message = `Mr . ${lawyerName} wants to handle your case.Do you want him to handle your case?.`;
-    await this.createNotfication(message, clientId);
+    const message = `Mr . ${data.name} wants to handle your case.Do you want him to handle your case?.`;
+    await this.createNotfication({ ...data, message });
     return message;
   }
   //  CLIENT specific , on client's req creation
   async caseRequestNotifyLawyer(
-    clientName: string,
-    lawyerId: string,
+    data: Omit<NotificationData, 'message'>,
   ): Promise<string> {
-    const message = `Do you want to take the case of Mr. ${clientName} ? `;
-    await this.createNotfication(message, lawyerId);
+    const message = `Do you want to take the case of Mr. ${data.name} ? `;
+    await this.createNotfication({ ...data, message });
     return message;
   }
   async caseRequestRejectedNotify(
-    userName: string,
-    userId: string,
+    data: Omit<NotificationData, 'message'>,
   ): Promise<string> {
-    const message = `Your case request has been rejected by Mr ${userName}. `;
-    await this.createNotfication(message, userId);
+    const message = `Your case request has been rejected by Mr ${data.name}. `;
+    await this.createNotfication({ ...data, message });
     return message;
   }
 }

@@ -35,10 +35,10 @@ export const createCaseHandler = async (
   };
   try {
     const createdCase = await prismaCase.createCase(data);
-    await notifier.caseCreation(
-      createdCase.title.slice(0, 32),
-      req.userId as string,
-    );
+
+    await notifier.caseCreation(createdCase.title.slice(0, 32), {
+      userId: req.userId as string,
+    });
 
     res.status(201).json({ ...createdCase, id: createdCase.id.toString() });
   } catch (error) {
