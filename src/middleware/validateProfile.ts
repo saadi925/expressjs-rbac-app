@@ -25,7 +25,7 @@ const validateBio = (bio: unknown) => {
 };
 
 export const validateProfileCredentials = (data: ProfileCredentials) => {
-  const { avatar, bio, displayname, location } = data;
+  const { avatar, bio, displayname, location, phone } = data;
   if (!validateAvatar(avatar)) {
     return Error('Invalid avatar');
   }
@@ -37,5 +37,11 @@ export const validateProfileCredentials = (data: ProfileCredentials) => {
   }
   if (typeof location !== 'string' || location === null) {
     return Error('Invalid location');
+  }
+  const regex = /^\+92[0-9]{10}$/;
+  if (!phone || !regex.test(phone)) {
+    return Error(
+      'Invalid phone number, must be start with +92 and 11 digits long',
+    );
   }
 };

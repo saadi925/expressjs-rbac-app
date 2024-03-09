@@ -15,6 +15,7 @@ model Profile {
   avatar      String?
   bio         String?
   location    String?
+  contact String?
 }
 model User {
   id                        String          @id @default(uuid())

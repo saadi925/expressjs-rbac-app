@@ -5,8 +5,8 @@ export const KEYS = {
   JWT_SECRET: process.env.JWT_SECRET || 'fA*&%23sha#@#',
 
   host: process.env.HOST || 'localhost',
-  port: process.env.PORT || 3000,
-  server: process.env.SERVER || 'http://localhost:8080',
+  port: process.env.PORT || 80,
+  server: process.env.SERVER || 'https://www.codingstack.site',
   email: process.env.G_EMAIL || 'userid925925@gmail.com',
   password: process.env.G_PASSWORD || 'kxyd aijd mmhi zjoi',
   NGROK_AUTHTOKEN:

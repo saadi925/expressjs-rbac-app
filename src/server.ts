@@ -13,9 +13,9 @@ import {
 import { socketHandler } from './socketIO';
 
 const app = express();
-import ngrok from '@ngrok/ngrok';
-import { KEYS } from '../config/keys';
+
 import { friendRequestRoutes } from './routes/friendRequestRoutes';
+import { getCities } from './utils/cities';
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
@@ -26,6 +26,7 @@ const io = new Server(server, {
     origin: '*',
   },
 });
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -40,7 +41,7 @@ app.use('/client', clientRoutes);
 app.use('/lawyer', lawyerRoutes);
 app.use('/common', commonRoutes);
 app.use('/user', friendRequestRoutes);
-
+app.use('/api/get-cities', getCities);
 // Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error('Error:', err);

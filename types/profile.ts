@@ -9,6 +9,7 @@ export interface ProfileCredentials {
   bio: string | null;
   avatar: string | null;
   displayname: string | null;
+  phone: string | null;
 }
 
 export interface RequestWithProfile extends RequestWithUser {

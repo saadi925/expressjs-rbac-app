@@ -10,10 +10,10 @@ import { PrismaDBProfile } from '../../prisma/queries/profile';
 
 const primsaProfile = new PrismaDBProfile();
 // creates a profile for a user
-//  req.body: { location, bio, avatar, displayname }
+//  req.body: { location, bio, avatar, displayname,phone }
 export const createProfile = async (req: RequestWithProfile, res: Response) => {
   try {
-    const { location, bio, avatar, displayname } = req.body;
+    const { location, bio, avatar, displayname, phone } = req.body;
     const { userId } = req;
     const ok = checkForUser(req, res);
     if (!ok) {
@@ -30,6 +30,7 @@ export const createProfile = async (req: RequestWithProfile, res: Response) => {
       bio,
       avatar,
       displayname,
+      phone,
     };
     const profile = await primsaProfile.createProfile(data, userId!);
     res.status(201).json(profile);
@@ -40,13 +41,13 @@ export const createProfile = async (req: RequestWithProfile, res: Response) => {
 };
 
 // updates a profile for an authenticated user
-//  req.body: { location, bio, avatar, displayname }
+//  req.body: { location, bio, avatar, displayname,phone }
 export const updateProfileHandler = async (
   req: RequestWithProfile,
   res: Response,
 ) => {
   try {
-    const { location, bio, avatar, displayname } = req.body;
+    const { location, bio, avatar, displayname, phone } = req.body;
     const ok = checkForUser(req, res);
     if (!ok) {
       return;
@@ -62,6 +63,7 @@ export const updateProfileHandler = async (
       bio,
       avatar,
       displayname,
+      phone,
     };
     const profile = await primsaProfile.updateProfile(
       req.userId as string,
