@@ -15,6 +15,8 @@ import {
   acceptCaseRequestClientHandler,
 } from '../../src/handlers/clientCaseRequest';
 import { uploadingCaseAttachments } from '../../src/handlers/attachmentsHandler';
+import { createReview, updateReview } from 'src/handlers/Reviews';
+import { GetLawyers } from '../../src/handlers/lawyers';
 
 const router = express.Router();
 // get a case by id
@@ -68,5 +70,8 @@ router.delete(
   RBACMiddleware,
   uploadingCaseAttachments,
 );
+router.get('/lawyers', authMiddleware, RBACMiddleware, GetLawyers);
+router.post('/review', authMiddleware, RBACMiddleware, createReview);
+router.put('/review', authMiddleware, RBACMiddleware, updateReview);
 
 export { router as clientRoutes };

@@ -1,4 +1,5 @@
 import { Case, CaseStatus, PrismaClient } from '@prisma/client';
+import { prisma } from '.';
 export type CaseData = Omit<Case, 'id'>;
 export class PrismaCase {
   #prisma;
@@ -44,8 +45,23 @@ export class PrismaCase {
       where: {
         clientId,
       },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+        client: {
+          select: {
+            name: true,
+            profile: { select: { avatar: true } },
+          },
+        },
+      },
     });
   }
+
   async getCaseByID(id: bigint) {
     return await this.#prisma.case.findUnique({
       where: { id },
@@ -81,5 +97,26 @@ export class PrismaCase {
       data: { status },
       where: { id: caseId, clientId },
     });
+  }
+}
+export async function getLawyerIdFromCase(
+  caseId: bigint,
+  clientId: string,
+): Promise<string | null> {
+  try {
+    // Query the database to find the case with the specified ID
+    const caseData = await prisma.case.findUnique({
+      where: { id: caseId, clientId },
+      select: { clientId: true, lawyerId: true },
+    });
+
+    if (!caseData) {
+      return null; // Case not found
+    }
+    // Return the lawyer ID from the case
+    return caseData.lawyerId;
+  } catch (error) {
+    console.error('Error fetching lawyer ID from case:', error);
+    throw error;
   }
 }

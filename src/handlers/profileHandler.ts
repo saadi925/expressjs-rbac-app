@@ -83,7 +83,7 @@ export const getUserProfile = async (req: RequestWithUser, res: Response) => {
     if (!ok) {
       return;
     }
-    const profile = await primsaProfile.getProfile(userId as string);
+    const profile = await primsaProfile.getProfileWithRole(userId as string);
     res.status(200).json(profile);
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });

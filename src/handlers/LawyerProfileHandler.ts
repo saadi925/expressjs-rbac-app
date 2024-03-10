@@ -4,11 +4,7 @@ import {
   LawyerProfileData,
   PrismaLawyerProfile,
 } from '../../prisma/queries/LawyerProfile';
-import {
-  isValidEmail,
-  isValidPhoneNumber,
-  isValidUrl,
-} from '../../src/middleware/validator';
+
 import { RequestWithUser } from 'types/profile';
 const lawyerProfile = new PrismaLawyerProfile();
 export const createOrUpdateLawyerProfile = async (
@@ -23,58 +19,16 @@ export const createOrUpdateLawyerProfile = async (
 
   const userId = req.userId as string;
   try {
-    const {
-      bio,
-      experience,
-      education,
-      phoneNumber,
-      facebook,
-      linkedin,
-      instagram,
-      specialization,
-      status,
-      phone,
-      email,
-      description,
-    } = req.body;
-
-    // Validate profile links
-    if (facebook && !isValidUrl(facebook)) {
-      return res.status(400).json({ message: 'Invalid Facebook profile link' });
-    }
-    if (linkedin && !isValidUrl(linkedin)) {
-      return res.status(400).json({ message: 'Invalid LinkedIn profile link' });
-    }
-    if (instagram && !isValidUrl(instagram)) {
-      return res
-        .status(400)
-        .json({ message: 'Invalid Instagram profile link' });
-    }
-
-    // Validate phone number
-    if (phone && !isValidPhoneNumber(phone)) {
-      return res.status(400).json({ message: 'Invalid phone number' });
-    }
-
-    // Validate email
-    if (email && !isValidEmail(email)) {
-      return res.status(400).json({ message: 'Invalid email address' });
-    }
-
+    const { bio, experience, education, specialization, status, description } =
+      req.body;
     const data: LawyerProfileData = {
       bio,
       experience,
       description,
       education,
-      phoneNumber,
-      facebook,
-      linkedin,
-      instagram,
       specialization,
       status,
       userId,
-      phone,
-      email,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

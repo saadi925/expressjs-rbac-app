@@ -84,7 +84,6 @@ model Case {
   attachments   Attachment[]
   caseRequests  CaseRequest[]  
   comments      Comment[]   @relation("caseComments") // Add the relation name 'caseComments' here
-
 }
 
 model LawyerProfile {
@@ -96,18 +95,14 @@ model LawyerProfile {
   bio         String?
   experience  String?
   education   String?
-  phoneNumber String?
-  facebook    String?
-  linkedin    String?
-  instagram   String?
-  phone       String?
   verification LawyerVerification?
-  email       String?
+ rating      Float?
   specialization String?
   status  AvailabilityStatus @default(AVAILABLE)
   reviews     LawyerReview[] 
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
+  contact     LawyerContact?
 }
 model LawyerVerification {
   id          String         @id @default(uuid())
@@ -127,7 +122,19 @@ model LawyerVerification {
   licenseExpiryDate DateTime? // Expiry date of the license
   practiceArea String? // Area of legal practice
 }
-
+model LawyerContact {
+  id          String @id @default(uuid())
+  lawyerId    String@unique
+  lawyer      LawyerProfile @relation(fields: [lawyerId], references: [id])
+ email       String?
+   phoneNumber String?
+   website String?
+  facebook    String?
+  linkedin    String?
+  instagram   String?
+  phone       String?
+  officeAddress String?
+}
 
 enum AvailabilityStatus {
   AVAILABLE
@@ -138,7 +145,8 @@ model LawyerReview {
   id          String         @id @default(uuid())
   lawyer      LawyerProfile  @relation(fields: [lawyerId], references: [id])
   lawyerId    String
-  // Add other fields for review details like rating, comments, etc.
+  score      Float
+  comment String
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 }

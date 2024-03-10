@@ -1,10 +1,25 @@
-import { PrismaClient } from '@prisma/client';
+import { $Enums, PrismaClient } from '@prisma/client';
 import { ProfileCredentials } from 'types/profile';
+type profileGet = {
+  id: string;
+  displayname: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  avatar: string | null;
+  bio: string | null;
+  location: string | null;
+  contact: string | null;
+  user: {
+    role: $Enums.Role;
+  };
+};
+
 export class PrismaDBProfile {
   #prisma;
   constructor() {
     this.#prisma = new PrismaClient();
   }
+
   async createProfile(data: ProfileCredentials, userId: string) {
     const pf = await this.#prisma.profile.upsert({
       where: { userId },
@@ -26,12 +41,22 @@ export class PrismaDBProfile {
       data,
     });
   }
-  async getProfile(userId: string) {
+  async getProfileWithRole(userId: string): Promise<profileGet | null> {
     return await this.#prisma.profile.findUnique({
       where: { userId },
-      include: {
+      select: {
+        id: true,
+        displayname: true,
+        createdAt: true,
+        updatedAt: true,
+        avatar: true,
+        bio: true,
+        location: true,
+        contact: true,
         user: {
-          select: { role: true },
+          select: {
+            role: true,
+          },
         },
       },
     });

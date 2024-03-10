@@ -50,3 +50,17 @@ export const isValidEmail = (email: string) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 };
+export const validateContact = [
+  check('email').custom(isValidEmail).withMessage('Invalid email address'),
+  check('phone').custom(isValidPhoneNumber).withMessage('Invalid phone number'),
+  check('facebook')
+    .custom(isValidFacebookProfile)
+    .withMessage('Invalid facebook profile'),
+  check('instagram')
+    .custom(isValidInstagramProfile)
+    .withMessage('Invalid instagram profile'),
+  check('linkedin')
+    .custom(isValidLinkedInProfile)
+    .withMessage('Invalid linkedin profile'),
+  check('officeAddress').isString().withMessage('Invalid office address'),
+];

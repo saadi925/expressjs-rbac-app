@@ -9,6 +9,11 @@ import {
   createOrUpdateLawyerProfile,
   getLawyerProfile,
 } from '../../src/handlers/LawyerProfileHandler';
+import {
+  createLawyerContact,
+  updateLawyerContact,
+} from 'src/handlers/LawyerContact';
+import { validateContact } from 'src/middleware/validator';
 
 const r = express.Router();
 // GET ALL PENDING CASE REQUESTS
@@ -27,4 +32,20 @@ r.put(
 );
 r.post('/profile', authMiddleware, RBACMiddleware, createOrUpdateLawyerProfile);
 r.get('/profile', authMiddleware, RBACMiddleware, getLawyerProfile);
+
+r.post(
+  '/profile/contact',
+  authMiddleware,
+  RBACMiddleware,
+  validateContact,
+  createLawyerContact,
+);
+r.put(
+  '/profile/contact',
+  authMiddleware,
+  RBACMiddleware,
+  validateContact,
+  updateLawyerContact,
+);
+
 export { r as lawyerRoutes };
