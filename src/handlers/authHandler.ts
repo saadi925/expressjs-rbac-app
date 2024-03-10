@@ -111,7 +111,7 @@ export const signinHandler = async (req: Request, res: Response) => {
     success = true;
     const token = generateToken(user);
     const profileDB = new PrismaDBProfile();
-    const profile = await profileDB.getProfile(user.id);
+    const profile = await profileDB.getProfileWithRole(user.id);
     if (!profile) {
       res.status(201).json({
         token,

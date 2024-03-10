@@ -21,7 +21,7 @@ export const createOrUpdateLawyerProfile = async (
   try {
     const { bio, experience, education, specialization, status, description } =
       req.body;
-    const data: LawyerProfileData = {
+    const data = {
       bio,
       experience,
       description,

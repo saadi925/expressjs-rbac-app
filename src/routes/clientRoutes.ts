@@ -15,7 +15,7 @@ import {
   acceptCaseRequestClientHandler,
 } from '../../src/handlers/clientCaseRequest';
 import { uploadingCaseAttachments } from '../../src/handlers/attachmentsHandler';
-import { createReview, updateReview } from 'src/handlers/Reviews';
+import { createReview, updateReview } from '../../src/handlers/Reviews';
 import { GetLawyers } from '../../src/handlers/lawyers';
 
 const router = express.Router();

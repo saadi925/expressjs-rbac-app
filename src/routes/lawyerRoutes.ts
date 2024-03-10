@@ -12,8 +12,8 @@ import {
 import {
   createLawyerContact,
   updateLawyerContact,
-} from 'src/handlers/LawyerContact';
-import { validateContact } from 'src/middleware/validator';
+} from '../../src/handlers/LawyerContact';
+import { validateContact } from '../../src/middleware/validator';
 
 const r = express.Router();
 // GET ALL PENDING CASE REQUESTS

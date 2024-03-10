@@ -7,7 +7,7 @@ export class PrismaLawyerProfile {
     this.prisma = new PrismaClient();
   }
   async createOrUpdateLawyerProfile(
-    data: LawyerProfileData,
+    data: Omit<LawyerProfileData, 'rating'>,
   ): Promise<LawyerProfile> {
     try {
       return await this.prisma.lawyerProfile.upsert({
