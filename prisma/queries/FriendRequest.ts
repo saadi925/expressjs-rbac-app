@@ -61,6 +61,13 @@ export class PrismaFriendRequest {
         orderBy: {
           createdAt: 'desc',
         },
+        include: {
+          sender: {
+            select: {
+              profile: { select: { avatar: true, displayname: true } },
+            },
+          },
+        },
       });
       return friendRequests;
     } catch (error) {

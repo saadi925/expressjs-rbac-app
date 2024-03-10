@@ -15,13 +15,13 @@ model Profile {
   avatar      String?
   bio         String?
   location    String?
-  
   contact String?
 }
 model User {
   id                        String          @id @default(uuid())
   email                     String          @unique
   name                      String?
+  online                   Boolean         @default(false)
   createdAt                 DateTime        @default(now())
   updatedAt                 DateTime        @updatedAt
   role                      Role            @default(CLIENT)
@@ -75,6 +75,7 @@ model Case {
   title         String
   description   String
   clientId      String
+  category     CaseCategory
   lawyerId      String?
   client        User        @relation("ClientCases", fields: [clientId], references: [id])
   lawyer        User?       @relation("LawyerCases", fields: [lawyerId], references: [id])
@@ -84,6 +85,15 @@ model Case {
   attachments   Attachment[]
   caseRequests  CaseRequest[]  
   comments      Comment[]   @relation("caseComments") // Add the relation name 'caseComments' here
+}
+enum CaseCategory {
+  FAMILY
+  CRIMINAL
+  CIVIL
+  LABOUR
+  PROPERTY
+  BUSINESS
+  OTHER
 }
 
 model LawyerProfile {

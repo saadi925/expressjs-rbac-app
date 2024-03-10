@@ -23,5 +23,6 @@ p, LAWYER, /lawyer/case_request, POST
 p, LAWYER, /lawyer/case_request/accept/:requestId, PUT
 p, LAWYER, /lawyer/profile/contact, POST
 p, LAWYER, /lawyer/profile/contact, PUT
+p, LAWYER, /lawyer/cases, GET
 
 

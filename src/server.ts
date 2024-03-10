@@ -40,7 +40,7 @@ app.use('/notifications', notificationRoutes);
 app.use('/client', clientRoutes);
 app.use('/lawyer', lawyerRoutes);
 app.use('/common', commonRoutes);
-app.use('/user', friendRequestRoutes);
+app.use('/friend-requests', friendRequestRoutes);
 app.use('/api/get-cities', getCities);
 // Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

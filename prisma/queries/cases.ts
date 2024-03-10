@@ -29,7 +29,7 @@ export class PrismaCase {
     });
     return createdCase;
   }
-  async updateCase(data: Case, caseID: bigint) {
+  async updateCase(data: Omit<Case, 'status'>, caseID: bigint) {
     return await this.#prisma.case.update({
       where: { id: caseID, clientId: data.clientId },
       data,

@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { PrismaCase, prisma } from '../../prisma';
 import { RequestWithCase } from 'types/case';
-import { Case } from '@prisma/client';
+import { $Enums, Case } from '@prisma/client';
 import { validateCaseData } from '../../src/middleware/validateCaseData';
 import { checkForUser } from '../middleware/rbacMiddleware';
 import { RequestWithUser } from 'types/profile';
@@ -13,7 +13,7 @@ export const createCaseHandler = async (
   req: RequestWithCase,
   res: Response,
 ) => {
-  const { title, description, status } = req.body;
+  const { title, description, category } = req.body;
   const ok = checkForUser(req, res);
   if (!ok) {
     return;
@@ -22,16 +22,17 @@ export const createCaseHandler = async (
   if (error) {
     return res.status(403).json({ error: error.message });
   }
-
+  const status: $Enums.CaseStatus = 'OPEN';
   const clientId = req.userId!;
   const data = {
     title,
     description,
-    status,
     clientId,
     createdAt: new Date(),
     updatedAt: new Date(),
     lawyerId: null,
+    category,
+    status,
   };
   try {
     const createdCase = await prismaCase.createCase(data);
@@ -96,7 +97,7 @@ export const updateCaseHandler = async (
       });
     }
     //  ready to be updated
-    const newData: Case = {
+    const newData: Omit<Case, 'status'> = {
       id: BigIntId,
       ...data,
       clientId: req.userId as string,
@@ -174,7 +175,7 @@ export const getCaseByID = async (req: RequestWithUser, res: Response) => {
 };
 //  body 'status'
 // params 'id'
-export async function updateCaseStatus(req: RequestWithCase, res: Response) {
+export async function updateCaseStatus(req: RequestWithUser, res: Response) {
   const ok = checkForUser(req, res);
   if (!ok) {
     return;

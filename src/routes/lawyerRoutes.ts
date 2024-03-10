@@ -47,5 +47,5 @@ r.put(
   validateContact,
   updateLawyerContact,
 );
-
+r.get('/cases', authMiddleware, RBACMiddleware, getLawyerProfile);
 export { r as lawyerRoutes };

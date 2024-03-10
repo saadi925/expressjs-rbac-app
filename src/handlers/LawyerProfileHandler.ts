@@ -1,9 +1,6 @@
 import { Response } from 'express';
 import { validationResult } from 'express-validator';
-import {
-  LawyerProfileData,
-  PrismaLawyerProfile,
-} from '../../prisma/queries/LawyerProfile';
+import { PrismaLawyerProfile } from '../../prisma/queries/LawyerProfile';
 
 import { RequestWithUser } from 'types/profile';
 const lawyerProfile = new PrismaLawyerProfile();

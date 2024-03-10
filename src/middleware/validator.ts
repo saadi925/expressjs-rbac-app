@@ -51,15 +51,21 @@ export const isValidEmail = (email: string) => {
   return emailRegex.test(email);
 };
 export const validateContact = [
-  check('email').custom(isValidEmail).withMessage('Invalid email address'),
+  check('email')
+    .optional()
+    .custom(isValidEmail)
+    .withMessage('Invalid email address'),
   check('phone').custom(isValidPhoneNumber).withMessage('Invalid phone number'),
   check('facebook')
+    .optional()
     .custom(isValidFacebookProfile)
     .withMessage('Invalid facebook profile'),
   check('instagram')
+    .optional()
     .custom(isValidInstagramProfile)
     .withMessage('Invalid instagram profile'),
   check('linkedin')
+    .optional()
     .custom(isValidLinkedInProfile)
     .withMessage('Invalid linkedin profile'),
   check('officeAddress').isString().withMessage('Invalid office address'),

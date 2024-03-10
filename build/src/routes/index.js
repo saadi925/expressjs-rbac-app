@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.lawyerRoutes = exports.clientRoutes = exports.profileRoutes = exports.authRoutes = exports.notificationRoutes = exports.commonRoutes = void 0;
+const authRoutes_1 = require("./authRoutes");
+Object.defineProperty(exports, "authRoutes", { enumerable: true, get: function () { return authRoutes_1.authRoutes; } });
+const clientRoutes_1 = require("./clientRoutes");
+Object.defineProperty(exports, "clientRoutes", { enumerable: true, get: function () { return clientRoutes_1.clientRoutes; } });
+const commonRoutes_1 = require("./commonRoutes");
+Object.defineProperty(exports, "commonRoutes", { enumerable: true, get: function () { return commonRoutes_1.commonRoutes; } });
+const lawyerRoutes_1 = require("./lawyerRoutes");
+Object.defineProperty(exports, "lawyerRoutes", { enumerable: true, get: function () { return lawyerRoutes_1.lawyerRoutes; } });
+const notificationRoutes_1 = require("./notificationRoutes");
+Object.defineProperty(exports, "notificationRoutes", { enumerable: true, get: function () { return notificationRoutes_1.notificationRoutes; } });
+const profileRoutes_1 = require("./profileRoutes");
+Object.defineProperty(exports, "profileRoutes", { enumerable: true, get: function () { return profileRoutes_1.profileRoutes; } });

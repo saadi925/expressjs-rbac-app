@@ -4,8 +4,8 @@ import { RequestWithUser } from './profile';
 export interface CaseCredentials {
   title: string;
   description: string;
-  status: $Enums.CaseStatus;
   lawyerId: string | null;
+  category: $Enums.CaseCategory;
 }
 
 export interface RequestWithCase extends RequestWithUser {
