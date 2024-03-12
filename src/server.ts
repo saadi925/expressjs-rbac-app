@@ -17,9 +17,7 @@ const app = express();
 import { friendRequestRoutes } from './routes/friendRequestRoutes';
 import { getCities } from './utils/cities';
 import { authMiddleware } from './middleware/authMiddleware';
-import { authorizeAction } from './handlers/authorization';
 import { authorizeApi } from './routes/authorizeRoutes';
-
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
@@ -29,16 +27,11 @@ const io = new Server(server, {
     origin: '*',
   },
 });
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
-
-// Handle socket.io events
 io.on('connection', socketHandler(io));
-
-// Define routes
 app.use('/auth', authRoutes);
-app.get('/api/user/authorize', authMiddleware, authorizeApi);
+app.use('/api/user/authorize', authMiddleware, authorizeApi);
 app.use('/user/profile', profileRoutes);
 app.use('/notifications', notificationRoutes);
 app.use('/client', clientRoutes);
@@ -46,7 +39,6 @@ app.use('/lawyer', lawyerRoutes);
 app.use('/common', commonRoutes);
 app.use('/friend-requests', friendRequestRoutes);
 app.use('/api/get-cities', getCities);
-// Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error('Error:', err);
   res.status(500).json({ error: 'Internal server error' });
