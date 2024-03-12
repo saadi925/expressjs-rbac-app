@@ -13,6 +13,7 @@ import { authMiddleware } from '../middleware/authMiddleware';
 import {
   createCaseRequestClientHandler,
   acceptCaseRequestClientHandler,
+  getPendingCaseRequestsHandler,
 } from '../../src/handlers/clientCaseRequest';
 import { uploadingCaseAttachments } from '../../src/handlers/attachmentsHandler';
 import { createReview, updateReview } from '../../src/handlers/Reviews';
@@ -45,6 +46,12 @@ router.put(
   authMiddleware,
   RBACMiddleware,
   acceptCaseRequestClientHandler,
+);
+router.get(
+  '/case_request/pending',
+  authMiddleware,
+  RBACMiddleware,
+  getPendingCaseRequestsHandler,
 );
 router.post(
   '/attachments',

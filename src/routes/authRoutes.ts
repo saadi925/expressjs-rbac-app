@@ -20,5 +20,4 @@ router.post('/signin', validateLoginCredentials, signinHandler);
 router.get('/email_verify', emailVerificationHandler);
 router.put('/email_verify_code', verifyWithCode);
 router.put('/email_verify/resend', resendConfirmation);
-
 export { router as authRoutes };

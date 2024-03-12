@@ -16,6 +16,9 @@ const app = express();
 
 import { friendRequestRoutes } from './routes/friendRequestRoutes';
 import { getCities } from './utils/cities';
+import { authMiddleware } from './middleware/authMiddleware';
+import { authorizeAction } from './handlers/authorization';
+import { authorizeApi } from './routes/authorizeRoutes';
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
@@ -35,6 +38,7 @@ io.on('connection', socketHandler(io));
 
 // Define routes
 app.use('/auth', authRoutes);
+app.get('/api/user/authorize', authMiddleware, authorizeApi);
 app.use('/user/profile', profileRoutes);
 app.use('/notifications', notificationRoutes);
 app.use('/client', clientRoutes);

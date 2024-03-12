@@ -12,6 +12,7 @@ p,CLIENT, /client/attachments,POST
 p,CLIENT, /client/attachments/:attachmentId,GET
 p,CLIENT, /client/attachments/:attachmentId,PUT
 p,CLIENT, /client/attachments/:attachmentId,DELETE
+p, CLIENT, /client/case_request/pending, GET
 
 p,CLIENT, /client/lawyers,GET
 p,CLIENT, /client/review,POST
@@ -20,6 +21,7 @@ p,CLIENT, /client/review,PUT
 
 
 p, LAWYER, /lawyer/case_request, POST
+p, LAWYER, /lawyer/case_request/pending, GET
 p, LAWYER, /lawyer/case_request/accept/:requestId, PUT
 p, LAWYER, /lawyer/profile/contact, POST
 p, LAWYER, /lawyer/profile/contact, PUT

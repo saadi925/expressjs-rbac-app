@@ -39,7 +39,7 @@ model User {
   sentMessages              Message[]       @relation("SentMessages")
   receivedMessages          Message[]       @relation("ReceivedMessages")
   lawyerProfile             LawyerProfile?
-  comments                  Comment[]       @relation("userComments") // Change the relation name to 'userComments'
+  comments                  Comment[]       @relation("userComments") 
 }
 model Friendship {
   id       String @id @default(uuid())
@@ -84,7 +84,7 @@ model Case {
   caseDetails   CaseDetail[]
   attachments   Attachment[]
   caseRequests  CaseRequest[]  
-  comments      Comment[]   @relation("caseComments") // Add the relation name 'caseComments' here
+  comments      Comment[]   @relation("caseComments") 
 }
 enum CaseCategory {
   FAMILY
@@ -127,10 +127,9 @@ model LawyerVerification {
   verifiedAt  DateTime?
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
-  // Additional fields
-  licenseNumber String? // License number if applicable
+  licenseNumber String? 
   licenseExpiryDate DateTime? // Expiry date of the license
-  practiceArea String? // Area of legal practice
+  practiceArea String? 
 }
 model LawyerContact {
   id          String @id @default(uuid())
@@ -193,13 +192,13 @@ model CaseRequest {
   id            BigInt              @id @default(autoincrement())
   clientId      String
   lawyerId      String
-  caseId        BigInt              // Ensure that the type matches the type of `id` in the `Case` model
+  caseId        BigInt              
   status        RequestStatus       @default(PENDING)
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
   client        User                @relation("SentCaseRequests", fields: [clientId], references: [id])
   lawyer        User                @relation("ReceivedCaseRequests", fields: [lawyerId], references: [id])
-  case          Case                @relation(fields: [caseId], references: [id]) // Ensure the type matches `id` in the `Case` model
+  case          Case                @relation(fields: [caseId], references: [id]) 
 }
 model EmailVerification {
   id                BigInt      @id @default(autoincrement())
@@ -211,10 +210,10 @@ model EmailVerification {
 model Notification {
   id          String    @id @default(uuid())
   userId      String
-   // ID of the user associated with this notification
-  message     String    // Message content of the notification
+  
+  message     String   
   createdAt   DateTime  @default(now())
-  read        Boolean   @default(false) // Indicates whether the notification has been read
+  read        Boolean   @default(false) 
   avatarUrl String?
   name String?
 

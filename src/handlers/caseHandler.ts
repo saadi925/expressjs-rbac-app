@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { PrismaCase, prisma } from '../../prisma';
+import { PrismaCase } from '../../prisma';
 import { RequestWithCase } from 'types/case';
 import { $Enums, Case } from '@prisma/client';
 import { validateCaseData } from '../../src/middleware/validateCaseData';

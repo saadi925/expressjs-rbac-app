@@ -26,7 +26,10 @@ async function sendVerificationEmail(
 
     // Create a Nodemailer transporter
     const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
       service: 'gmail',
+      port: 465,
+      secure: true,
       auth: {
         user: KEYS.email,
         pass: KEYS.password,
@@ -40,10 +43,12 @@ async function sendVerificationEmail(
       subject: 'Verify your email',
       html: replacedHtml,
     };
-
-    // Send the email
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Verification email sent:', info.response);
+    try {
+      const info = await transporter.sendMail(mailOptions);
+      console.log('Verification email sent:', info.response);
+    } catch (error) {
+      console.log('error while sending email : ', error);
+    }
   } catch (error) {
     console.error('Error sending verification email:', error);
   }

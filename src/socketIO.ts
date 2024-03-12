@@ -28,6 +28,15 @@ class MessageHandler {
       if (!userId || typeof userId !== 'string') {
         throw new Error('Invalid user ID');
       }
+      if (
+        !pageSize ||
+        typeof pageSize !== 'string' ||
+        !pageNumber ||
+        typeof pageNumber !== 'string'
+      ) {
+        throw new Error('invalid page');
+      }
+
       const skip = (Number(pageNumber) - 1) * Number(pageSize);
       const olderMessages = await this.prismaMessages.getMessages(
         userId,
@@ -50,11 +59,9 @@ class MessageHandler {
       if (!sender || !receiver) {
         throw new Error('Sender or receiver does not exist');
       }
-      // Sanitize the message content to prevent XSS attacks
       const sanitizedContent = xss(content);
       const emojiRegexPattern = emojiRegex();
       const isValidEmoji = emojiRegexPattern.test(sanitizedContent);
-      // Validate message length
       if (sanitizedContent.length > 1000) {
         throw new Error('Message exceeds maximum length');
       }

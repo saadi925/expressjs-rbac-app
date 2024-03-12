@@ -24,6 +24,12 @@ r.post(
   RBACMiddleware,
   createCaseRequestLawyerHandler,
 );
+r.get(
+  '/case_request/pending',
+  authMiddleware,
+  RBACMiddleware,
+  createCaseRequestLawyerHandler,
+);
 r.put(
   '/case_request/accept/:requestId',
   authMiddleware,

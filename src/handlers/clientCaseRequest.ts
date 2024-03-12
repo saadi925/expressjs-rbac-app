@@ -204,8 +204,17 @@ export async function getPendingCaseRequestsHandler(
 ): Promise<void> {
   try {
     const { userId } = req; // userId is lawyer id here
-    const pendingRequests =
-      await prismaCaseRequest.getPendingCaseRequestsByLawyer(userId as string);
+    const { userRole } = req;
+    let pendingRequests;
+    if (userRole === 'LAWYER') {
+      pendingRequests = await prismaCaseRequest.getPendingCaseRequestsByLawyer(
+        userId as string,
+      );
+    } else {
+      pendingRequests = await prismaCaseRequest.getPendingCaseRequestsByClient(
+        userId!,
+      );
+    }
     res.status(200).json(pendingRequests);
   } catch (error) {
     console.error('Error getting pending case requests:', error);

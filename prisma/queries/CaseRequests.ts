@@ -16,6 +16,7 @@ export class PrismaCaseRequest {
   constructor() {
     this.#prisma = new PrismaClient();
   }
+
   async removeRequestFromSenderSent(caseRequestId: bigint, userId: string) {
     await this.#prisma.user.update({
       where: { id: userId },
@@ -154,12 +155,30 @@ export class PrismaCaseRequest {
     });
   }
 
-  async getPendingCaseRequestsByLawyer(
-    lawyerId: string,
-  ): Promise<PrismaCaseRequestModel[]> {
+  async getPendingCaseRequestsByLawyer(lawyerId: string) {
     const pendingRequests = await this.#prisma.caseRequest.findMany({
       where: { lawyerId, status: 'PENDING' },
       orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        caseId: true,
+        status: true,
+        createdAt: true,
+      },
+    });
+    return pendingRequests;
+  }
+
+  async getPendingCaseRequestsByClient(clientId: string) {
+    const pendingRequests = await this.#prisma.caseRequest.findMany({
+      where: { clientId, status: 'PENDING' },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        caseId: true,
+        status: true,
+        createdAt: true,
+      },
     });
     return pendingRequests;
   }

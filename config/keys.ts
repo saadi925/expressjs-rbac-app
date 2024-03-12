@@ -9,9 +9,6 @@ export const KEYS = {
   server: process.env.SERVER || 'https://www.codingstack.site',
   email: process.env.G_EMAIL || 'userid925925@gmail.com',
   password: process.env.G_PASSWORD || 'kxyd aijd mmhi zjoi',
-  NGROK_AUTHTOKEN:
-    process.env.NGROK_AUTHTOKEN ||
-    '2YES5ga1rE7V5tcGmtug2wWrqx3_esRRMUdknfRFpJFEL6ye',
 };
 
 export const rbacConfig = {
