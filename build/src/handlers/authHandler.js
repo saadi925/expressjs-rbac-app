@@ -54,15 +54,15 @@ const signupHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             updatedAt: Date.now(),
             verified: false,
         };
-        user = yield (0, prisma_1.createUser)(data);
+        const newUser = yield (0, prisma_1.createUser)(data);
         const emailVerification = new EmailVerification_1.EmailVerification();
         const code = yield emailVerification.genRandomCode();
-        const verificationToken = (0, generateToken_1.generateVerificationToken)(user, code);
+        const verificationToken = (0, generateToken_1.generateVerificationToken)(newUser, code);
         yield emailVerification.createEmailVerification({
             email,
             verificationToken,
             code,
-            userId: user.id,
+            userId: newUser.id,
         });
         yield (0, sendVerificationEmail_1.sendVerificationEmail)(email, verificationToken, code);
         res.status(201).json({

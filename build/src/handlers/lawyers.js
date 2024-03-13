@@ -55,6 +55,17 @@ function GetLawyers(req, res) {
                     status: true,
                     reviews: { select: { comment: true, score: true, id: true } },
                     createdAt: true,
+                    user: {
+                        select: {
+                            profile: {
+                                select: {
+                                    location: true,
+                                    avatar: true,
+                                    displayname: true,
+                                },
+                            },
+                        },
+                    },
                     // Add other fields as needed
                 },
             });

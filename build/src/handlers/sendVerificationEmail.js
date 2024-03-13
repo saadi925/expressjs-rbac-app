@@ -30,6 +30,9 @@ function sendVerificationEmail(email, verificationToken, code) {
                 .replace('{{verificationToken}}', verificationToken)
                 .replace('{{server}}', keys_1.KEYS.server);
             console.log(verificationToken);
+            if (!keys_1.KEYS.email || !keys_1.KEYS.password) {
+                throw new Error('sender email error , please try again later');
+            }
             // Create a Nodemailer transporter
             const transporter = nodemailer_1.default.createTransport({
                 host: 'smtp.gmail.com',

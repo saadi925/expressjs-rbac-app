@@ -9,6 +9,7 @@ const middleware_1 = require("../middleware");
 const LawyerCaseRequests_1 = require("../../src/handlers/LawyerCaseRequests");
 const LawyerProfileHandler_1 = require("../../src/handlers/LawyerProfileHandler");
 const LawyerContact_1 = require("../../src/handlers/LawyerContact");
+const caseHandler_1 = require("../../src/handlers/caseHandler");
 const r = express_1.default.Router();
 exports.lawyerRoutes = r;
 // GET ALL PENDING CASE REQUESTS
@@ -20,4 +21,4 @@ r.post('/profile', middleware_1.authMiddleware, middleware_1.RBACMiddleware, mid
 r.get('/profile', middleware_1.authMiddleware, middleware_1.RBACMiddleware, middleware_1.createLawyerProfileValidationRules, LawyerProfileHandler_1.getLawyerProfile);
 r.post('/profile/contact', middleware_1.authMiddleware, middleware_1.RBACMiddleware, middleware_1.validateContact, LawyerContact_1.createLawyerContact);
 r.put('/profile/contact', middleware_1.authMiddleware, middleware_1.RBACMiddleware, middleware_1.validateContact, LawyerContact_1.updateLawyerContact);
-r.get('/cases', middleware_1.authMiddleware, middleware_1.RBACMiddleware, LawyerProfileHandler_1.getLawyerProfile);
+r.get('/cases', middleware_1.authMiddleware, middleware_1.RBACMiddleware, caseHandler_1.getCasesHandler);
