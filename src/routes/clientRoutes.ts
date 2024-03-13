@@ -8,8 +8,7 @@ import {
   updateCaseStatus,
   getAllOpenCases,
 } from '../handlers/caseHandler';
-import { RBACMiddleware } from '../middleware/rbacMiddleware';
-import { authMiddleware } from '../middleware/authMiddleware';
+import { authMiddleware, RBACMiddleware } from '../middleware';
 import {
   createCaseRequestClientHandler,
   acceptCaseRequestClientHandler,
@@ -33,6 +32,10 @@ router.delete('/case/:id', authMiddleware, RBACMiddleware, deleteCaseHandler);
 // get all cases 'CLIENT' only
 router.get('/cases', authMiddleware, RBACMiddleware, getCasesHandler);
 router.get('/cases/open', authMiddleware, RBACMiddleware, getAllOpenCases);
+
+router.get('/lawyers', authMiddleware, RBACMiddleware, GetLawyers);
+router.post('/review', authMiddleware, RBACMiddleware, createReview);
+router.put('/review', authMiddleware, RBACMiddleware, updateReview);
 
 // lawyer id , case id
 router.post(
@@ -77,8 +80,5 @@ router.delete(
   RBACMiddleware,
   uploadingCaseAttachments,
 );
-router.get('/lawyers', authMiddleware, RBACMiddleware, GetLawyers);
-router.post('/review', authMiddleware, RBACMiddleware, createReview);
-router.put('/review', authMiddleware, RBACMiddleware, updateReview);
 
 export { router as clientRoutes };

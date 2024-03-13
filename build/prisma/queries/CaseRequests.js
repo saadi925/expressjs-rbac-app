@@ -173,6 +173,27 @@ class PrismaCaseRequest {
             const pendingRequests = yield __classPrivateFieldGet(this, _PrismaCaseRequest_prisma, "f").caseRequest.findMany({
                 where: { lawyerId, status: 'PENDING' },
                 orderBy: { createdAt: 'desc' },
+                select: {
+                    id: true,
+                    caseId: true,
+                    status: true,
+                    createdAt: true,
+                },
+            });
+            return pendingRequests;
+        });
+    }
+    getPendingCaseRequestsByClient(clientId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const pendingRequests = yield __classPrivateFieldGet(this, _PrismaCaseRequest_prisma, "f").caseRequest.findMany({
+                where: { clientId, status: 'PENDING' },
+                orderBy: { createdAt: 'desc' },
+                select: {
+                    id: true,
+                    caseId: true,
+                    status: true,
+                    createdAt: true,
+                },
             });
             return pendingRequests;
         });

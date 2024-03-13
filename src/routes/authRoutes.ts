@@ -6,10 +6,7 @@ import {
   signupHandler,
   verifyWithCode,
 } from './../handlers/authHandler';
-import {
-  validateLoginCredentials,
-  validateUserCred,
-} from '../middleware/validator';
+import { validateLoginCredentials, validateUserCred } from '../middleware';
 
 const router = express.Router();
 // create user route (sign up)

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetLawyers = void 0;
+exports.GetClients = exports.GetLawyers = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 // Get lawyers based on reviews, location, availability, etc.
@@ -138,3 +138,57 @@ function GetLawyers(req, res) {
     });
 }
 exports.GetLawyers = GetLawyers;
+function GetClients(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const userId = req.userId;
+        if (!userId) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        try {
+            //  get Cases with the 'Case' as Type
+            const cases = yield prisma.case.findMany({
+                where: {
+                    status: 'OPEN',
+                },
+                select: {
+                    id: true,
+                    status: true,
+                    title: true,
+                    description: true,
+                    category: true,
+                    updatedAt: true,
+                    createdAt: true,
+                    client: {
+                        select: {
+                            online: true,
+                            profile: {
+                                select: {
+                                    avatar: true,
+                                    displayname: true,
+                                    location: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+            const serializedCases = cases.map((c) => {
+                return {
+                    id: BigInt(c.id).toString(),
+                    status: c.status,
+                    title: c.title,
+                    description: c.description,
+                    category: c.category,
+                    updatedAt: c.updatedAt,
+                    createdAt: c.createdAt,
+                    client: c.client,
+                };
+            });
+            res.status(200).json(serializedCases);
+        }
+        catch (error) {
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    });
+}
+exports.GetClients = GetClients;

@@ -20,15 +20,17 @@ const isStatusValid = (status) => {
     return regex.test(status);
 };
 const validateCaseData = (data) => {
-    const { status, description, title } = data;
+    const { description, title } = data;
     if (!isTitleValid(title)) {
         return Error('Invalid title');
     }
     if (!isDescriptionValid(description)) {
         return Error('Invalid description');
     }
-    if (!isStatusValid(status)) {
-        return Error('Invalid Status');
+    const catRegex = /^(CRIMINAL|CIVIL|FAMILY|PROPERTY|LABOUR|OTHERS)$/;
+    if (!data.category || !catRegex.test(data.category)) {
+        return Error('Invalid Category');
     }
+    return;
 };
 exports.validateCaseData = validateCaseData;

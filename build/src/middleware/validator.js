@@ -51,15 +51,21 @@ const isValidEmail = (email) => {
 };
 exports.isValidEmail = isValidEmail;
 exports.validateContact = [
-    (0, express_validator_1.check)('email').custom(exports.isValidEmail).withMessage('Invalid email address'),
+    (0, express_validator_1.check)('email')
+        .optional()
+        .custom(exports.isValidEmail)
+        .withMessage('Invalid email address'),
     (0, express_validator_1.check)('phone').custom(exports.isValidPhoneNumber).withMessage('Invalid phone number'),
     (0, express_validator_1.check)('facebook')
+        .optional()
         .custom(isValidFacebookProfile)
         .withMessage('Invalid facebook profile'),
     (0, express_validator_1.check)('instagram')
+        .optional()
         .custom(isValidInstagramProfile)
         .withMessage('Invalid instagram profile'),
     (0, express_validator_1.check)('linkedin')
+        .optional()
         .custom(isValidLinkedInProfile)
         .withMessage('Invalid linkedin profile'),
     (0, express_validator_1.check)('officeAddress').isString().withMessage('Invalid office address'),

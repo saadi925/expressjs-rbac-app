@@ -4,8 +4,12 @@ import { Server, Socket } from 'socket.io';
 import { prisma } from '../prisma';
 import xss from 'xss';
 import emojiRegex from 'emoji-regex';
-import { SocketWithUser, isAuthorizedSocket } from './middleware/isAuthorized';
-import { authMiddleware } from './middleware/socketAuth';
+
+import {
+  authSocketMiddleware,
+  isAuthorizedSocket,
+  SocketWithUser,
+} from './middleware';
 
 interface SendMessageData {
   senderId: string;
@@ -103,7 +107,7 @@ export const socketHandler = (io: Server) => (socket: Socket) => {
   console.log('A user connected');
   const messageHandler = new MessageHandler(io);
   socket.use((packet, next) => {
-    authMiddleware(socket as SocketWithUser, (err) => {
+    authSocketMiddleware(socket as SocketWithUser, (err) => {
       if (err) {
         console.error('Error in authMiddleware:', err);
         return next(err);

@@ -29,9 +29,13 @@ function sendVerificationEmail(email, verificationToken, code) {
                 .replace('{{code}}', code.toString())
                 .replace('{{verificationToken}}', verificationToken)
                 .replace('{{server}}', keys_1.KEYS.server);
+            console.log(verificationToken);
             // Create a Nodemailer transporter
             const transporter = nodemailer_1.default.createTransport({
+                host: 'smtp.gmail.com',
                 service: 'gmail',
+                port: 465,
+                secure: true,
                 auth: {
                     user: keys_1.KEYS.email,
                     pass: keys_1.KEYS.password,
@@ -44,9 +48,13 @@ function sendVerificationEmail(email, verificationToken, code) {
                 subject: 'Verify your email',
                 html: replacedHtml,
             };
-            // Send the email
-            const info = yield transporter.sendMail(mailOptions);
-            console.log('Verification email sent:', info.response);
+            try {
+                const info = yield transporter.sendMail(mailOptions);
+                console.log('Verification email sent:', info.response);
+            }
+            catch (error) {
+                console.log('error while sending email : ', error);
+            }
         }
         catch (error) {
             console.error('Error sending verification email:', error);

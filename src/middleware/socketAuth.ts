@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import { KEYS } from '../../config/keys';
-import { Socket } from 'socket.io';
 import { SocketWithUser } from './isAuthorized';
 
 interface DecodedToken {
@@ -10,7 +9,7 @@ interface DecodedToken {
   role: 'LAWYER' | 'CLIENT';
 }
 
-export const authMiddleware = (
+export const authSocketMiddleware = (
   socket: SocketWithUser,
   next: (err?: any) => void,
 ) => {

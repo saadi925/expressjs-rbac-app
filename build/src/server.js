@@ -12,6 +12,7 @@ const socketIO_1 = require("./socketIO");
 const app = (0, express_1.default)();
 const friendRequestRoutes_1 = require("./routes/friendRequestRoutes");
 const cities_1 = require("./utils/cities");
+const authorizeRoutes_1 = require("./routes/authorizeRoutes");
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
@@ -23,18 +24,16 @@ const io = new socket_io_1.Server(server, {
 });
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
-// Handle socket.io events
 io.on('connection', (0, socketIO_1.socketHandler)(io));
-// Define routes
 app.use('/auth', routes_1.authRoutes);
+app.use('/api/user/authorize', authorizeRoutes_1.authorizeApi);
 app.use('/user/profile', routes_1.profileRoutes);
 app.use('/notifications', routes_1.notificationRoutes);
 app.use('/client', routes_1.clientRoutes);
 app.use('/lawyer', routes_1.lawyerRoutes);
 app.use('/common', routes_1.commonRoutes);
-app.use('/user', friendRequestRoutes_1.friendRequestRoutes);
+app.use('/friend-requests', friendRequestRoutes_1.friendRequestRoutes);
 app.use('/api/get-cities', cities_1.getCities);
-// Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Error:', err);
     res.status(500).json({ error: 'Internal server error' });

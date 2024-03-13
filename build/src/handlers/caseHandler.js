@@ -18,7 +18,7 @@ const prismaCase = new prisma_1.PrismaCase();
 const notifier = new CaseNotifications_1.CaseNotifications();
 //  this is the case creation handler , only 'CLIENT' can create the case,
 const createCaseHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { title, description, status } = req.body;
+    const { title, description, category } = req.body;
     const ok = (0, rbacMiddleware_1.checkForUser)(req, res);
     if (!ok) {
         return;
@@ -27,15 +27,17 @@ const createCaseHandler = (req, res) => __awaiter(void 0, void 0, void 0, functi
     if (error) {
         return res.status(403).json({ error: error.message });
     }
+    const status = 'OPEN';
     const clientId = req.userId;
     const data = {
         title,
         description,
-        status,
         clientId,
         createdAt: new Date(),
         updatedAt: new Date(),
         lawyerId: null,
+        category,
+        status,
     };
     try {
         const createdCase = yield prismaCase.createCase(data);

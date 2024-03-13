@@ -16,8 +16,17 @@ export const getReviewsByLawyerId = async (req: Request, res: Response) => {
   }
 };
 
-export const getReviewsByUserId = async (req: Request, res: Response) => {
-  const { userId } = req.params;
+export const getReviewsByUserId = async (
+  req: RequestWithUser,
+  res: Response,
+) => {
+  const { userId } = req;
+  if (!userId) {
+    res.status(401).json({
+      error: 'unauthorized',
+    });
+    return;
+  }
   try {
     const reviews = await reviewService.getReviewsByUserId(userId);
     res.status(200).json(reviews);

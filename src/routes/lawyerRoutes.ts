@@ -1,6 +1,10 @@
 import express from 'express';
-import { authMiddleware } from '../middleware/authMiddleware';
-import { RBACMiddleware } from '../middleware/rbacMiddleware';
+import {
+  RBACMiddleware,
+  authMiddleware,
+  validateContact,
+  createLawyerProfileValidationRules,
+} from '../middleware';
 import {
   acceptCaseRequestLawyerHandler,
   createCaseRequestLawyerHandler,
@@ -13,7 +17,7 @@ import {
   createLawyerContact,
   updateLawyerContact,
 } from '../../src/handlers/LawyerContact';
-import { validateContact } from '../../src/middleware/validator';
+import { getCasesHandler } from '../../src/handlers/caseHandler';
 
 const r = express.Router();
 // GET ALL PENDING CASE REQUESTS
@@ -36,8 +40,20 @@ r.put(
   RBACMiddleware,
   acceptCaseRequestLawyerHandler,
 );
-r.post('/profile', authMiddleware, RBACMiddleware, createOrUpdateLawyerProfile);
-r.get('/profile', authMiddleware, RBACMiddleware, getLawyerProfile);
+r.post(
+  '/profile',
+  authMiddleware,
+  RBACMiddleware,
+  createLawyerProfileValidationRules,
+  createOrUpdateLawyerProfile,
+);
+r.get(
+  '/profile',
+  authMiddleware,
+  RBACMiddleware,
+  createLawyerProfileValidationRules,
+  getLawyerProfile,
+);
 
 r.post(
   '/profile/contact',
@@ -53,5 +69,5 @@ r.put(
   validateContact,
   updateLawyerContact,
 );
-r.get('/cases', authMiddleware, RBACMiddleware, getLawyerProfile);
+r.get('/cases', authMiddleware, RBACMiddleware, getCasesHandler);
 export { r as lawyerRoutes };

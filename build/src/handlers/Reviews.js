@@ -26,7 +26,13 @@ const getReviewsByLawyerId = (req, res) => __awaiter(void 0, void 0, void 0, fun
 });
 exports.getReviewsByLawyerId = getReviewsByLawyerId;
 const getReviewsByUserId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { userId } = req.params;
+    const { userId } = req;
+    if (!userId) {
+        res.status(401).json({
+            error: 'unauthorized',
+        });
+        return;
+    }
     try {
         const reviews = yield reviewService.getReviewsByUserId(userId);
         res.status(200).json(reviews);

@@ -10,7 +10,7 @@ const path_1 = __importDefault(require("path"));
 // Multer configuration for handling file uploads
 exports.storage = multer_1.default.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'uploads/'); // Destination folder for storing uploaded files
+        cb(null, 'uploads/');
     },
     filename: function (req, file, cb) {
         const uniqueFileName = `${(0, uuid_1.v4)()}${path_1.default.extname(file.originalname)}`; // Generate unique filename

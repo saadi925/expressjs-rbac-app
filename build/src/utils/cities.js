@@ -57,10 +57,10 @@ const getCities = (req, res) => {
     const startsWith = req.query.startsWith;
     if (startsWith) {
         const cities = arr.filter((city) => city.startsWith(startsWith.toString()));
-        res.json(cities);
         if (cities.length === 0) {
             res.status(404).json({ error: 'no city found' });
         }
+        res.status(200).json(cities);
     }
     else {
         res.status(400).json({ error: 'missing city text' });

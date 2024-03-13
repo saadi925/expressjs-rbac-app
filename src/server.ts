@@ -16,7 +16,6 @@ const app = express();
 
 import { friendRequestRoutes } from './routes/friendRequestRoutes';
 import { getCities } from './utils/cities';
-import { authMiddleware } from './middleware/authMiddleware';
 import { authorizeApi } from './routes/authorizeRoutes';
 app.get('/', (req, res) => {
   res.send('Hello World!');
@@ -31,7 +30,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 io.on('connection', socketHandler(io));
 app.use('/auth', authRoutes);
-app.use('/api/user/authorize', authMiddleware, authorizeApi);
+app.use('/api/user/authorize', authorizeApi);
 app.use('/user/profile', profileRoutes);
 app.use('/notifications', notificationRoutes);
 app.use('/client', clientRoutes);

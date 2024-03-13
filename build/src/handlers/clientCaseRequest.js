@@ -160,7 +160,14 @@ function getPendingCaseRequestsHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { userId } = req; // userId is lawyer id here
-            const pendingRequests = yield prismaCaseRequest.getPendingCaseRequestsByLawyer(userId);
+            const { userRole } = req;
+            let pendingRequests;
+            if (userRole === 'LAWYER') {
+                pendingRequests = yield prismaCaseRequest.getPendingCaseRequestsByLawyer(userId);
+            }
+            else {
+                pendingRequests = yield prismaCaseRequest.getPendingCaseRequestsByClient(userId);
+            }
             res.status(200).json(pendingRequests);
         }
         catch (error) {

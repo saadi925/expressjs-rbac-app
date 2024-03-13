@@ -17,8 +17,7 @@ const PrismaMessages_1 = require("../prisma/queries/PrismaMessages");
 const prisma_1 = require("../prisma");
 const xss_1 = __importDefault(require("xss"));
 const emoji_regex_1 = __importDefault(require("emoji-regex"));
-const isAuthorized_1 = require("./middleware/isAuthorized");
-const socketAuth_1 = require("./middleware/socketAuth");
+const middleware_1 = require("./middleware");
 class MessageHandler {
     constructor(io) {
         this.fetchOlderMessages = (req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -26,6 +25,12 @@ class MessageHandler {
                 const { userId, pageNumber = '1', pageSize = '30' } = req.query;
                 if (!userId || typeof userId !== 'string') {
                     throw new Error('Invalid user ID');
+                }
+                if (!pageSize ||
+                    typeof pageSize !== 'string' ||
+                    !pageNumber ||
+                    typeof pageNumber !== 'string') {
+                    throw new Error('invalid page');
                 }
                 const skip = (Number(pageNumber) - 1) * Number(pageSize);
                 const olderMessages = yield this.prismaMessages.getMessages(userId, Number(pageSize), skip);
@@ -45,11 +50,9 @@ class MessageHandler {
                 if (!sender || !receiver) {
                     throw new Error('Sender or receiver does not exist');
                 }
-                // Sanitize the message content to prevent XSS attacks
                 const sanitizedContent = (0, xss_1.default)(content);
                 const emojiRegexPattern = (0, emoji_regex_1.default)();
                 const isValidEmoji = emojiRegexPattern.test(sanitizedContent);
-                // Validate message length
                 if (sanitizedContent.length > 1000) {
                     throw new Error('Message exceeds maximum length');
                 }
@@ -89,7 +92,7 @@ const socketHandler = (io) => (socket) => {
     console.log('A user connected');
     const messageHandler = new MessageHandler(io);
     socket.use((packet, next) => {
-        (0, socketAuth_1.authMiddleware)(socket, (err) => {
+        (0, middleware_1.authSocketMiddleware)(socket, (err) => {
             if (err) {
                 console.error('Error in authMiddleware:', err);
                 return next(err);
@@ -105,7 +108,7 @@ const socketHandler = (io) => (socket) => {
             'markMessageAsSeen',
         ];
         if (authorizedEvents.includes(packet[0])) {
-            (0, isAuthorized_1.isAuthorizedSocket)(socket, next);
+            (0, middleware_1.isAuthorizedSocket)(socket, next);
         }
         else {
             next();

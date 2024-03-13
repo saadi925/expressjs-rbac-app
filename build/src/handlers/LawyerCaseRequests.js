@@ -23,19 +23,18 @@ function createCaseRequestLawyerHandler(req, res) {
             const { userId } = req;
             let clientId;
             let lawyerId;
-            const { caseId, clientId: requestBodyClientId } = req.body;
-            if (requestBodyClientId) {
-                clientId = requestBodyClientId;
-            }
-            lawyerId = userId;
-            if (!requestBodyClientId) {
-                return res.status(400).json({
-                    error: 'clientId is required for a lawyer to create a case request',
-                });
-            }
+            const { caseId } = req.body;
             if (!caseId) {
                 return res.status(400).json({ error: 'caseId is required' });
             }
+            //  check if case exists
+            const c = yield prismaCase.getCaseByID(caseId);
+            if (!c) {
+                res.status(403).json({ error: 'invalid request' });
+                return;
+            }
+            clientId = c.clientId;
+            lawyerId = userId;
             const bigintCaseId = BigInt(caseId);
             const caseRequest = yield prismaCaseRequest.createCaseRequest({
                 clientId: clientId,
@@ -54,7 +53,7 @@ function createCaseRequestLawyerHandler(req, res) {
             // Notifying
             // we notify client when lawyer sent a case request
             yield notifier.caseRequestNotifyClient(notifyClientData);
-            res.status(201).json(caseRequest);
+            res.status(201).json({ message: 'Case request sent ' });
         }
         catch (error) {
             console.error('Error creating case request:', error);

@@ -1,14 +1,12 @@
 import path from 'path';
 
 export const KEYS = {
-  MONGO_URI: process.env.MONGO_URI || 'mongodb://localhost:27017/advoco',
   JWT_SECRET: process.env.JWT_SECRET || 'fA*&%23sha#@#',
-
   host: process.env.HOST || 'localhost',
-  port: process.env.PORT || 80,
+  port: process.env.PORT || 8080,
   server: process.env.SERVER || 'https://www.codingstack.site',
-  email: process.env.G_EMAIL || 'userid925925@gmail.com',
-  password: process.env.G_PASSWORD || 'kxyd aijd mmhi zjoi',
+  email: process.env.G_EMAIL,
+  password: process.env.G_PASSWORD,
 };
 
 export const rbacConfig = {

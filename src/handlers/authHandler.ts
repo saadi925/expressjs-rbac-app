@@ -50,15 +50,15 @@ export const signupHandler = async (req: Request, res: Response) => {
       updatedAt: Date.now(),
       verified: false,
     };
-    user = await createUser(data);
+    const newUser = await createUser(data);
     const emailVerification = new EmailVerification();
     const code = await emailVerification.genRandomCode();
-    const verificationToken = generateVerificationToken(user, code);
+    const verificationToken = generateVerificationToken(newUser, code);
     await emailVerification.createEmailVerification({
       email,
       verificationToken,
       code,
-      userId: user.id,
+      userId: newUser.id,
     });
     await sendVerificationEmail(email, verificationToken, code);
     res.status(201).json({
