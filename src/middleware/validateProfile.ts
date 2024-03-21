@@ -5,7 +5,8 @@ const validateAvatar = (avatar: unknown) => {
     return false;
   }
   // Check if the avatar is a base64-encoded image
-  const isBase64Image = avatar.startsWith('data:image/');
+  const isBase64Image =
+    avatar.startsWith('data:image/') || avatar.startsWith('file://');
 
   // Check if the avatar is a valid image URL
   const isImageUrl = /^https?:\/\/.*\.(?:png|jpg|jpeg|gif)$/i.test(avatar);
@@ -31,9 +32,9 @@ const validateBio = (bio: unknown) => {
 
 export const validateProfileCredentials = (data: ProfileCredentials) => {
   const { avatar, bio, displayname, location, phone } = data;
-  if (!validateAvatar(avatar)) {
-    return Error('Invalid avatar');
-  }
+  // if (!validateAvatar(avatar)) {
+  //   return Error('Invalid avatar');
+  // }
   if (bio && !validateBio(bio)) {
     return Error('Invalid bio');
   }
