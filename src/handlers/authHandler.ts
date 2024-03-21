@@ -60,6 +60,8 @@ export const signupHandler = async (req: Request, res: Response) => {
       code,
       userId: newUser.id,
     });
+    console.log('code', code);
+
     await sendVerificationEmail(email, verificationToken, code);
     res.status(201).json({
       message:

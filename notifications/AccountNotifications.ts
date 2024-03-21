@@ -1,6 +1,4 @@
-import { NotificationData } from 'prisma/queries/Notifications';
 import { Notifications } from './Notifications';
-type NotifyData = Omit<NotificationData, 'message'>;
 export class AccountNotifications extends Notifications {
   constructor() {
     super();

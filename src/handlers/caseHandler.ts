@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { PrismaCase } from '../../prisma';
 import { RequestWithCase } from 'types/case';
-import { $Enums, Case } from '@prisma/client';
+import { $Enums, Case, CaseStatus } from '@prisma/client';
 import { validateCaseData } from '../../src/middleware/validateCaseData';
 import { checkForUser } from '../middleware/rbacMiddleware';
 import { RequestWithUser } from 'types/profile';
@@ -165,8 +165,10 @@ export const getCaseByID = async (req: RequestWithUser, res: Response) => {
       });
     }
     const caseByID = await prismaCase.getCaseByID(BigInt(id));
-    res.status(201).json({
-      caseByID,
+
+    res.status(200).json({
+      ...caseByID,
+      id: String(caseByID?.id),
     });
   } catch (error) {
     res.status(500).send({ error: 'Internal Server Error' });
@@ -190,7 +192,7 @@ export async function updateCaseStatus(req: RequestWithUser, res: Response) {
       });
     }
     const updatedCase = await prismaCase.updateCaseStatus(
-      status,
+      status as CaseStatus,
       BigInt(id),
       req.userId as string,
     );

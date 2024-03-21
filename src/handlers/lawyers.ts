@@ -60,7 +60,6 @@ export async function GetLawyers(req: RequestWithUser, res: Response) {
             },
           },
         },
-        // Add other fields as needed
       },
     });
 
