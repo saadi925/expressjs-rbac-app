@@ -8,7 +8,7 @@ type profileGet = {
   avatar: string | null;
   bio: string | null;
   location: string | null;
-  contact: string | null;
+  phone: string | null;
   user: {
     role: $Enums.Role;
   };
@@ -52,7 +52,7 @@ export class PrismaDBProfile {
         avatar: true,
         bio: true,
         location: true,
-        contact: true,
+        phone: true,
         user: {
           select: {
             role: true,

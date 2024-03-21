@@ -33,8 +33,6 @@ export const authSocketMiddleware = (
     if (!['LAWYER', 'CLIENT'].includes(role)) {
       return next(new Error('Not authorized.'));
     }
-
-    // Attach user ID and role to the socket object
     socket.userId = id;
     socket.userRole = role;
     next();

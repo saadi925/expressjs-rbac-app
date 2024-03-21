@@ -4,8 +4,13 @@ const validateAvatar = (avatar: unknown) => {
   if (typeof avatar !== 'string' || avatar === null) {
     return false;
   }
-  const regex = /^https?:\/\/.*\.(?:png|jpg|jpeg|gif)$/i;
-  return regex.test(avatar);
+  // Check if the avatar is a base64-encoded image
+  const isBase64Image = avatar.startsWith('data:image/');
+
+  // Check if the avatar is a valid image URL
+  const isImageUrl = /^https?:\/\/.*\.(?:png|jpg|jpeg|gif)$/i.test(avatar);
+
+  return isBase64Image || isImageUrl;
 };
 
 const validateDisplayName = (displayname: unknown) => {

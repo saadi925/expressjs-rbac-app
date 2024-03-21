@@ -30,11 +30,6 @@ export const authorizeAction = async (req: RequestWithUser, res: Response) => {
         .status(403)
         .json({ message: 'Unauthorized', redirect: SCREENS.CREATE_PROFILE });
     }
-    if (!user.profile.contact) {
-      return res
-        .status(403)
-        .json({ message: 'Unauthorized', redirect: SCREENS.CONTACT });
-    }
     if (user.role === 'LAWYER') {
       if (!user.lawyerProfile) {
         return res
