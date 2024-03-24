@@ -21,20 +21,23 @@ export const authorizeAction = async (req: RequestWithUser, res: Response) => {
     });
 
     if (!user) {
-      return res
+      res
         .status(403)
         .json({ message: 'Unauthorized', redirect: SCREENS.LOGIN });
+      return;
     }
     if (!user.profile) {
-      return res
+      res
         .status(403)
         .json({ message: 'Unauthorized', redirect: SCREENS.CREATE_PROFILE });
+      return;
     }
     if (user.role === 'LAWYER') {
       if (!user.lawyerProfile) {
-        return res
+        res
           .status(403)
           .json({ message: 'Unauthorized', redirect: SCREENS.LAWYER_PROFILE });
+        return;
       }
     }
 

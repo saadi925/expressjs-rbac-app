@@ -98,6 +98,7 @@ export async function getRecievedRequests(req: RequestWithUser, res: Response) {
       res.status(404).json({
         error: 'No Recieved Requests Found',
       });
+      return;
     }
     const serialized = requests.map((friendRequest) => ({
       ...friendRequest,
@@ -123,6 +124,7 @@ export async function getSentFriendRequests(
       res.status(404).json({
         error: 'No Sent FriendRequests Found',
       });
+      return;
     }
     const serialized = requests.map((friendRequest) => ({
       ...friendRequest,
