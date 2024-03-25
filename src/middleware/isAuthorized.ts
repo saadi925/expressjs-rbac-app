@@ -45,7 +45,6 @@ export const isAuthorizedSocket = async (
     // Check if the sender and receiver are friends
     const areFriend = await areFriends(userId, receiverId);
 
-    // Instantiate PrismaCaseRequest
     const prismaCaseRequest = new PrismaCaseRequest();
 
     // Retrieve case request based on user role

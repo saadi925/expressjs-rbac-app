@@ -140,4 +140,27 @@ export class PrismaFriendRequest {
       throw new Error('Failed to remove from received friend requests');
     }
   }
+  async getAcceptedFriends(userId: string) {
+    try {
+      const friendRequests = await this.#prisma.friendRequest.findMany({
+        where: {
+          OR: [{ receiverId: userId }, { userId }],
+          status: 'ACCEPTED',
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        include: {
+          sender: {
+            select: {
+              profile: { select: { avatar: true, displayname: true } },
+            },
+          },
+        },
+      });
+      return friendRequests;
+    } catch (error) {
+      throw new Error(`error getting friends, ${error}`);
+    }
+  }
 }

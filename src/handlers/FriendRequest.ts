@@ -32,7 +32,7 @@ export async function getFriends(req: RequestWithUser, res: Response) {
       res.status(401).json({ error: 'UnAuthorized' });
       return;
     }
-    const friends = await friendship.getFriends(req.userId!);
+    const friends = await friendRequest.getAcceptedFriends(req.userId!);
     res.status(200).json(friends);
   } catch (error) {
     console.log(error);

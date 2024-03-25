@@ -17,6 +17,7 @@ const app = express();
 import { friendRequestRoutes } from './routes/friendRequestRoutes';
 import { getCities } from './utils/cities';
 import { authorizeApi } from './routes/authorizeRoutes';
+import { authMiddleware } from './middleware';
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
@@ -36,7 +37,7 @@ app.use('/notifications', notificationRoutes);
 app.use('/client', clientRoutes);
 app.use('/lawyer', lawyerRoutes);
 app.use('/common', commonRoutes);
-app.use('/friend-requests', friendRequestRoutes);
+app.use('/friend-requests', authMiddleware, friendRequestRoutes);
 app.use('/api/get-cities', getCities);
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error('Error:', err);
