@@ -21,8 +21,19 @@ export class PrismaLawyerProfile {
     }
   }
 
-  async getLawyerProfileById(id: string): Promise<LawyerProfile | null> {
-    return this.prisma.lawyerProfile.findUnique({ where: { id } });
+  async getLawyerProfileById(id: string) {
+    const c = this.prisma.lawyerProfile.findUnique({
+      where: { id },
+      select: {
+        contact: true,
+        description: true,
+        experience: true,
+        bio: true,
+        specialization: true,
+        status: true,
+      },
+    });
+    return c;
   }
 
   async updateLawyerProfile(

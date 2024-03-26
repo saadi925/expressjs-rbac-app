@@ -3,6 +3,8 @@ import { validationResult } from 'express-validator';
 import { PrismaLawyerProfile } from '../../prisma/queries/LawyerProfile';
 
 import { RequestWithUser } from 'types/profile';
+import { PrismaLawyerContact } from '../../prisma/queries/LawyerContact';
+import { LawyerContact } from '@prisma/client';
 const lawyerProfile = new PrismaLawyerProfile();
 export const createOrUpdateLawyerProfile = async (
   req: RequestWithUser,
@@ -16,8 +18,22 @@ export const createOrUpdateLawyerProfile = async (
 
   const userId = req.userId as string;
   try {
-    const { bio, experience, education, specialization, status, description } =
-      req.body;
+    const {
+      bio,
+      experience,
+      education,
+      specialization,
+      status,
+      description,
+      email,
+      phoneNumber,
+      website,
+      instagram,
+      phone,
+      linkedin,
+      officeAddress,
+      facebook,
+    } = req.body;
     const data = {
       bio,
       experience,
@@ -30,6 +46,20 @@ export const createOrUpdateLawyerProfile = async (
       updatedAt: new Date(),
     };
     const profile = await lawyerProfile.createOrUpdateLawyerProfile(data);
+    const lawyerContact = new PrismaLawyerContact();
+    const contact: Omit<LawyerContact, 'id'> = {
+      lawyerId: userId,
+      email,
+      phoneNumber,
+      website,
+      instagram,
+      phone,
+      officeAddress,
+      facebook,
+      linkedin,
+    };
+    await lawyerContact.createLawyerContact(contact);
+
     res.status(201).json({ profile });
   } catch (error) {
     console.error('Error creating lawyer profile:', error);

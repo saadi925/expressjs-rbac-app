@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import { LawyerContact } from '../../prisma/queries/LawyerContact';
+import { PrismaLawyerContact } from '../../prisma/queries/LawyerContact';
 import { RequestWithUser } from 'types/profile';
 type ContactRecord = {
   email: string | null;
@@ -11,7 +11,7 @@ type ContactRecord = {
   phone: string | null;
   officeAddress: string | null;
 };
-const lawyerContact = new LawyerContact();
+const lawyerContact = new PrismaLawyerContact();
 export const createLawyerContact = async (
   req: RequestWithUser,
   res: Response,

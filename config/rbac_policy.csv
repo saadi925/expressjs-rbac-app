@@ -23,8 +23,9 @@ p,CLIENT, /client/review,PUT
 p, LAWYER, /lawyer/case_request, POST
 p, LAWYER, /lawyer/case_request/pending, GET
 p, LAWYER, /lawyer/case_request/accept/:requestId, PUT
-p, LAWYER, /lawyer/profile/contact, POST
-p, LAWYER, /lawyer/profile/contact, PUT
+p, LAWYER, /lawyer/profile, POST
+p, LAWYER, /lawyer/profile, PUT
+p, LAWYER, /lawyer/profile, GET
 p, LAWYER, /lawyer/cases, GET
 
 

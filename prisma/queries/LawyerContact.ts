@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 
-export class LawyerContact {
+export class PrismaLawyerContact {
   readonly prisma;
   constructor() {
     this.prisma = new PrismaClient();

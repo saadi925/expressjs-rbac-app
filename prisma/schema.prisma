@@ -136,7 +136,6 @@ model LawyerContact {
   lawyerId    String@unique
   lawyer      LawyerProfile @relation(fields: [lawyerId], references: [id])
  email       String?
-   phoneNumber String?
    website String?
   facebook    String?
   linkedin    String?

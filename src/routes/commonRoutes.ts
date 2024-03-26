@@ -36,9 +36,7 @@ router.put(
   authMiddleware,
   cancelCaseRequestHandler,
 );
-// FRIEND REQUEST ROUTES
 
-// POST endpoint for uploading case attachments
 router.post(
   '/case/:caseId/attachments',
   authMiddleware,
