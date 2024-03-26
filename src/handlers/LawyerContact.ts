@@ -44,7 +44,7 @@ export const createLawyerContact = async (
       linkedin,
       lawyerId: userId,
     };
-    const profile = await lawyerContact.createLawyerContact(data);
+    const profile = await lawyerContact.createLawyerContact(data, userId);
     res.status(201).json({ profile });
   } catch (error) {
     console.error('Error creating lawyer contact:', error);

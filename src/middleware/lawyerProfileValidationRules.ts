@@ -1,8 +1,5 @@
 import { body } from 'express-validator';
 export const createLawyerProfileValidationRules = [
-  // Validate bio (optional)
-  body('bio').optional().isString().withMessage('Bio must be a string'),
-
   body('experience').isString().withMessage('Experience must be a string'),
 
   body('education').isString().withMessage('Education must be a string'),
@@ -17,8 +14,11 @@ export const createLawyerProfileValidationRules = [
   body('email').isEmail().withMessage('Email must be a valid email'),
   body('phone')
     .optional()
-    .matches(/^[0-9]{11}$/)
-    .withMessage('Phone number must be a valid phone number'),
+    .matches(/^\+92\d{9}$/)
+    .withMessage(
+      'Phone number must be a valid Pakistani phone number starting with +92',
+    ),
+
   body('linkedin')
     .optional()
     //  regex to validate linkedin url

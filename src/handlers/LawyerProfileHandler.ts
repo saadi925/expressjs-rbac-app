@@ -42,10 +42,12 @@ export const createOrUpdateLawyerProfile = async (
       createdAt: new Date(),
       updatedAt: new Date(),
     };
+    console.log(email);
+
     const profile = await lawyerProfile.createOrUpdateLawyerProfile(data);
     const lawyerContact = new PrismaLawyerContact();
     const contact: Omit<LawyerContact, 'id'> = {
-      lawyerId: userId,
+      lawyerId: profile.id,
       email,
       website,
       instagram,
@@ -54,7 +56,7 @@ export const createOrUpdateLawyerProfile = async (
       facebook,
       linkedin,
     };
-    await lawyerContact.createLawyerContact(contact);
+    await lawyerContact.createLawyerContact(contact, userId);
 
     res.status(201).json({ profile });
   } catch (error) {
