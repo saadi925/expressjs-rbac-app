@@ -11,10 +11,10 @@ export const createLawyerProfileValidationRules = [
     .withMessage('Specialization must be a valid'),
 
   body('description').isString().withMessage('Description must be a string'),
-  body('email').isEmail().withMessage('Email must be a valid email'),
+  body('email').optional().isEmail().withMessage('Email must be a valid email'),
   body('phone')
     .optional()
-    .matches(/^\+92\d{9}$/)
+    .matches(/^\+92\d{10}$/)
     .withMessage(
       'Phone number must be a valid Pakistani phone number starting with +92',
     ),
