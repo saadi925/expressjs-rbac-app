@@ -22,6 +22,12 @@ export class PrismaLawyerProfile {
   }
 
   async getLawyerProfileById(id: string) {
+    const profile = await this.prisma.lawyerProfile.findUnique({
+      where: { userId: id },
+    });
+    if (!profile) {
+      throw new Error('Lawyer profile not found');
+    }
     const c = this.prisma.lawyerProfile.findUnique({
       where: { id },
       select: {

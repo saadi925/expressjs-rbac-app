@@ -1,5 +1,5 @@
 import { body } from 'express-validator';
-export const createLawyerProfileValidationRules = () => [
+export const createLawyerProfileValidationRules = [
   // Validate bio (optional)
   body('bio').optional().isString().withMessage('Bio must be a string'),
 

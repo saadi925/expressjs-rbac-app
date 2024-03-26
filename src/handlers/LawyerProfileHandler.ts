@@ -65,9 +65,17 @@ export const createOrUpdateLawyerProfile = async (
 
 export const getLawyerProfile = async (req: RequestWithUser, res: Response) => {
   const userId = req.userId as string;
+  if (!userId) {
+    return res.status(400).json({ error: 'unauthorized' });
+  }
   try {
-    const profile = await lawyerProfile.getLawyerProfileById(userId);
-    res.status(200).json({ profile });
+    try {
+      const profile = await lawyerProfile.getLawyerProfileById(userId);
+      res.status(200).json({ profile });
+    } catch (error: any) {
+      console.error('Error fetching lawyer profile:', error);
+      res.status(400).json({ error: error.message });
+    }
   } catch (error) {
     console.error('Error fetching lawyer profile:', error);
     res.status(500).json({ message: 'Internal server error' });

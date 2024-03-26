@@ -47,13 +47,7 @@ r.post(
   createLawyerProfileValidationRules,
   createOrUpdateLawyerProfile,
 );
-r.get(
-  '/profile',
-  authMiddleware,
-  RBACMiddleware,
-  createLawyerProfileValidationRules,
-  getLawyerProfile,
-);
+r.get('/profile', authMiddleware, RBACMiddleware, getLawyerProfile);
 
 r.post(
   '/profile/contact',
