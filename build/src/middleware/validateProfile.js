@@ -5,8 +5,11 @@ const validateAvatar = (avatar) => {
     if (typeof avatar !== 'string' || avatar === null) {
         return false;
     }
-    const regex = /^https?:\/\/.*\.(?:png|jpg|jpeg|gif)$/i;
-    return regex.test(avatar);
+    // Check if the avatar is a base64-encoded image
+    const isBase64Image = avatar.startsWith('data:image/') || avatar.startsWith('file://');
+    // Check if the avatar is a valid image URL
+    const isImageUrl = /^https?:\/\/.*\.(?:png|jpg|jpeg|gif)$/i.test(avatar);
+    return isBase64Image || isImageUrl;
 };
 const validateDisplayName = (displayname) => {
     if (typeof displayname !== 'string' || displayname === null) {
@@ -24,10 +27,10 @@ const validateBio = (bio) => {
 };
 const validateProfileCredentials = (data) => {
     const { avatar, bio, displayname, location, phone } = data;
-    if (!validateAvatar(avatar)) {
-        return Error('Invalid avatar');
-    }
-    if (!validateBio(bio)) {
+    // if (!validateAvatar(avatar)) {
+    //   return Error('Invalid avatar');
+    // }
+    if (bio && !validateBio(bio)) {
         return Error('Invalid bio');
     }
     if (!validateDisplayName(displayname)) {
@@ -37,7 +40,7 @@ const validateProfileCredentials = (data) => {
         return Error('Invalid location');
     }
     const regex = /^\+92[0-9]{10}$/;
-    if (!phone || !regex.test(phone)) {
+    if (phone && !regex.test(phone)) {
         return Error('Invalid phone number, must be start with +92 and 11 digits long');
     }
 };

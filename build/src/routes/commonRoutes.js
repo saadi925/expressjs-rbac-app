@@ -18,8 +18,6 @@ router.get('/case_statuses', authMiddleware_1.authMiddleware, api_1.getCaseStatu
 router.get('/case_request/pending', authMiddleware_1.authMiddleware, clientCaseRequest_1.getPendingCaseRequestsHandler);
 router.put('/case_request/reject/:requestId', authMiddleware_1.authMiddleware, clientCaseRequest_1.rejectCaseRequestHandler);
 router.put('/case_request/cancel/:requestId', authMiddleware_1.authMiddleware, clientCaseRequest_1.cancelCaseRequestHandler);
-// FRIEND REQUEST ROUTES
-// POST endpoint for uploading case attachments
 router.post('/case/:caseId/attachments', authMiddleware_1.authMiddleware, attachments_1.upload.single('file'), attachmentsHandler_1.uploadingCaseAttachments);
 // GET endpoint for downloading case attachments
 router.get('/case/:caseId/attachments/:filename', authMiddleware_1.authMiddleware, attachmentsHandler_1.downloadingCaseAttachments);

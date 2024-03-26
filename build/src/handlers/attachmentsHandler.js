@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -19,7 +10,7 @@ const fs_1 = __importDefault(require("fs"));
 const rbacMiddleware_1 = require("../../src/middleware/rbacMiddleware");
 const UPLOADS_FOLDER = path_1.default.join(__dirname, '..', 'uploads');
 const prismaCaseAttachment = new CaseAttachment_1.PrismaCaseAttachment();
-const uploadingCaseAttachments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const uploadingCaseAttachments = async (req, res) => {
     try {
         const { userId } = req;
         const isOk = (0, rbacMiddleware_1.checkForUser)(req, res);
@@ -45,7 +36,7 @@ const uploadingCaseAttachments = (req, res) => __awaiter(void 0, void 0, void 0,
             fileName,
             uploadTime: new Date(),
         };
-        yield prismaCaseAttachment.createCaseAttachment(data, // Assuming you have other attachment data to include
+        await prismaCaseAttachment.createCaseAttachment(data, // Assuming you have other attachment data to include
         BigInt(caseId), userId);
         res
             .status(201)
@@ -55,9 +46,9 @@ const uploadingCaseAttachments = (req, res) => __awaiter(void 0, void 0, void 0,
         console.error('Error uploading attachment:', error);
         res.status(500).json({ error: 'Failed to upload attachment' });
     }
-});
+};
 exports.uploadingCaseAttachments = uploadingCaseAttachments;
-const downloadingCaseAttachments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const downloadingCaseAttachments = async (req, res) => {
     try {
         const { filename } = req.params;
         const userId = req;
@@ -79,57 +70,51 @@ const downloadingCaseAttachments = (req, res) => __awaiter(void 0, void 0, void 
         console.error('Error downloading attachment:', error);
         res.status(500).json({ error: 'Failed to download attachment' });
     }
-});
+};
 exports.downloadingCaseAttachments = downloadingCaseAttachments;
-function GetCaseAttachmentById(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const attachmentId = BigInt(req.params.attachmentId);
-            const attachment = yield prismaCaseAttachment.getCaseAttachmentById(attachmentId, req.userId);
-            if (!attachment) {
-                return res.status(404).json({ error: 'Attachment not found' });
-            }
-            res.json(attachment);
+async function GetCaseAttachmentById(req, res) {
+    try {
+        const attachmentId = BigInt(req.params.attachmentId);
+        const attachment = await prismaCaseAttachment.getCaseAttachmentById(attachmentId, req.userId);
+        if (!attachment) {
+            return res.status(404).json({ error: 'Attachment not found' });
         }
-        catch (error) {
-            console.error('Error retrieving attachment:', error);
-            res.status(500).json({ error: 'Failed to retrieve attachment' });
-        }
-    });
+        res.json(attachment);
+    }
+    catch (error) {
+        console.error('Error retrieving attachment:', error);
+        res.status(500).json({ error: 'Failed to retrieve attachment' });
+    }
 }
 exports.GetCaseAttachmentById = GetCaseAttachmentById;
-function updateCaseAttachment(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const attachmentId = BigInt(req.params.attachmentId);
-            const { data } = req.body;
-            const attachment = yield prismaCaseAttachment.updateCaseAttachment(attachmentId, req.userId, data);
-            if (!attachment) {
-                return res.status(404).json({ error: 'Attachment not found' });
-            }
-            res.json(attachment);
+async function updateCaseAttachment(req, res) {
+    try {
+        const attachmentId = BigInt(req.params.attachmentId);
+        const { data } = req.body;
+        const attachment = await prismaCaseAttachment.updateCaseAttachment(attachmentId, req.userId, data);
+        if (!attachment) {
+            return res.status(404).json({ error: 'Attachment not found' });
         }
-        catch (error) {
-            console.error('Error updating attachment:', error);
-            res.status(500).json({ error: 'Failed to update attachment' });
-        }
-    });
+        res.json(attachment);
+    }
+    catch (error) {
+        console.error('Error updating attachment:', error);
+        res.status(500).json({ error: 'Failed to update attachment' });
+    }
 }
 exports.updateCaseAttachment = updateCaseAttachment;
-function deleteCaseAttachment(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const attachmentId = BigInt(req.params.attachmentId);
-            const attachment = yield prismaCaseAttachment.deleteCaseAttachment(attachmentId, req.userId);
-            if (!attachment) {
-                return res.status(404).json({ error: 'Attachment not found' });
-            }
-            res.json({ message: 'Attachment deleted successfully' });
+async function deleteCaseAttachment(req, res) {
+    try {
+        const attachmentId = BigInt(req.params.attachmentId);
+        const attachment = await prismaCaseAttachment.deleteCaseAttachment(attachmentId, req.userId);
+        if (!attachment) {
+            return res.status(404).json({ error: 'Attachment not found' });
         }
-        catch (error) {
-            console.error('Error deleting attachment:', error);
-            res.status(500).json({ error: 'Failed to delete attachment' });
-        }
-    });
+        res.json({ message: 'Attachment deleted successfully' });
+    }
+    catch (error) {
+        console.error('Error deleting attachment:', error);
+        res.status(500).json({ error: 'Failed to delete attachment' });
+    }
 }
 exports.deleteCaseAttachment = deleteCaseAttachment;

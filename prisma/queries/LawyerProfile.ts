@@ -28,7 +28,6 @@ export class PrismaLawyerProfile {
         contact: true,
         description: true,
         experience: true,
-        bio: true,
         specialization: true,
         status: true,
       },

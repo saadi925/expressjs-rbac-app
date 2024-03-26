@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateCaseStatus = exports.getCaseByID = exports.getCasesHandler = exports.deleteCaseHandler = exports.updateCaseHandler = exports.getAllOpenCases = exports.createCaseHandler = void 0;
 const prisma_1 = require("../../prisma");
@@ -17,7 +8,7 @@ const CaseNotifications_1 = require("../../notifications/CaseNotifications");
 const prismaCase = new prisma_1.PrismaCase();
 const notifier = new CaseNotifications_1.CaseNotifications();
 //  this is the case creation handler , only 'CLIENT' can create the case,
-const createCaseHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const createCaseHandler = async (req, res) => {
     const { title, description, category } = req.body;
     const ok = (0, rbacMiddleware_1.checkForUser)(req, res);
     if (!ok) {
@@ -40,47 +31,48 @@ const createCaseHandler = (req, res) => __awaiter(void 0, void 0, void 0, functi
         status,
     };
     try {
-        const createdCase = yield prismaCase.createCase(data);
-        yield notifier.caseCreation(createdCase.title.slice(0, 32), {
+        const createdCase = await prismaCase.createCase(data);
+        await notifier.caseCreation(createdCase.title.slice(0, 32), {
             userId: req.userId,
         });
-        res.status(201).json(Object.assign(Object.assign({}, createdCase), { id: createdCase.id.toString() }));
+        res.status(201).json({ ...createdCase, id: createdCase.id.toString() });
     }
     catch (error) {
         res.status(500).send({ error: 'Internal Server Error' });
         console.log(error);
     }
-});
+};
 exports.createCaseHandler = createCaseHandler;
-function getAllOpenCases(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const { userId } = req;
-            if (!userId) {
-                return res.status(401).json({
-                    error: 'Unauthorized',
-                });
-            }
-            const cases = yield prismaCase.getAllOpenCases(userId);
-            if (cases.length === 0) {
-                return res.status(404).json({
-                    error: 'No Open Cases Found',
-                });
-            }
-            const serialized = cases.map((caseItem) => (Object.assign(Object.assign({}, caseItem), { id: String(caseItem.id) })));
-            res.status(200).json(serialized);
+async function getAllOpenCases(req, res) {
+    try {
+        const { userId } = req;
+        if (!userId) {
+            return res.status(401).json({
+                error: 'Unauthorized',
+            });
         }
-        catch (error) {
-            res.status(500).send({ error: 'Internal Server Error' });
-            console.log(error);
+        const cases = await prismaCase.getAllOpenCases(userId);
+        if (cases.length === 0) {
+            return res.status(404).json({
+                error: 'No Open Cases Found',
+            });
         }
-    });
+        const serialized = cases.map((caseItem) => ({
+            ...caseItem,
+            id: String(caseItem.id),
+        }));
+        res.status(200).json(serialized);
+    }
+    catch (error) {
+        res.status(500).send({ error: 'Internal Server Error' });
+        console.log(error);
+    }
 }
 exports.getAllOpenCases = getAllOpenCases;
 //  update Case ('CLIENT' req)
 // 'id' in params
 // 'case in body
-const updateCaseHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const updateCaseHandler = async (req, res) => {
     const ok = (0, rbacMiddleware_1.checkForUser)(req, res);
     if (!ok) {
         return;
@@ -93,37 +85,43 @@ const updateCaseHandler = (req, res) => __awaiter(void 0, void 0, void 0, functi
         if (error) {
             return res.status(403).json({ error: error.message });
         }
-        const exists = yield prismaCase.caseExists(BigIntId);
+        const exists = await prismaCase.caseExists(BigIntId);
         if (!exists) {
             return res.status(404).json({
                 error: 'Case Not Found',
             });
         }
         //  ready to be updated
-        const newData = Object.assign(Object.assign({ id: BigIntId }, data), { clientId: req.userId, updatedAt: new Date(), createdAt: new Date() });
-        const updatedCase = yield prismaCase.updateCase(newData, BigIntId);
-        res.status(201).json(Object.assign(Object.assign({}, updatedCase), { id: updatedCase.id.toString() }));
+        const newData = {
+            id: BigIntId,
+            ...data,
+            clientId: req.userId,
+            updatedAt: new Date(),
+            createdAt: new Date(),
+        };
+        const updatedCase = await prismaCase.updateCase(newData, BigIntId);
+        res.status(201).json({ ...updatedCase, id: updatedCase.id.toString() });
     }
     catch (error) {
         res.status(500).send({ error: 'Internal Server Error' });
         console.log(error);
     }
-});
+};
 exports.updateCaseHandler = updateCaseHandler;
-const deleteCaseHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteCaseHandler = async (req, res) => {
     const { id } = req.params;
     const ok = (0, rbacMiddleware_1.checkForUser)(req, res);
     if (!ok) {
         return;
     }
     try {
-        const exists = yield prismaCase.caseExists(BigInt(id));
+        const exists = await prismaCase.caseExists(BigInt(id));
         if (!exists) {
             return res.status(404).json({
                 error: 'Case Not Found',
             });
         }
-        const deletedCase = yield prismaCase.deleteCase(BigInt(id), req.userId);
+        const deletedCase = await prismaCase.deleteCase(BigInt(id), req.userId);
         res.status(201).json({
             message: `case has been deleted successfully with id ${deletedCase.id.toString()}`,
         });
@@ -132,64 +130,66 @@ const deleteCaseHandler = (req, res) => __awaiter(void 0, void 0, void 0, functi
         res.status(500).send({ error: 'Internal Server Error' });
         console.log(error);
     }
-});
+};
 exports.deleteCaseHandler = deleteCaseHandler;
-const getCasesHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getCasesHandler = async (req, res) => {
     try {
-        const getAllCases = yield prismaCase.getCases(req.userId);
-        const serialized = getAllCases.map((caseItem) => (Object.assign(Object.assign({}, caseItem), { id: String(caseItem.id) })));
+        const getAllCases = await prismaCase.getCases(req.userId);
+        const serialized = getAllCases.map((caseItem) => ({
+            ...caseItem,
+            id: String(caseItem.id),
+        }));
         res.status(200).json(serialized);
     }
     catch (error) {
         res.status(500).send({ error: 'Internal Server Error' });
         console.log(error);
     }
-});
+};
 exports.getCasesHandler = getCasesHandler;
-const getCaseByID = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getCaseByID = async (req, res) => {
     try {
         const { id } = req.params;
-        const exists = yield prismaCase.caseExists(BigInt(id));
+        const exists = await prismaCase.caseExists(BigInt(id));
         if (!exists) {
             return res.status(404).json({
                 error: 'Case Not Found',
             });
         }
-        const caseByID = yield prismaCase.getCaseByID(BigInt(id));
-        res.status(201).json({
-            caseByID,
+        const caseByID = await prismaCase.getCaseByID(BigInt(id));
+        res.status(200).json({
+            ...caseByID,
+            id: String(caseByID?.id),
         });
     }
     catch (error) {
         res.status(500).send({ error: 'Internal Server Error' });
         console.log(error);
     }
-});
+};
 exports.getCaseByID = getCaseByID;
 //  body 'status'
 // params 'id'
-function updateCaseStatus(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const ok = (0, rbacMiddleware_1.checkForUser)(req, res);
-        if (!ok) {
-            return;
+async function updateCaseStatus(req, res) {
+    const ok = (0, rbacMiddleware_1.checkForUser)(req, res);
+    if (!ok) {
+        return;
+    }
+    const { id } = req.params;
+    const { status } = req.body;
+    try {
+        const exists = await prismaCase.caseExists(BigInt(id));
+        if (!exists) {
+            return res.status(404).json({
+                error: 'Case Not Found',
+            });
         }
-        const { id } = req.params;
-        const { status } = req.body;
-        try {
-            const exists = yield prismaCase.caseExists(BigInt(id));
-            if (!exists) {
-                return res.status(404).json({
-                    error: 'Case Not Found',
-                });
-            }
-            const updatedCase = yield prismaCase.updateCaseStatus(status, BigInt(id), req.userId);
-            res.status(201).json(Object.assign(Object.assign({}, updatedCase), { id: updatedCase.id.toString() }));
-        }
-        catch (error) {
-            res.status(500).send({ error: 'Internal Server Error' });
-            console.log(error);
-        }
-    });
+        const updatedCase = await prismaCase.updateCaseStatus(status, BigInt(id), req.userId);
+        res.status(201).json({ ...updatedCase, id: updatedCase.id.toString() });
+    }
+    catch (error) {
+        res.status(500).send({ error: 'Internal Server Error' });
+        console.log(error);
+    }
 }
 exports.updateCaseStatus = updateCaseStatus;

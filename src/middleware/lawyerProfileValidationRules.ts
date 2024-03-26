@@ -3,31 +3,18 @@ export const createLawyerProfileValidationRules = () => [
   // Validate bio (optional)
   body('bio').optional().isString().withMessage('Bio must be a string'),
 
-  // Validate experience (optional)
-  body('experience')
-    .optional()
-    .isString()
-    .withMessage('Experience must be a string'),
+  body('experience').isString().withMessage('Experience must be a string'),
 
-  // Validate education (optional)
-  body('education')
-    .optional()
-    .isString()
-    .withMessage('Education must be a string'),
+  body('education').isString().withMessage('Education must be a string'),
 
   // Validate specialization (optional)
   body('specialization')
-    .optional()
     .isString()
     .isLength({ max: 60 })
     .withMessage('Specialization must be a valid'),
 
-  // Validate description (optional)
-  body('description')
-    .optional()
-    .isString()
-    .withMessage('Description must be a string'),
-  body('email').optional().isEmail().withMessage('Email must be a valid email'),
+  body('description').isString().withMessage('Description must be a string'),
+  body('email').isEmail().withMessage('Email must be a valid email'),
   body('phone')
     .optional()
     .matches(/^[0-9]{11}$/)

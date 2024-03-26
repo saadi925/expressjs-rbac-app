@@ -19,14 +19,12 @@ export const createOrUpdateLawyerProfile = async (
   const userId = req.userId as string;
   try {
     const {
-      bio,
       experience,
       education,
       specialization,
       status,
       description,
       email,
-      phoneNumber,
       website,
       instagram,
       phone,
@@ -35,7 +33,6 @@ export const createOrUpdateLawyerProfile = async (
       facebook,
     } = req.body;
     const data = {
-      bio,
       experience,
       description,
       education,
@@ -50,7 +47,6 @@ export const createOrUpdateLawyerProfile = async (
     const contact: Omit<LawyerContact, 'id'> = {
       lawyerId: userId,
       email,
-      phoneNumber,
       website,
       instagram,
       phone,

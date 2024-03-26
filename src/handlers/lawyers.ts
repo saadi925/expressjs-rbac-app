@@ -45,7 +45,6 @@ export async function GetLawyers(req: RequestWithUser, res: Response) {
         rating: true, // Only select necessary fields, excluding userId
         description: true,
         experience: true,
-        bio: true,
         status: true,
         reviews: { select: { comment: true, score: true, id: true } },
         createdAt: true,
@@ -78,7 +77,6 @@ export async function GetLawyers(req: RequestWithUser, res: Response) {
           rating: true, // Only select necessary fields, excluding userId
           description: true,
           experience: true,
-          bio: true,
           status: true,
           user: {
             select: {
@@ -113,7 +111,6 @@ export async function GetLawyers(req: RequestWithUser, res: Response) {
         description: true,
         // Add other fields as needed
         experience: true,
-        bio: true,
         status: true,
         user: {
           select: {

@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -22,14 +13,14 @@ const keys_1 = require("../../config/keys");
 const sendVerificationEmail_1 = require("./sendVerificationEmail");
 const EmailVerification_1 = require("../../prisma/queries/EmailVerification");
 const AccountNotifications_1 = require("../../notifications/AccountNotifications");
-const signupHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const signupHandler = async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
         const errors = (0, express_validator_1.validationResult)(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-        let user = yield (0, prisma_1.findUserByEmail)(email);
+        let user = await (0, prisma_1.findUserByEmail)(email);
         if (user) {
             if (!user.verified) {
                 res.status(401).json({
@@ -54,17 +45,18 @@ const signupHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             updatedAt: Date.now(),
             verified: false,
         };
-        const newUser = yield (0, prisma_1.createUser)(data);
+        const newUser = await (0, prisma_1.createUser)(data);
         const emailVerification = new EmailVerification_1.EmailVerification();
-        const code = yield emailVerification.genRandomCode();
+        const code = await emailVerification.genRandomCode();
         const verificationToken = (0, generateToken_1.generateVerificationToken)(newUser, code);
-        yield emailVerification.createEmailVerification({
+        await emailVerification.createEmailVerification({
             email,
             verificationToken,
             code,
             userId: newUser.id,
         });
-        yield (0, sendVerificationEmail_1.sendVerificationEmail)(email, verificationToken, code);
+        console.log('code', code);
+        await (0, sendVerificationEmail_1.sendVerificationEmail)(email, verificationToken, code);
         res.status(201).json({
             message: 'user has been registered successfully , verify email to get logged in',
             redirectToVerify: true,
@@ -80,9 +72,9 @@ const signupHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             ],
         });
     }
-});
+};
 exports.signupHandler = signupHandler;
-const signinHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const signinHandler = async (req, res) => {
     try {
         let success = false;
         const { email, password } = req.body;
@@ -90,14 +82,14 @@ const signinHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array(), success });
         }
-        const user = yield (0, prisma_1.findUserByEmail)(email);
+        const user = await (0, prisma_1.findUserByEmail)(email);
         if (!user) {
             // if user is not found .
             return res
                 .status(400)
                 .json({ errors: [{ msg: 'Invalid Credentials' }], success });
         }
-        const passwordCompare = yield bcrypt_1.default.compare(password, user.password);
+        const passwordCompare = await bcrypt_1.default.compare(password, user.password);
         if (!passwordCompare) {
             //  incase , if password is incorrect
             return res
@@ -114,7 +106,7 @@ const signinHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         success = true;
         const token = (0, generateToken_1.generateToken)(user);
         const profileDB = new prisma_1.PrismaDBProfile();
-        const profile = yield profileDB.getProfileWithRole(user.id);
+        const profile = await profileDB.getProfileWithRole(user.id);
         if (!profile) {
             res.status(201).json({
                 token,
@@ -135,13 +127,13 @@ const signinHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         console.error(error);
         res.status(500).send('Server error');
     }
-});
+};
 exports.signinHandler = signinHandler;
-const resendConfirmation = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const resendConfirmation = async (req, res) => {
     try {
         const { email } = req.body;
         // Check if the user exists
-        const user = yield (0, prisma_1.findUserByEmail)(email);
+        const user = await (0, prisma_1.findUserByEmail)(email);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -151,16 +143,16 @@ const resendConfirmation = (req, res) => __awaiter(void 0, void 0, void 0, funct
         }
         const emailVerification = new EmailVerification_1.EmailVerification();
         // Generate a new verification code
-        const code = yield emailVerification.genRandomCode();
+        const code = await emailVerification.genRandomCode();
         const verificationToken = (0, generateToken_1.generateVerificationToken)(user, code);
         // Create a new email verification record or update the existing one
-        yield emailVerification.createOrUpdateEmailVerification({
+        await emailVerification.createOrUpdateEmailVerification({
             email,
             userId: user.id,
             code,
             verificationToken,
         });
-        yield (0, sendVerificationEmail_1.sendVerificationEmail)(email, verificationToken, code);
+        await (0, sendVerificationEmail_1.sendVerificationEmail)(email, verificationToken, code);
         return res
             .status(200)
             .json({ message: `Confirmation email sent successfully to ${email}` });
@@ -169,9 +161,9 @@ const resendConfirmation = (req, res) => __awaiter(void 0, void 0, void 0, funct
         console.error('Error resending confirmation email:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-});
+};
 exports.resendConfirmation = resendConfirmation;
-const verifyWithCode = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const verifyWithCode = async (req, res) => {
     const email = req.query.email;
     const code = req.query.code;
     if (!email ||
@@ -181,7 +173,7 @@ const verifyWithCode = (req, res) => __awaiter(void 0, void 0, void 0, function*
         res.status(403).json({ error: 'email or code is missing' });
         return;
     }
-    const user = yield prisma_1.prisma.user.findUnique({
+    const user = await prisma_1.prisma.user.findUnique({
         where: { email },
     });
     if (!user) {
@@ -192,7 +184,7 @@ const verifyWithCode = (req, res) => __awaiter(void 0, void 0, void 0, function*
         res.status(403).json({ error: 'email already verified, you can login' });
     }
     const emailVerify = new EmailVerification_1.EmailVerification();
-    const emailRecord = yield emailVerify.getEmailVerifyById(user.id);
+    const emailRecord = await emailVerify.getEmailVerifyById(user.id);
     if (!emailRecord) {
         res.status(403).json({
             error: 'no email exists',
@@ -212,7 +204,7 @@ const verifyWithCode = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const role = user.role;
         res.status(200).json({ token, role, redirectToProfile: true });
     }
-});
+};
 exports.verifyWithCode = verifyWithCode;
 const verifyCodeForEmailVerify = (emailRecord, code) => {
     if (emailRecord.code !== code) {
@@ -222,7 +214,7 @@ const verifyCodeForEmailVerify = (emailRecord, code) => {
         return true;
     }
 };
-const emailVerificationHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const emailVerificationHandler = async (req, res) => {
     try {
         const one_time_token = req.query.one_time_token;
         if (!one_time_token || typeof one_time_token !== 'string') {
@@ -236,7 +228,7 @@ const emailVerificationHandler = (req, res) => __awaiter(void 0, void 0, void 0,
         }
         // Check if the verification code matches the one stored in the database
         const emailVerification = new EmailVerification_1.EmailVerification();
-        const email = yield emailVerification.getEmailVerifyById(id);
+        const email = await emailVerification.getEmailVerifyById(id);
         if (!email) {
             return res
                 .status(404)
@@ -246,16 +238,16 @@ const emailVerificationHandler = (req, res) => __awaiter(void 0, void 0, void 0,
             return res.status(400).json({ error: 'Invalid verification code' });
         }
         // Update the user's verified status in the database
-        yield emailVerification.updateUserVerifyStatus(email.userId, true);
+        await emailVerification.updateUserVerifyStatus(email.userId, true);
         const notifier = new AccountNotifications_1.AccountNotifications();
-        yield notifier.emailVerifyNotification(email.email, email.userId);
+        await notifier.emailVerifyNotification(email.email, email.userId);
         // Delete the email verification record from the database
-        yield emailVerification.deleteEmailVerification(email.email, id);
+        await emailVerification.deleteEmailVerification(email.email, id);
         return res.status(200).json({ message: 'Email verification successful' });
     }
     catch (error) {
         console.error('Error in emailVerificationHandler:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-});
+};
 exports.emailVerificationHandler = emailVerificationHandler;

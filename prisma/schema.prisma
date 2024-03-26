@@ -101,13 +101,12 @@ model LawyerProfile {
   user        User           @relation(fields: [userId], references: [id])
   userId      String         @unique
   isVerified Boolean @default(false)
-  description String?
-  bio         String?
-  experience  String?
-  education   String?
+  description String
+  experience  String
+  education   String
+  specialization String
   verification LawyerVerification?
  rating      Float?
-  specialization String?
   status  AvailabilityStatus @default(AVAILABLE)
   reviews     LawyerReview[] 
   createdAt   DateTime       @default(now())
@@ -135,7 +134,7 @@ model LawyerContact {
   id          String @id @default(uuid())
   lawyerId    String@unique
   lawyer      LawyerProfile @relation(fields: [lawyerId], references: [id])
- email       String?
+ email       String
    website String?
   facebook    String?
   linkedin    String?

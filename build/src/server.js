@@ -13,6 +13,7 @@ const app = (0, express_1.default)();
 const friendRequestRoutes_1 = require("./routes/friendRequestRoutes");
 const cities_1 = require("./utils/cities");
 const authorizeRoutes_1 = require("./routes/authorizeRoutes");
+const middleware_1 = require("./middleware");
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
@@ -32,7 +33,7 @@ app.use('/notifications', routes_1.notificationRoutes);
 app.use('/client', routes_1.clientRoutes);
 app.use('/lawyer', routes_1.lawyerRoutes);
 app.use('/common', routes_1.commonRoutes);
-app.use('/friend-requests', friendRequestRoutes_1.friendRequestRoutes);
+app.use('/friend-requests', middleware_1.authMiddleware, friendRequestRoutes_1.friendRequestRoutes);
 app.use('/api/get-cities', cities_1.getCities);
 app.use((err, req, res, next) => {
     console.error('Error:', err);
