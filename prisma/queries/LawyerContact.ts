@@ -5,7 +5,7 @@ export class PrismaLawyerContact {
   constructor() {
     this.prisma = new PrismaClient();
   }
-  async createLawyerContact(data: Omit<LawyerContact, 'id'>, userId: string) {
+  async createLawyerContact(data: any, userId: string) {
     try {
       const profile = await this.prisma.lawyerContact.upsert({
         where: { lawyerId: userId },
