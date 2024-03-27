@@ -27,5 +27,5 @@ p, LAWYER, /lawyer/profile, POST
 p, LAWYER, /lawyer/profile, PUT
 p, LAWYER, /lawyer/profile, GET
 p, LAWYER, /lawyer/cases, GET
-
+p, LAWYER, /lawyer/clients, GET
 

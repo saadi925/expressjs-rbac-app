@@ -11,9 +11,10 @@ class PrismaLawyerContact {
         try {
             const profile = await this.prisma.lawyerContact.upsert({
                 where: { lawyerId: userId },
-                update: { ...data },
+                update: { ...data, email: data.email },
                 create: {
                     ...data,
+                    email: data.email,
                 },
             });
             return profile;

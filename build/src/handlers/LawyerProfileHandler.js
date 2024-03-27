@@ -11,9 +11,10 @@ const createOrUpdateLawyerProfile = async (req, res) => {
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
+    const status = 'AVAILABLE';
     const userId = req.userId;
     try {
-        const { experience, education, specialization, status, description, email, website, instagram, phone, linkedin, officeAddress, facebook, } = req.body;
+        const { experience, education, specialization, description, email, website, instagram, phone, linkedin, officeAddress, facebook, } = req.body;
         const data = {
             experience,
             description,
@@ -24,7 +25,6 @@ const createOrUpdateLawyerProfile = async (req, res) => {
             createdAt: new Date(),
             updatedAt: new Date(),
         };
-        console.log(email);
         const profile = await lawyerProfile.createOrUpdateLawyerProfile(data);
         const lawyerContact = new LawyerContact_1.PrismaLawyerContact();
         const contact = {
@@ -37,7 +37,7 @@ const createOrUpdateLawyerProfile = async (req, res) => {
             facebook,
             linkedin,
         };
-        await lawyerContact.createLawyerContact(contact, userId);
+        await lawyerContact.createLawyerContact(contact, profile.id);
         res.status(201).json({ profile });
     }
     catch (error) {

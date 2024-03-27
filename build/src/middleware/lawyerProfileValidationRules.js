@@ -11,7 +11,10 @@ exports.createLawyerProfileValidationRules = [
         .isLength({ max: 60 })
         .withMessage('Specialization must be a valid'),
     (0, express_validator_1.body)('description').isString().withMessage('Description must be a string'),
-    (0, express_validator_1.body)('email').optional().isEmail().withMessage('Email must be a valid email'),
+    (0, express_validator_1.check)('email')
+        .optional()
+        .isEmail()
+        .withMessage('Email must be a valid email'),
     (0, express_validator_1.body)('phone')
         .optional()
         .matches(/^\+92\d{10}$/)

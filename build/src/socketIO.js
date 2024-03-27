@@ -80,11 +80,7 @@ const socketHandler = (io) => (socket) => {
     });
     // Apply isAuthorized middleware to specific socket events
     socket.use((packet, next) => {
-        const authorizedEvents = [
-            'fetchOlderMessages',
-            'sendMessage',
-            'markMessageAsSeen',
-        ];
+        const authorizedEvents = ['sendMessage', 'markMessageAsSeen'];
         if (authorizedEvents.includes(packet[0])) {
             (0, middleware_1.isAuthorizedSocket)(socket, next);
         }

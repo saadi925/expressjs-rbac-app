@@ -1,4 +1,3 @@
-import { Request, Response } from 'express';
 import { PrismaMessages } from '../prisma/queries/PrismaMessages';
 import { Server, Socket } from 'socket.io';
 import { prisma } from '../prisma';

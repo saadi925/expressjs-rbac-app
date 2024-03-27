@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, $Enums } from '@prisma/client';
 import { Request, Response } from 'express';
 import { RequestWithUser } from 'types/profile';
-
+$Enums.AvailabilityStatus;
 const prisma = new PrismaClient();
 const SCREENS = {
   LOGIN: 'Login',

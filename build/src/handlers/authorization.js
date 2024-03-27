@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authorizeAction = void 0;
 const client_1 = require("@prisma/client");
+client_1.$Enums.AvailabilityStatus;
 const prisma = new client_1.PrismaClient();
 const SCREENS = {
     LOGIN: 'Login',

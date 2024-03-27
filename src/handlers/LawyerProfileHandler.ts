@@ -1,10 +1,13 @@
 import { Response } from 'express';
 import { validationResult } from 'express-validator';
-import { PrismaLawyerProfile } from '../../prisma/queries/LawyerProfile';
+import {
+  PrismaLawyerProfile,
+  LawyerProfileData,
+} from '../../prisma/queries/LawyerProfile';
 
 import { RequestWithUser } from 'types/profile';
 import { PrismaLawyerContact } from '../../prisma/queries/LawyerContact';
-import { LawyerContact } from '@prisma/client';
+import { LawyerContact, $Enums } from '@prisma/client';
 const lawyerProfile = new PrismaLawyerProfile();
 export const createOrUpdateLawyerProfile = async (
   req: RequestWithUser,
@@ -15,14 +18,13 @@ export const createOrUpdateLawyerProfile = async (
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-
+  const status: $Enums.AvailabilityStatus = 'AVAILABLE';
   const userId = req.userId as string;
   try {
     const {
       experience,
       education,
       specialization,
-      status,
       description,
       email,
       website,
@@ -42,7 +44,6 @@ export const createOrUpdateLawyerProfile = async (
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    console.log(email);
 
     const profile = await lawyerProfile.createOrUpdateLawyerProfile(data);
     const lawyerContact = new PrismaLawyerContact();
@@ -56,7 +57,7 @@ export const createOrUpdateLawyerProfile = async (
       facebook,
       linkedin,
     };
-    await lawyerContact.createLawyerContact(contact, userId);
+    await lawyerContact.createLawyerContact(contact, profile.id);
 
     res.status(201).json({ profile });
   } catch (error) {

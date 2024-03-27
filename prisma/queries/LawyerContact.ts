@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, LawyerContact } from '@prisma/client';
 
 export class PrismaLawyerContact {
   readonly prisma;
@@ -9,9 +9,10 @@ export class PrismaLawyerContact {
     try {
       const profile = await this.prisma.lawyerContact.upsert({
         where: { lawyerId: userId },
-        update: { ...data },
+        update: { ...data, email: data.email },
         create: {
           ...data,
+          email: data.email,
         },
       });
       return profile;

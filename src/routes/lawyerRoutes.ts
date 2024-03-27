@@ -18,6 +18,7 @@ import {
   updateLawyerContact,
 } from '../../src/handlers/LawyerContact';
 import { getCasesHandler } from '../../src/handlers/caseHandler';
+import { GetClients } from 'src/handlers/lawyers';
 
 const r = express.Router();
 // GET ALL PENDING CASE REQUESTS
@@ -64,4 +65,5 @@ r.put(
   updateLawyerContact,
 );
 r.get('/cases', authMiddleware, RBACMiddleware, getCasesHandler);
+r.get('/clients', authMiddleware, RBACMiddleware, GetClients);
 export { r as lawyerRoutes };

@@ -10,7 +10,7 @@ const authMiddleware_1 = require("../../src/middleware/authMiddleware");
 const clientCaseRequest_1 = require("../../src/handlers/clientCaseRequest");
 const attachments_1 = require("../../src/utils/attachments");
 const attachmentsHandler_1 = require("../../src/handlers/attachmentsHandler");
-const messagesHandler_1 = require("src/handlers/messagesHandler");
+const messagesHandler_1 = require("../../src/handlers/messagesHandler");
 const router = express_1.default.Router();
 exports.commonRoutes = router;
 //  get the statuses available for case
