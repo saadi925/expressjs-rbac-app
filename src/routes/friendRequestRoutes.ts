@@ -11,12 +11,12 @@ import {
 
 const router = express.Router();
 
-router.post('/:receiverId', sendFriendRequest);
+router.post('/:caseId', sendFriendRequest);
 router.put('/:requestId/accept', acceptFriendRequest);
 router.put('/:requestId/reject', rejectFriendRequest);
 router.get('/received', getRecievedRequests);
 router.get('/sent', getSentFriendRequests);
-router.delete('/friends/:friendId', removeFriend);
+router.delete('/friends/:requestId', removeFriend);
 router.get('/friends', getFriends);
 
 export { router as friendRequestRoutes };

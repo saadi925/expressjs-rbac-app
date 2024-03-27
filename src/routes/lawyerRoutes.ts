@@ -18,7 +18,7 @@ import {
   updateLawyerContact,
 } from '../../src/handlers/LawyerContact';
 import { getCasesHandler } from '../../src/handlers/caseHandler';
-import { GetClients } from 'src/handlers/lawyers';
+import { GetClients } from '../../src/handlers/lawyers';
 
 const r = express.Router();
 // GET ALL PENDING CASE REQUESTS

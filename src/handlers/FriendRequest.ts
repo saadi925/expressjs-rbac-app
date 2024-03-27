@@ -2,6 +2,7 @@ import express, { Response } from 'express';
 import { PrismaFriendRequest } from '../../prisma/queries/FriendRequest';
 import { PrismaFriendship } from '../../prisma/queries/FriendShips';
 import { RequestWithUser } from 'types/profile';
+import { prisma } from '../../prisma/queries/index';
 
 const app = express();
 app.use(express.json());
@@ -13,7 +14,12 @@ const friendRequest = new PrismaFriendRequest();
 export async function removeFriend(req: RequestWithUser, res: Response) {
   try {
     const { userId } = req;
-    const { friendId } = req.body;
+    const { requestId } = req.body;
+    //  get friend by request id
+    const friendId = await friendRequest.getFriendByRequestId(
+      requestId,
+      userId!,
+    );
     await friendship.removeFriend(userId!, friendId);
     res.status(200).json({
       message: `friend removed successfully `,
@@ -46,7 +52,17 @@ export async function getFriends(req: RequestWithUser, res: Response) {
 export async function sendFriendRequest(req: RequestWithUser, res: Response) {
   try {
     const userId = req.userId as string;
-    const { receiverId } = req.params;
+    const { caseId } = req.params;
+    const clientCase = await prisma.case.findUnique({
+      where: { id: BigInt(caseId) },
+    });
+    if (!clientCase) {
+      res.status(404).json({
+        error: 'Case not found',
+      });
+      return;
+    }
+    const receiverId = clientCase.clientId;
     const request = await friendRequest.sendFriendRequest(userId, receiverId);
     await friendRequest.addToSent(userId, request.id);
     await friendRequest.addToReceived(receiverId, request.id);

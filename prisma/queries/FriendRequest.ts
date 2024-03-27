@@ -5,6 +5,24 @@ export class PrismaFriendRequest {
   constructor() {
     this.#prisma = new PrismaClient();
   }
+  async getFriendByRequestId(requestId: bigint, userId: string) {
+    try {
+      const friendRequest = await this.#prisma.friendRequest.findUnique({
+        where: { id: requestId },
+      });
+      if (!friendRequest) {
+        throw new Error('Friend request not found');
+      }
+      const friendId =
+        friendRequest.userId === userId
+          ? friendRequest.receiverId
+          : friendRequest.userId;
+      return friendId;
+    } catch (error) {
+      console.error('Error fetching friend by request id:', error);
+      throw new Error('Failed to fetch friend by request id');
+    }
+  }
   async sendFriendRequest(
     senderId: string,
     receiverId: string,
