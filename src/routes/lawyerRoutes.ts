@@ -66,4 +66,5 @@ r.put(
 );
 r.get('/cases', authMiddleware, RBACMiddleware, getCasesHandler);
 r.get('/clients', authMiddleware, RBACMiddleware, GetClients);
+r.get('/clients', authMiddleware, RBACMiddleware, GetClients);
 export { r as lawyerRoutes };
