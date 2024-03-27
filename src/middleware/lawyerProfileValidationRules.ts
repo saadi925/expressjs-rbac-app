@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, check } from 'express-validator';
 export const createLawyerProfileValidationRules = [
   body('experience').isString().withMessage('Experience must be a string'),
 
@@ -11,7 +11,10 @@ export const createLawyerProfileValidationRules = [
     .withMessage('Specialization must be a valid'),
 
   body('description').isString().withMessage('Description must be a string'),
-  body('email').optional().isEmail().withMessage('Email must be a valid email'),
+  check('email')
+    .optional()
+    .isEmail()
+    .withMessage('Email must be a valid email'),
   body('phone')
     .optional()
     .matches(/^\+92\d{10}$/)

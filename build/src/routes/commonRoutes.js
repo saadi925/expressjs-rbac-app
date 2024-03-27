@@ -10,6 +10,7 @@ const authMiddleware_1 = require("../../src/middleware/authMiddleware");
 const clientCaseRequest_1 = require("../../src/handlers/clientCaseRequest");
 const attachments_1 = require("../../src/utils/attachments");
 const attachmentsHandler_1 = require("../../src/handlers/attachmentsHandler");
+const messagesHandler_1 = require("src/handlers/messagesHandler");
 const router = express_1.default.Router();
 exports.commonRoutes = router;
 //  get the statuses available for case
@@ -21,3 +22,4 @@ router.put('/case_request/cancel/:requestId', authMiddleware_1.authMiddleware, c
 router.post('/case/:caseId/attachments', authMiddleware_1.authMiddleware, attachments_1.upload.single('file'), attachmentsHandler_1.uploadingCaseAttachments);
 // GET endpoint for downloading case attachments
 router.get('/case/:caseId/attachments/:filename', authMiddleware_1.authMiddleware, attachmentsHandler_1.downloadingCaseAttachments);
+router.get('/messages', authMiddleware_1.authMiddleware, messagesHandler_1.getMessages);

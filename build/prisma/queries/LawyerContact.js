@@ -7,13 +7,13 @@ class PrismaLawyerContact {
     constructor() {
         this.prisma = new client_1.PrismaClient();
     }
-    async createLawyerContact(data) {
+    async createLawyerContact(data, userId) {
         try {
-            const profile = await this.prisma.lawyerContact.create({
-                data: {
+            const profile = await this.prisma.lawyerContact.upsert({
+                where: { lawyerId: userId },
+                update: { ...data },
+                create: {
                     ...data,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
                 },
             });
             return profile;

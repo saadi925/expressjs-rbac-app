@@ -1,4 +1,4 @@
-import { PrismaClient, LawyerProfile } from '@prisma/client';
+import { PrismaClient, LawyerProfile, $Enums } from '@prisma/client';
 export type LawyerProfileData = Omit<Omit<LawyerProfile, 'id'>, 'isVerified'>;
 export class PrismaLawyerProfile {
   private prisma: PrismaClient;
@@ -10,6 +10,7 @@ export class PrismaLawyerProfile {
     data: Omit<LawyerProfileData, 'rating'>,
   ): Promise<LawyerProfile> {
     try {
+      $Enums.AvailabilityStatus
       return await this.prisma.lawyerProfile.upsert({
         where: { userId: data.userId },
         update: { ...data },

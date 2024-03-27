@@ -26,10 +26,23 @@ export class PrismaMessages {
     });
   }
 
-  async getMessages(userId: string, limit: number, offset: number) {
+  async getMessages(
+    senderId: string,
+    receiverId: string,
+    limit: number,
+    offset: number,
+  ) {
     const messages = await this.#prisma.message.findMany({
       where: {
-        OR: [{ senderId: userId }, { receiverId: userId }],
+        OR: [
+          { senderId, receiverId },
+          { senderId: receiverId, receiverId: senderId },
+        ],
+      },
+      include: {
+        receiver: {
+          select: { profile: { select: { avatar: true, displayname: true } } },
+        },
       },
       orderBy: {
         createdAt: 'asc',

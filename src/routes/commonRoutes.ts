@@ -14,6 +14,7 @@ import {
   downloadingCaseAttachments,
   uploadingCaseAttachments,
 } from '../../src/handlers/attachmentsHandler';
+import { getMessages } from '../../src/handlers/messagesHandler';
 
 const router = express.Router();
 //  get the statuses available for case
@@ -50,4 +51,6 @@ router.get(
   authMiddleware,
   downloadingCaseAttachments,
 );
+
+router.get('/messages', authMiddleware, getMessages);
 export { router as commonRoutes };

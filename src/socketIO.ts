@@ -12,7 +12,6 @@ import {
 } from './middleware';
 
 interface SendMessageData {
-  senderId: string;
   receiverId: string;
   content: string;
 }
@@ -26,36 +25,15 @@ class MessageHandler {
     this.io = io;
   }
 
-  fetchOlderMessages = async (req: Request, res: Response) => {
+  sendMessage = async (socket: SocketWithUser, data: SendMessageData) => {
     try {
-      const { userId, pageNumber = '1', pageSize = '30' } = req.query;
-      if (!userId || typeof userId !== 'string') {
-        throw new Error('Invalid user ID');
-      }
-      if (
-        !pageSize ||
-        typeof pageSize !== 'string' ||
-        !pageNumber ||
-        typeof pageNumber !== 'string'
-      ) {
-        throw new Error('invalid page');
-      }
+      const { receiverId, content } = data;
+      // Access sender ID from the authenticated socket
+      const senderId = socket.userId;
 
-      const skip = (Number(pageNumber) - 1) * Number(pageSize);
-      const olderMessages = await this.prismaMessages.getMessages(
-        userId,
-        Number(pageSize),
-        skip,
-      );
-      res.status(200).json(olderMessages);
-    } catch (error) {
-      console.error('Error fetching older messages:', error);
-      res.status(500).json({ error: 'Failed to fetch older messages' });
-    }
-  };
-
-  sendMessage = async ({ senderId, receiverId, content }: SendMessageData) => {
-    try {
+      if (!senderId) {
+        throw new Error('Sender ID not found');
+      }
       const [sender, receiver] = await Promise.all([
         prisma.user.findUnique({ where: { id: senderId } }),
         prisma.user.findUnique({ where: { id: receiverId } }),
@@ -118,11 +96,7 @@ export const socketHandler = (io: Server) => (socket: Socket) => {
 
   // Apply isAuthorized middleware to specific socket events
   socket.use((packet, next) => {
-    const authorizedEvents = [
-      'fetchOlderMessages',
-      'sendMessage',
-      'markMessageAsSeen',
-    ];
+    const authorizedEvents = ['sendMessage', 'markMessageAsSeen'];
     if (authorizedEvents.includes(packet[0])) {
       isAuthorizedSocket(socket, next);
     } else {
@@ -130,8 +104,9 @@ export const socketHandler = (io: Server) => (socket: Socket) => {
     }
   });
 
-  socket.on('fetchOlderMessages', messageHandler.fetchOlderMessages);
-  socket.on('sendMessage', messageHandler.sendMessage);
+  socket.on('sendMessage', (data: SendMessageData) =>
+    messageHandler.sendMessage(socket as SocketWithUser, data),
+  );
   socket.on('markMessageAsSeen', messageHandler.markMessageAsSeen);
   socket.on('disconnect', () => {
     console.log('A user disconnected');

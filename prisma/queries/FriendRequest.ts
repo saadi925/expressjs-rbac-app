@@ -153,14 +153,43 @@ export class PrismaFriendRequest {
         include: {
           sender: {
             select: {
+              id: true,
+              profile: { select: { avatar: true, displayname: true } },
+              online: true,
+            },
+          },
+          receiver: {
+            select: {
+              id: true,
+              online: true,
               profile: { select: { avatar: true, displayname: true } },
             },
           },
         },
       });
-      return friendRequests;
+
+      const formattedFriendRequests = friendRequests.map((request) => {
+        const isCurrentUserSender = request.sender.id === userId;
+        const otherUserId = isCurrentUserSender
+          ? request.receiver.id
+          : request.sender.id;
+        const otherUserProfile = isCurrentUserSender
+          ? request.receiver.profile
+          : request.sender.profile;
+        return {
+          id: String(request.id),
+          otherUserId,
+          ...otherUserProfile,
+          online: isCurrentUserSender
+            ? request.receiver.online
+            : request.sender.online,
+        };
+      });
+
+      return formattedFriendRequests;
     } catch (error) {
-      throw new Error(`error getting friends, ${error}`);
+      console.error('Error fetching accepted friends:', error);
+      throw new Error('Failed to fetch accepted friends');
     }
   }
 }

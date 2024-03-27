@@ -24,10 +24,11 @@ const createOrUpdateLawyerProfile = async (req, res) => {
             createdAt: new Date(),
             updatedAt: new Date(),
         };
+        console.log(email);
         const profile = await lawyerProfile.createOrUpdateLawyerProfile(data);
         const lawyerContact = new LawyerContact_1.PrismaLawyerContact();
         const contact = {
-            lawyerId: userId,
+            lawyerId: profile.id,
             email,
             website,
             instagram,
@@ -36,7 +37,7 @@ const createOrUpdateLawyerProfile = async (req, res) => {
             facebook,
             linkedin,
         };
-        await lawyerContact.createLawyerContact(contact);
+        await lawyerContact.createLawyerContact(contact, userId);
         res.status(201).json({ profile });
     }
     catch (error) {
@@ -47,9 +48,18 @@ const createOrUpdateLawyerProfile = async (req, res) => {
 exports.createOrUpdateLawyerProfile = createOrUpdateLawyerProfile;
 const getLawyerProfile = async (req, res) => {
     const userId = req.userId;
+    if (!userId) {
+        return res.status(400).json({ error: 'unauthorized' });
+    }
     try {
-        const profile = await lawyerProfile.getLawyerProfileById(userId);
-        res.status(200).json({ profile });
+        try {
+            const profile = await lawyerProfile.getLawyerProfileById(userId);
+            res.status(200).json({ profile });
+        }
+        catch (error) {
+            console.error('Error fetching lawyer profile:', error);
+            res.status(400).json({ error: error.message });
+        }
     }
     catch (error) {
         console.error('Error fetching lawyer profile:', error);

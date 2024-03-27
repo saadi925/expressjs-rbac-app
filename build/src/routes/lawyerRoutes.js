@@ -18,7 +18,7 @@ r.post('/case_request', middleware_1.authMiddleware, middleware_1.RBACMiddleware
 r.get('/case_request/pending', middleware_1.authMiddleware, middleware_1.RBACMiddleware, LawyerCaseRequests_1.createCaseRequestLawyerHandler);
 r.put('/case_request/accept/:requestId', middleware_1.authMiddleware, middleware_1.RBACMiddleware, LawyerCaseRequests_1.acceptCaseRequestLawyerHandler);
 r.post('/profile', middleware_1.authMiddleware, middleware_1.RBACMiddleware, middleware_1.createLawyerProfileValidationRules, LawyerProfileHandler_1.createOrUpdateLawyerProfile);
-r.get('/profile', middleware_1.authMiddleware, middleware_1.RBACMiddleware, middleware_1.createLawyerProfileValidationRules, LawyerProfileHandler_1.getLawyerProfile);
+r.get('/profile', middleware_1.authMiddleware, middleware_1.RBACMiddleware, LawyerProfileHandler_1.getLawyerProfile);
 r.post('/profile/contact', middleware_1.authMiddleware, middleware_1.RBACMiddleware, middleware_1.validateContact, LawyerContact_1.createLawyerContact);
 r.put('/profile/contact', middleware_1.authMiddleware, middleware_1.RBACMiddleware, middleware_1.validateContact, LawyerContact_1.updateLawyerContact);
 r.get('/cases', middleware_1.authMiddleware, middleware_1.RBACMiddleware, caseHandler_1.getCasesHandler);

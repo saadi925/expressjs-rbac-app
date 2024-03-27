@@ -34,9 +34,14 @@ export async function markMessageAsSeen(req: Request, res: Response) {
 export async function getMessages(req: RequestWithUser, res: Response) {
   try {
     const { userId } = req;
-    const { limit, offset } = req.body;
+    if (!userId || typeof userId !== 'string') {
+      res.status(401).json({ error: 'unauthorized' });
+      return;
+    }
+    const { limit, offset, recieverId } = req.body;
     const messages = await prismaMessages.getMessages(
-      userId as string,
+      userId,
+      recieverId,
       limit,
       offset,
     );

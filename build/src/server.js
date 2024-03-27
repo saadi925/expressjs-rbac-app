@@ -35,7 +35,7 @@ app.use('/lawyer', routes_1.lawyerRoutes);
 app.use('/common', routes_1.commonRoutes);
 app.use('/friend-requests', middleware_1.authMiddleware, friendRequestRoutes_1.friendRequestRoutes);
 app.use('/api/get-cities', cities_1.getCities);
-app.use((err, req, res, next) => {
+app.use((err, _req, res) => {
     console.error('Error:', err);
     res.status(500).json({ error: 'Internal server error' });
 });

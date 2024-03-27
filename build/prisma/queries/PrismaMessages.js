@@ -24,10 +24,18 @@ class PrismaMessages {
             data: { seen: true },
         });
     }
-    async getMessages(userId, limit, offset) {
+    async getMessages(senderId, receiverId, limit, offset) {
         const messages = await this.#prisma.message.findMany({
             where: {
-                OR: [{ senderId: userId }, { receiverId: userId }],
+                OR: [
+                    { senderId, receiverId },
+                    { senderId: receiverId, receiverId: senderId },
+                ],
+            },
+            include: {
+                receiver: {
+                    select: { profile: { select: { avatar: true, displayname: true } } },
+                },
             },
             orderBy: {
                 createdAt: 'asc',

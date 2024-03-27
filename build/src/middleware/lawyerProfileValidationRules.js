@@ -2,9 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createLawyerProfileValidationRules = void 0;
 const express_validator_1 = require("express-validator");
-const createLawyerProfileValidationRules = () => [
-    // Validate bio (optional)
-    (0, express_validator_1.body)('bio').optional().isString().withMessage('Bio must be a string'),
+exports.createLawyerProfileValidationRules = [
     (0, express_validator_1.body)('experience').isString().withMessage('Experience must be a string'),
     (0, express_validator_1.body)('education').isString().withMessage('Education must be a string'),
     // Validate specialization (optional)
@@ -13,11 +11,11 @@ const createLawyerProfileValidationRules = () => [
         .isLength({ max: 60 })
         .withMessage('Specialization must be a valid'),
     (0, express_validator_1.body)('description').isString().withMessage('Description must be a string'),
-    (0, express_validator_1.body)('email').isEmail().withMessage('Email must be a valid email'),
+    (0, express_validator_1.body)('email').optional().isEmail().withMessage('Email must be a valid email'),
     (0, express_validator_1.body)('phone')
         .optional()
-        .matches(/^[0-9]{11}$/)
-        .withMessage('Phone number must be a valid phone number'),
+        .matches(/^\+92\d{10}$/)
+        .withMessage('Phone number must be a valid Pakistani phone number starting with +92'),
     (0, express_validator_1.body)('linkedin')
         .optional()
         //  regex to validate linkedin url
@@ -46,4 +44,3 @@ const createLawyerProfileValidationRules = () => [
         .matches(/^[a-zA-Z0-9\s,.'-]{5,100}$/)
         .withMessage('Office address must be a string'),
 ];
-exports.createLawyerProfileValidationRules = createLawyerProfileValidationRules;

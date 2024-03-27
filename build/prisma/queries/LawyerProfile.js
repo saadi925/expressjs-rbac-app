@@ -9,6 +9,7 @@ class PrismaLawyerProfile {
     }
     async createOrUpdateLawyerProfile(data) {
         try {
+            client_1.$Enums.AvailabilityStatus;
             return await this.prisma.lawyerProfile.upsert({
                 where: { userId: data.userId },
                 update: { ...data },
@@ -21,6 +22,12 @@ class PrismaLawyerProfile {
         }
     }
     async getLawyerProfileById(id) {
+        const profile = await this.prisma.lawyerProfile.findUnique({
+            where: { userId: id },
+        });
+        if (!profile) {
+            throw new Error('Lawyer profile not found');
+        }
         const c = this.prisma.lawyerProfile.findUnique({
             where: { id },
             select: {

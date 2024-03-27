@@ -16,29 +16,14 @@ class MessageHandler {
         this.prismaMessages = new PrismaMessages_1.PrismaMessages();
         this.io = io;
     }
-    fetchOlderMessages = async (req, res) => {
+    sendMessage = async (socket, data) => {
         try {
-            const { userId, pageNumber = '1', pageSize = '30' } = req.query;
-            if (!userId || typeof userId !== 'string') {
-                throw new Error('Invalid user ID');
+            const { receiverId, content } = data;
+            // Access sender ID from the authenticated socket
+            const senderId = socket.userId;
+            if (!senderId) {
+                throw new Error('Sender ID not found');
             }
-            if (!pageSize ||
-                typeof pageSize !== 'string' ||
-                !pageNumber ||
-                typeof pageNumber !== 'string') {
-                throw new Error('invalid page');
-            }
-            const skip = (Number(pageNumber) - 1) * Number(pageSize);
-            const olderMessages = await this.prismaMessages.getMessages(userId, Number(pageSize), skip);
-            res.status(200).json(olderMessages);
-        }
-        catch (error) {
-            console.error('Error fetching older messages:', error);
-            res.status(500).json({ error: 'Failed to fetch older messages' });
-        }
-    };
-    sendMessage = async ({ senderId, receiverId, content }) => {
-        try {
             const [sender, receiver] = await Promise.all([
                 prisma_1.prisma.user.findUnique({ where: { id: senderId } }),
                 prisma_1.prisma.user.findUnique({ where: { id: receiverId } }),
@@ -107,8 +92,7 @@ const socketHandler = (io) => (socket) => {
             next();
         }
     });
-    socket.on('fetchOlderMessages', messageHandler.fetchOlderMessages);
-    socket.on('sendMessage', messageHandler.sendMessage);
+    socket.on('sendMessage', (data) => messageHandler.sendMessage(socket, data));
     socket.on('markMessageAsSeen', messageHandler.markMessageAsSeen);
     socket.on('disconnect', () => {
         console.log('A user disconnected');

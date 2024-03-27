@@ -23,7 +23,7 @@ const createLawyerContact = async (req, res) => {
             linkedin,
             lawyerId: userId,
         };
-        const profile = await lawyerContact.createLawyerContact(data);
+        const profile = await lawyerContact.createLawyerContact(data, userId);
         res.status(201).json({ profile });
     }
     catch (error) {
