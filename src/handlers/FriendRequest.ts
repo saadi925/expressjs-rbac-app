@@ -118,7 +118,7 @@ export async function getRecievedRequests(req: RequestWithUser, res: Response) {
     }
     const serialized = requests.map((friendRequest) => ({
       ...friendRequest,
-      id: BigInt(friendRequest.id),
+      id: String(friendRequest.id),
     }));
     res.status(200).json(serialized);
   } catch (error) {
