@@ -9,7 +9,7 @@ import { authMiddleware } from '../middleware/authMiddleware';
 import { upload } from '../../src/utils/storage';
 
 const r = express.Router();
-r.get('/avatar', authMiddleware, upload.single('avatar') , uploadAvatar)
+r.post('/avatar', authMiddleware, upload.single('avatar') , uploadAvatar)
 r.get('/', authMiddleware, getUserProfile);
 r.post('/', authMiddleware, createOrUpdateProfile);
 r.put('/', authMiddleware, updateProfileHandler);
