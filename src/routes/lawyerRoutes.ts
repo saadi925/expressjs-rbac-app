@@ -17,9 +17,10 @@ import {
   createLawyerContact,
   updateLawyerContact,
 } from '../../src/handlers/LawyerContact';
-import { getCasesHandler } from '../../src/handlers/caseHandler';
+import { getCasesHandler, getCasesHandlerForLawyer } from '../../src/handlers/caseHandler';
 import { GetClients } from '../../src/handlers/lawyers';
-
+// lawyerRoutes
+//  '/lawyer '
 const r = express.Router();
 // GET ALL PENDING CASE REQUESTS
 //  LAWYER --> body 'case_id', 'client_id'
@@ -64,7 +65,6 @@ r.put(
   validateContact,
   updateLawyerContact,
 );
-r.get('/cases', authMiddleware, RBACMiddleware, getCasesHandler);
-r.get('/clients', authMiddleware, RBACMiddleware, GetClients);
+r.get('/cases', authMiddleware, RBACMiddleware, getCasesHandlerForLawyer);
 r.get('/clients', authMiddleware, RBACMiddleware, GetClients);
 export { r as lawyerRoutes };

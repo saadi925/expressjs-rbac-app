@@ -164,6 +164,16 @@ export class PrismaCaseRequest {
         caseId: true,
         status: true,
         createdAt: true,
+        client :{
+          select: {
+            name: true,
+            profile: {
+              select: {
+                avatar: true
+              }
+            }
+          }
+        }
       },
     });
     return pendingRequests;
@@ -178,6 +188,16 @@ export class PrismaCaseRequest {
         caseId: true,
         status: true,
         createdAt: true,
+        lawyer: {
+          select: {
+            name: true,
+            profile: {
+              select: {
+                avatar: true
+              }
+            }
+          }
+        }
       },
     });
     return pendingRequests;

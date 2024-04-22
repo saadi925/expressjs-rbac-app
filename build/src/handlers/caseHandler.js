@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateCaseStatus = exports.getCaseByID = exports.getCasesHandler = exports.deleteCaseHandler = exports.updateCaseHandler = exports.getAllOpenCases = exports.createCaseHandler = void 0;
+exports.updateCaseStatus = exports.getCaseByID = exports.getCasesHandlerForLawyer = exports.getCasesHandler = exports.deleteCaseHandler = exports.updateCaseHandler = exports.getAllOpenCases = exports.createCaseHandler = void 0;
 const prisma_1 = require("../../prisma");
 const validateCaseData_1 = require("../../src/middleware/validateCaseData");
 const rbacMiddleware_1 = require("../middleware/rbacMiddleware");
@@ -147,6 +147,21 @@ const getCasesHandler = async (req, res) => {
     }
 };
 exports.getCasesHandler = getCasesHandler;
+const getCasesHandlerForLawyer = async (req, res) => {
+    try {
+        const getAllCases = await prismaCase.getCasesForLawyer(req.userId);
+        const serialized = getAllCases.map((caseItem) => ({
+            ...caseItem,
+            id: String(caseItem.id),
+        }));
+        res.status(200).json(serialized);
+    }
+    catch (error) {
+        res.status(500).send({ error: 'Internal Server Error' });
+        console.log(error);
+    }
+};
+exports.getCasesHandlerForLawyer = getCasesHandlerForLawyer;
 const getCaseByID = async (req, res) => {
     try {
         const { id } = req.params;

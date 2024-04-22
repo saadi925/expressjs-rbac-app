@@ -17,9 +17,7 @@ export const validateLoginCredentials = [
     'Please enter a password with 8 or more characters and special characters, \n e.g Plasma51a&',
   ).matches(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/),
 ];
-// Validator middleware for checking URLs
 export const isValidUrl = (url: string) => {
-  // Regex to validate URL format
   const urlRegex = /^(https?:\/\/)?([\w\d]+\.)+[\w\d]{2,}(\/.*)*$/;
   return urlRegex.test(url);
 };
@@ -28,7 +26,6 @@ export function isValidFacebookProfile(url: string) {
   return regex.test(url);
 }
 
-// Validator middleware for checking phone numbers
 export const isValidPhoneNumber = (phone: string) => {
   // Regex to validate phone number format
   const phoneRegex = /^\+?[1-9]\d{1,14}$/;
@@ -44,9 +41,7 @@ export function isValidLinkedInProfile(url: string) {
   return regex.test(url);
 }
 
-// Validator middleware for checking email addresses
 export const isValidEmail = (email: string) => {
-  // Regex to validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 };

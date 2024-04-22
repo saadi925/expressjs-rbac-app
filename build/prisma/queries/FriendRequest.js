@@ -7,6 +7,24 @@ class PrismaFriendRequest {
     constructor() {
         this.#prisma = new client_1.PrismaClient();
     }
+    async getFriendByRequestId(requestId, userId) {
+        try {
+            const friendRequest = await this.#prisma.friendRequest.findUnique({
+                where: { id: requestId },
+            });
+            if (!friendRequest) {
+                throw new Error('Friend request not found');
+            }
+            const friendId = friendRequest.userId === userId
+                ? friendRequest.receiverId
+                : friendRequest.userId;
+            return friendId;
+        }
+        catch (error) {
+            console.error('Error fetching friend by request id:', error);
+            throw new Error('Failed to fetch friend by request id');
+        }
+    }
     async sendFriendRequest(senderId, receiverId) {
         try {
             const r = await this.#prisma.friendRequest.create({
@@ -76,6 +94,13 @@ class PrismaFriendRequest {
                 orderBy: {
                     createdAt: 'desc',
                 },
+                include: {
+                    receiver: {
+                        select: {
+                            profile: { select: { avatar: true, displayname: true } },
+                        }
+                    }
+                }
             });
             return sentRequests;
         }
@@ -181,6 +206,18 @@ class PrismaFriendRequest {
         catch (error) {
             console.error('Error fetching accepted friends:', error);
             throw new Error('Failed to fetch accepted friends');
+        }
+    }
+    async cancelFriendRequest(userId, requestId) {
+        try {
+            await this.#prisma.friendRequest.update({
+                where: { id: requestId, userId },
+                data: { status: 'CANCELLED' },
+            });
+        }
+        catch (error) {
+            console.error('Error cancelling friend request:', error);
+            throw new Error('Failed to cancelling friend request');
         }
     }
 }

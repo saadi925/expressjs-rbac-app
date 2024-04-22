@@ -65,6 +65,5 @@ const getCities = (req, res) => {
     else {
         res.status(400).json({ error: 'missing city text' });
     }
-    // Check if the startsWith parameter is missing
 };
 exports.getCities = getCities;

@@ -1,14 +1,17 @@
 import express from 'express';
 import {
-  createProfile,
   updateProfileHandler,
   getUserProfile,
+  createOrUpdateProfile,
+  uploadAvatar,
 } from '../handlers/profileHandler';
 import { authMiddleware } from '../middleware/authMiddleware';
+import { upload } from '../../src/utils/storage';
 
 const r = express.Router();
+r.get('/avatar', authMiddleware, upload.single('avatar') , uploadAvatar)
 r.get('/', authMiddleware, getUserProfile);
-r.post('/', authMiddleware, createProfile);
+r.post('/', authMiddleware, createOrUpdateProfile);
 r.put('/', authMiddleware, updateProfileHandler);
 
 export { r as profileRoutes };

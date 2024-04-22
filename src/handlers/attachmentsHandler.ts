@@ -1,5 +1,5 @@
 import path from 'path';
-import { Request, Response } from 'express';
+import {  Response } from 'express';
 import {
   AttachmentData,
   PrismaCaseAttachment,

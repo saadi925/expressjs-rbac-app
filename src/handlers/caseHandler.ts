@@ -154,7 +154,20 @@ export const getCasesHandler = async (req: RequestWithUser, res: Response) => {
     console.log(error);
   }
 };
+export const getCasesHandlerForLawyer = async (req: RequestWithUser, res: Response) => {
+  try {
+    const getAllCases = await prismaCase.getCasesForLawyer(req.userId as string);
+    const serialized = getAllCases.map((caseItem) => ({
+      ...caseItem,
+      id: String(caseItem.id),
+    }));
 
+    res.status(200).json(serialized);
+  } catch (error) {
+    res.status(500).send({ error: 'Internal Server Error' });
+    console.log(error);
+  }
+};
 export const getCaseByID = async (req: RequestWithUser, res: Response) => {
   try {
     const { id } = req.params;

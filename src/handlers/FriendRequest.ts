@@ -144,7 +144,7 @@ export async function getSentFriendRequests(
     }
     const serialized = requests.map((friendRequest) => ({
       ...friendRequest,
-      id: BigInt(friendRequest.id),
+      id: String(friendRequest.id),
     }));
     res.status(200).json(serialized);
   } catch (error) {
@@ -152,5 +152,15 @@ export async function getSentFriendRequests(
     res.status(500).json({
       error: 'Internal Server Error',
     });
+  }
+}
+export async function cancelFriendRequest(req : RequestWithUser, res : Response) {
+  try {
+    const userId = req.userId!
+    const {requestId} = req.params
+    const cancel = friendRequest.cancelFriendRequest(userId, BigInt(requestId))
+    res.status(200).json({ message: 'request cancelled successfully' });
+  } catch (error) {
+    
   }
 }

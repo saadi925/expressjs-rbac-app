@@ -56,8 +56,27 @@ class PrismaCase {
                 updatedAt: true,
                 client: {
                     select: {
-                        name: true,
-                        profile: { select: { avatar: true } },
+                        profile: { select: { avatar: true, displayname: true } },
+                    },
+                },
+            },
+        });
+    }
+    async getCasesForLawyer(lawyerId) {
+        return await this.#prisma.case.findMany({
+            where: {
+                lawyerId,
+            },
+            select: {
+                id: true,
+                title: true,
+                description: true,
+                status: true,
+                createdAt: true,
+                updatedAt: true,
+                client: {
+                    select: {
+                        profile: { select: { avatar: true, displayname: true } },
                     },
                 },
             },

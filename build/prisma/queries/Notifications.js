@@ -16,7 +16,7 @@ class PrismaNotification {
     async getNotifications(userId) {
         const notifications = await this.#prisma.notification.findMany({
             where: { userId },
-            orderBy: { createdAt: 'desc' }, // Order notifications by creation date in descending order
+            orderBy: { createdAt: 'desc' },
         });
         return notifications;
     }

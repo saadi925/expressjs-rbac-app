@@ -118,15 +118,18 @@ export const signinHandler = async (req: Request, res: Response) => {
       res.status(201).json({
         token,
         success,
-        errors: [
-          {
-            msg: 'create your profile to get started',
-          },
-        ],
+        role : user.role,
         redirectToProfile: true,
       });
     } else {
-      res.status(201).json({ token, success });
+      const data = {
+        location: profile.location,
+        bio : profile.bio,
+        displayname : profile.displayname,
+        role : user.role,
+        avatar : profile.avatar,
+      }
+      res.status(201).json({ token, success, profile : data , role : user.role });
     }
   } catch (error) {
     console.error(error);

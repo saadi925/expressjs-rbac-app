@@ -17,7 +17,7 @@ import {
 import { uploadingCaseAttachments } from '../../src/handlers/attachmentsHandler';
 import { createReview, updateReview } from '../../src/handlers/Reviews';
 import { GetLawyers } from '../../src/handlers/lawyers';
-
+'/client'
 const router = express.Router();
 // get a case by id
 router.get('/case/:id', authMiddleware, getCaseByID);

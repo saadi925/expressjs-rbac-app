@@ -101,6 +101,13 @@ export class PrismaFriendRequest {
         orderBy: {
           createdAt: 'desc',
         },
+        include :{
+          receiver :{
+            select :{
+                profile: { select: { avatar: true, displayname: true } },
+            }
+          }
+        }
       });
       return sentRequests;
     } catch (error) {
@@ -208,6 +215,17 @@ export class PrismaFriendRequest {
     } catch (error) {
       console.error('Error fetching accepted friends:', error);
       throw new Error('Failed to fetch accepted friends');
+    }
+  }
+  async cancelFriendRequest(userId : string , requestId : bigint){
+    try {
+      await this.#prisma.friendRequest.update({
+        where: { id: requestId, userId },
+        data: { status: 'CANCELLED' },
+      });
+    } catch (error) {
+      console.error('Error cancelling friend request:', error);
+      throw new Error('Failed to cancelling friend request');
     }
   }
 }

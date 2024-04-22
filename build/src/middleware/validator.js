@@ -14,9 +14,7 @@ exports.validateLoginCredentials = [
     (0, express_validator_1.check)('email', 'Please include a valid email').isEmail(),
     (0, express_validator_1.check)('password', 'Please enter a password with 8 or more characters and special characters, \n e.g Plasma51a&').matches(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/),
 ];
-// Validator middleware for checking URLs
 const isValidUrl = (url) => {
-    // Regex to validate URL format
     const urlRegex = /^(https?:\/\/)?([\w\d]+\.)+[\w\d]{2,}(\/.*)*$/;
     return urlRegex.test(url);
 };
@@ -26,7 +24,6 @@ function isValidFacebookProfile(url) {
     return regex.test(url);
 }
 exports.isValidFacebookProfile = isValidFacebookProfile;
-// Validator middleware for checking phone numbers
 const isValidPhoneNumber = (phone) => {
     // Regex to validate phone number format
     const phoneRegex = /^\+?[1-9]\d{1,14}$/;
@@ -43,9 +40,7 @@ function isValidLinkedInProfile(url) {
     return regex.test(url);
 }
 exports.isValidLinkedInProfile = isValidLinkedInProfile;
-// Validator middleware for checking email addresses
 const isValidEmail = (email) => {
-    // Regex to validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
 };

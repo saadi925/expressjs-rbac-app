@@ -165,7 +165,6 @@ export async function GetClients(req: RequestWithUser, res: Response) {
         createdAt: true,
         client: {
           select: {
-            online: true,
             profile: {
               select: {
                 avatar: true,

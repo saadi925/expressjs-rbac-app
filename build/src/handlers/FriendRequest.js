@@ -3,10 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSentFriendRequests = exports.getRecievedRequests = exports.rejectFriendRequest = exports.acceptFriendRequest = exports.sendFriendRequest = exports.getFriends = exports.removeFriend = void 0;
+exports.cancelFriendRequest = exports.getSentFriendRequests = exports.getRecievedRequests = exports.rejectFriendRequest = exports.acceptFriendRequest = exports.sendFriendRequest = exports.getFriends = exports.removeFriend = void 0;
 const express_1 = __importDefault(require("express"));
 const FriendRequest_1 = require("../../prisma/queries/FriendRequest");
 const FriendShips_1 = require("../../prisma/queries/FriendShips");
+const index_1 = require("../../prisma/queries/index");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 const friendship = new FriendShips_1.PrismaFriendship();
@@ -15,7 +16,9 @@ const friendRequest = new FriendRequest_1.PrismaFriendRequest();
 async function removeFriend(req, res) {
     try {
         const { userId } = req;
-        const { friendId } = req.body;
+        const { requestId } = req.body;
+        //  get friend by request id
+        const friendId = await friendRequest.getFriendByRequestId(requestId, userId);
         await friendship.removeFriend(userId, friendId);
         res.status(200).json({
             message: `friend removed successfully `,
@@ -50,7 +53,17 @@ exports.getFriends = getFriends;
 async function sendFriendRequest(req, res) {
     try {
         const userId = req.userId;
-        const { receiverId } = req.params;
+        const { caseId } = req.params;
+        const clientCase = await index_1.prisma.case.findUnique({
+            where: { id: BigInt(caseId) },
+        });
+        if (!clientCase) {
+            res.status(404).json({
+                error: 'Case not found',
+            });
+            return;
+        }
+        const receiverId = clientCase.clientId;
         const request = await friendRequest.sendFriendRequest(userId, receiverId);
         await friendRequest.addToSent(userId, request.id);
         await friendRequest.addToReceived(receiverId, request.id);
@@ -107,7 +120,7 @@ async function getRecievedRequests(req, res) {
         }
         const serialized = requests.map((friendRequest) => ({
             ...friendRequest,
-            id: BigInt(friendRequest.id),
+            id: String(friendRequest.id),
         }));
         res.status(200).json(serialized);
     }
@@ -131,7 +144,7 @@ async function getSentFriendRequests(req, res) {
         }
         const serialized = requests.map((friendRequest) => ({
             ...friendRequest,
-            id: BigInt(friendRequest.id),
+            id: String(friendRequest.id),
         }));
         res.status(200).json(serialized);
     }
@@ -143,3 +156,14 @@ async function getSentFriendRequests(req, res) {
     }
 }
 exports.getSentFriendRequests = getSentFriendRequests;
+async function cancelFriendRequest(req, res) {
+    try {
+        const userId = req.userId;
+        const { requestId } = req.params;
+        const cancel = friendRequest.cancelFriendRequest(userId, BigInt(requestId));
+        res.status(200).json({ message: 'request cancelled successfully' });
+    }
+    catch (error) {
+    }
+}
+exports.cancelFriendRequest = cancelFriendRequest;

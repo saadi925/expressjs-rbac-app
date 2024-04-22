@@ -11,6 +11,7 @@ const clientCaseRequest_1 = require("../../src/handlers/clientCaseRequest");
 const attachmentsHandler_1 = require("../../src/handlers/attachmentsHandler");
 const Reviews_1 = require("../../src/handlers/Reviews");
 const lawyers_1 = require("../../src/handlers/lawyers");
+'/client';
 const router = express_1.default.Router();
 exports.clientRoutes = router;
 // get a case by id

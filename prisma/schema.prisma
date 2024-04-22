@@ -64,7 +64,7 @@ model Comment {
   content     String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  case        Case     @relation("caseComments", fields: [caseId], references: [id]) // Add the relation name 'caseComments' here
+  case        Case     @relation("caseComments", fields: [caseId], references: [id]) 
   caseId      BigInt
   user        User     @relation("userComments", fields: [userId], references: [id]) 
   userId      String
@@ -106,7 +106,7 @@ model LawyerProfile {
   education   String
   specialization String
   verification LawyerVerification?
- rating      Float?
+  rating      Float?
   status  AvailabilityStatus @default(AVAILABLE)
   reviews     LawyerReview[] 
   createdAt   DateTime       @default(now())
@@ -139,7 +139,7 @@ model LawyerVerification {
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
   licenseNumber String? 
-  licenseExpiryDate DateTime? // Expiry date of the license
+  licenseExpiryDate DateTime? 
   practiceArea String? 
 }
 

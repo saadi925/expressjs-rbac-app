@@ -38,7 +38,7 @@ async function GetLawyers(req, res) {
             },
             select: {
                 id: true,
-                rating: true,
+                rating: true, // Only select necessary fields, excluding userId
                 description: true,
                 experience: true,
                 status: true,
@@ -66,10 +66,10 @@ async function GetLawyers(req, res) {
                 orderBy: {
                     rating: 'desc', // Order by rating in descending order
                 },
-                take: 10,
+                take: 10, // Limit the number of lawyers to be fetched
                 select: {
                     id: true,
-                    rating: true,
+                    rating: true, // Only select necessary fields, excluding userId
                     description: true,
                     experience: true,
                     status: true,
@@ -98,10 +98,10 @@ async function GetLawyers(req, res) {
             orderBy: {
                 rating: 'desc', // Order by rating in descending order
             },
-            take: 10,
+            take: 10, // Limit the number of lawyers to be fetched
             select: {
                 id: true,
-                rating: true,
+                rating: true, // Only select necessary fields, excluding userId
                 description: true,
                 // Add other fields as needed
                 experience: true,
@@ -155,7 +155,6 @@ async function GetClients(req, res) {
                 createdAt: true,
                 client: {
                     select: {
-                        online: true,
                         profile: {
                             select: {
                                 avatar: true,
