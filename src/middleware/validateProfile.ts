@@ -32,9 +32,7 @@ const validateBio = (bio: unknown) => {
 
 export const validateProfileCredentials = (data: ProfileCredentials) => {
   const { avatar, bio, displayname, location, phone } = data;
-  // if (!validateAvatar(avatar)) {
-  //   return Error('Invalid avatar');
-  // }
+ 
   if (bio && !validateBio(bio)) {
     return Error('Invalid bio');
   }

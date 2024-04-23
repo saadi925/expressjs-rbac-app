@@ -209,6 +209,11 @@ export const verifyWithCode = async (req: Request, res: Response) => {
   if (!verify) {
     res.status(403).json({ error: 'invalid code' });
   } else {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        verified: true,
+      }})
     const token = generateVerificationToken(user, Number(code));
     //  user verified .
     const role = user.role;
