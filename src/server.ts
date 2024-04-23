@@ -18,6 +18,7 @@ import { friendRequestRoutes } from './routes/friendRequestRoutes';
 import { getCities } from './utils/cities';
 import { authorizeApi } from './routes/authorizeRoutes';
 import { authMiddleware } from './middleware';
+import { uploadAvatar } from './handlers/profileHandler';
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
@@ -31,6 +32,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 io.on('connection', socketHandler(io));
 app.use('/auth', authRoutes);
+app.use('/upload', uploadAvatar)
 app.use('/api/user/authorize', authorizeApi);
 app.use('/user/profile', profileRoutes);
 app.use('/notifications', notificationRoutes);

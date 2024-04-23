@@ -11,8 +11,7 @@ import { LawyerContact, $Enums } from '@prisma/client';
 const lawyerProfile = new PrismaLawyerProfile();
 export const createOrUpdateLawyerProfile = async (
   req: RequestWithUser,
-  res: Response,
-) => {
+  res: Response,) => {
   // Validate request body using Express Validator
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
