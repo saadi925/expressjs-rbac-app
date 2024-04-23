@@ -7,6 +7,7 @@ import {
 import { validateProfileCredentials } from '../middleware/validateProfile';
 import { checkForUser } from '../middleware/rbacMiddleware';
 import { PrismaDBProfile } from '../../prisma/queries/profile';
+import { prisma, PrismaCase } from 'prisma';
 const uploadDir = 'uploads/avatars';
 
 
@@ -108,6 +109,115 @@ export const deleteUserProfile = async (
     res.status(200).json({
       message: `the profile has been deleted successfully with the user id ${deletedProfile.id.toString()}`,
     });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+    console.log(error);
+  }
+};
+export const getOtherClientProfile = async (req: RequestWithUser, res: Response) => {
+  try {
+    const { userId } = req;
+    const ok = checkForUser(req, res);
+    if (!ok) {
+      return;
+    }
+    const { caseId } = req.params;
+    const prismaCase = new PrismaCase()
+    const Case = await prismaCase.getCaseByID(BigInt(caseId));
+    if (!Case) {
+      return res.status(404).json({ error: 'Case not found' });
+    }
+    const profile = await prisma.profile.findUnique({
+      where : { userId : caseId },
+      include :{
+        user :{
+          select :{
+            lawyerCases : true,
+            clientCases : true,
+            online : true,
+            
+          }
+        }
+      }
+    });
+    if (!profile) {
+      res.status(404).json({
+        error : "Profile Not found"
+      })
+      return
+    }
+    res.status(200).json(profile);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+    console.log(error);
+  }
+};
+
+export const getOtherLawyerProfile = async (req: RequestWithUser, res: Response) => {
+  try {
+    const { userId } = req;
+    const ok = checkForUser(req, res);
+    if (!ok) {
+      return;
+    }
+    const { profileId } = req.params;
+    const profile = await prisma.profile.findUnique({
+      where: { id:  profileId},
+      select: {
+        id: true,
+        displayname: true,
+        createdAt: true,
+        updatedAt: true,
+        avatar: true,
+        bio: true,
+        location: true,
+        phone: true,
+        user: {
+          select: {
+            lawyerCases : true,
+            clientCases : true,
+            lawyerProfile :{
+              select: {
+                id: true,
+                experience: true,
+                education: true,
+                specialization: true,
+                status : true,
+                description : true,
+                contact :{
+                  select: {
+                    email: true,
+                    phone: true,
+                    website: true,
+                    linkedin: true,
+                    facebook : true,
+                    instagram : true,
+                    officeAddress : true
+                  }}
+                
+              },
+            }
+          },
+        },
+      },
+    
+    });
+    if (!profile) {
+      res.status(404).json({
+        error : "Profile Not found"
+      })
+      return
+    }
+    const {
+      id : pId , displayname, avatar , createdAt ,bio, location, phone, user
+    } = profile
+  const {
+    lawyerCases, lawyerProfile,  
+  } = user
+     const payload = {
+      profileId : pId, displayname, avatar, createdAt, bio, location, phone, lawyerCases, lawyerProfile
+     }    
+    res.status(200).json(payload);
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
     console.log(error);

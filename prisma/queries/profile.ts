@@ -19,6 +19,7 @@ export class PrismaDBProfile {
   constructor() {
     this.#prisma = new PrismaClient();
   }
+  
 
   async createProfile(data: ProfileCredentials, userId: string) {
     const pf = await this.#prisma.profile.upsert({
