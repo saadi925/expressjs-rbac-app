@@ -28,7 +28,8 @@ const io = new Server(server, {
     origin: '*',
   },
 });
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '35mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '35mb', parameterLimit: 50000 }));
 app.use(express.json());
 io.on('connection', socketHandler(io));
 app.use('/auth', authRoutes);

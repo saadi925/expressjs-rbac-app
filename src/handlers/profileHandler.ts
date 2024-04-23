@@ -7,17 +7,14 @@ import {
 import { validateProfileCredentials } from '../middleware/validateProfile';
 import { checkForUser } from '../middleware/rbacMiddleware';
 import { PrismaDBProfile } from '../../prisma/queries/profile';
+const uploadDir = 'uploads/avatars';
+
 
 const primsaProfile = new PrismaDBProfile();
 // creates a profile for a user
 //  req.body: { location, bio, avatar, displayname,phone }
 export const uploadAvatar = async (req : RequestWithUser, res : Response) => {
   try {
-    // Check if file was uploaded via multer
-    if (req.file) {
-      const avatarPath = `/uploads/avatars/${req.file.filename}`;
-      return res.status(200).json({ message: 'File uploaded successfully', avatarPath });
-    }
 
     // Check if avatar data is provided in the request body
     const base64Avatar = req.body.avatar;
@@ -27,9 +24,14 @@ export const uploadAvatar = async (req : RequestWithUser, res : Response) => {
 
     // Convert the base64 avatar data to a buffer
     const buffer = Buffer.from(base64Avatar, 'base64');
-
+    
+  // console.log(buffer);
+ // Check if the directory exists, if not, create it
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+} 
     // Save the avatar data to a file
-    const filename = 'avatar.png'; // You may want to generate a unique filename
+    const filename = 'avatar-' + Date.now() + '.png'; // You may want to generate a unique filename
     fs.writeFileSync(`uploads/avatars/${filename}`, buffer);
 
     const avatarPath = `/uploads/avatars/${filename}`;
