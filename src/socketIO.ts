@@ -13,6 +13,7 @@ import {
 interface SendMessageData {
   receiverId: string;
   content: string;
+  type? : string
 }
 
 class MessageHandler {
@@ -26,8 +27,7 @@ class MessageHandler {
 
   sendMessage = async (socket: SocketWithUser, data: SendMessageData) => {
     try {
-      const { receiverId, content } = data;
-      // Access sender ID from the authenticated socket
+      const { receiverId, content, type } = data;
       const senderId = socket.userId;
  console.log("data in sendMessage : ", data);
   console.log("sender id ", senderId);
@@ -54,7 +54,6 @@ class MessageHandler {
       if (sanitizedContent.length > 1000) {
         throw new Error('Message exceeds maximum length');
       }
-      console.log("this  pass");
    
       if (isValidEmoji) {
         throw new Error('Invalid emoji');
@@ -64,7 +63,7 @@ class MessageHandler {
       const message = await this.prismaMessages.sendMessage(
         senderId,
         receiverId,
-        sanitizedContent,
+        sanitizedContent,type
       );
       await Promise.all([
         prisma.user.update({
@@ -80,7 +79,6 @@ class MessageHandler {
       console.log("message pass");
       this.io.to(receiverId).emit('message', message)
       ;
-      console.log("saved");
       
     } catch (error) {
       console.error('Error sending message:', error);
@@ -110,14 +108,14 @@ export const socketHandler = (io: Server) => (socket: Socket) => {
   });
 
   // Apply isAuthorized middleware to specific socket events
-  // socket.use((packet, next) => {
-  //   // const authorizedEvents = ['sendMessage', 'markMessageAsSeen'];
-  //   // if (authorizedEvents.includes(packet[0])) {
-  //   //   isAuthorizedSocket(socket, next);
-  //   // } else {
-  //   //   next();
-  //   // }
-  // });
+  socket.use((packet, next) => {
+    const authorizedEvents = ['sendMessage', 'markMessageAsSeen'];
+    if (authorizedEvents.includes(packet[0])) {
+      isAuthorizedSocket(socket, next);
+    } else {
+      next();
+    }
+  });
 
   socket.on('sendMessage', (data: SendMessageData) =>
   {

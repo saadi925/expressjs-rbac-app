@@ -4,7 +4,14 @@ import { PrismaMessages } from '../../prisma/queries/PrismaMessages';
 import { RequestWithUser } from 'types/profile';
 
 const prismaMessages = new PrismaMessages();
-
+type MessageResponse = {
+  id : string,
+  content : string,
+  type : string,
+  user :{
+    
+  }
+}
 export async function sendMessage(req: Request, res: Response) {
   try {
     const { senderId, receiverId, content } = req.body;
@@ -42,10 +49,11 @@ export async function getMessages(req: RequestWithUser, res: Response) {
     const messages = await prismaMessages.getMessages(
       userId,
       recieverId,
-      limit,
-      offset,
+      // limit,
+      // offset,
     );
-    res.status(200).json({ messages });
+    
+    res.status(200).json({  });
   } catch (error) {
     console.error('Error getting messages:', error);
     res.status(500).json({ error: 'Internal server error' });
