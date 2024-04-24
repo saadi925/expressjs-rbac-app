@@ -47,8 +47,6 @@ export class PrismaMessages {
       orderBy: {
         createdAt: 'asc',
       },
-      take: limit,
-      skip: offset,
     });
     return messages;
   }
