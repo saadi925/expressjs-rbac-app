@@ -30,7 +30,10 @@ class MessageHandler {
       // Access sender ID from the authenticated socket
       const senderId = socket.userId;
  console.log("data in sendMessage : ", data);
- 
+  console.log("sender id ", senderId);
+  console.log('reciver id', receiverId);
+  
+  
       if (!senderId) {
         throw new Error('Sender ID not found');
       }
@@ -68,7 +71,7 @@ class MessageHandler {
           where: { id: senderId },
           data: { sentMessages: { connect: { id: message.id } } },
         }),
-        
+
         prisma.user.update({
           where: { id: receiverId },
           data: { receivedMessages: { connect: { id: message.id } } },
