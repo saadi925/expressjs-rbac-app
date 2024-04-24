@@ -126,7 +126,21 @@ export class PrismaFriendRequest {
       throw new Error('Failed to add to sent friend requests');
     }
   }
-
+async checkIfFriendRequestExists(senderId : string , receiverId : string){
+  try {
+    const request = await this.#prisma.friendRequest.findFirst({
+      where :{
+        userId : senderId,
+        receiverId,
+        status : "PENDING"
+      }
+    });
+    return request;
+  } catch (error) {
+    console.error('Error checking if friend request exists:', error);
+    throw new Error('Failed to check if friend request exists');
+  }
+}
   async removeFromSent(senderId: string, requestId: bigint): Promise<void> {
     try {
       await this.#prisma.user.update({

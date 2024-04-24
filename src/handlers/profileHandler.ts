@@ -7,7 +7,7 @@ import {
 import { validateProfileCredentials } from '../middleware/validateProfile';
 import { checkForUser } from '../middleware/rbacMiddleware';
 import { PrismaDBProfile } from '../../prisma/queries/profile';
-import { prisma, PrismaCase } from 'prisma';
+import { prisma, PrismaCase } from '../../prisma';
 const uploadDir = 'uploads/avatars';
 
 
@@ -128,12 +128,11 @@ export const getOtherClientProfile = async (req: RequestWithUser, res: Response)
       return res.status(404).json({ error: 'Case not found' });
     }
     const profile = await prisma.profile.findUnique({
-      where : { userId : caseId },
+      where : { userId : Case.clientId },
       include :{
         user :{
           select :{
-            lawyerCases : true,
-            clientCases : true,
+            // clientCases : true,
             online : true,
             
           }
@@ -146,7 +145,27 @@ export const getOtherClientProfile = async (req: RequestWithUser, res: Response)
       })
       return
     }
-    res.status(200).json(profile);
+    // const serializedClientCases = profile.user.clientCases.map((c) => {
+    //   return {
+    //     id: String(c.id),
+    //     title: c.title,
+    //     description: c.description,
+    //     status: c.status,
+    //     createdAt: c.createdAt,
+    //     updatedAt: c.updatedAt,
+    //     lawyerId: c.lawyerId,
+    //     clientId: c.clientId,
+    //     category : c.category
+    // };
+    // })
+
+   const payload ={
+    ...profile,
+    // clientCases : serializedClientCases,
+
+    
+   }
+    res.status(200).json(payload);
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
     console.log(error);
@@ -161,8 +180,28 @@ export const getOtherLawyerProfile = async (req: RequestWithUser, res: Response)
       return;
     }
     const { profileId } = req.params;
+    const p = await prisma.lawyerProfile.findUnique({
+     where :{
+        id : profileId
+        
+     },select :{
+      user :{
+        select :{
+          profile :{
+            select :{
+              id : true
+            }
+          }
+        }
+      }
+     }
+    })
+    if (!p) {
+      return res.status(404).json({ error: 'Profile not found' });
+    }
+
     const profile = await prisma.profile.findUnique({
-      where: { id:  profileId},
+      where: { id: p.user.profile?.id  },
       select: {
         id: true,
         displayname: true,
@@ -174,11 +213,9 @@ export const getOtherLawyerProfile = async (req: RequestWithUser, res: Response)
         phone: true,
         user: {
           select: {
-            lawyerCases : true,
-            clientCases : true,
             lawyerProfile :{
               select: {
-                id: true,
+                // id: true,
                 experience: true,
                 education: true,
                 specialization: true,
@@ -211,11 +248,9 @@ export const getOtherLawyerProfile = async (req: RequestWithUser, res: Response)
     const {
       id : pId , displayname, avatar , createdAt ,bio, location, phone, user
     } = profile
-  const {
-    lawyerCases, lawyerProfile,  
-  } = user
+ const {lawyerProfile} = user
      const payload = {
-      profileId : pId, displayname, avatar, createdAt, bio, location, phone, lawyerCases, lawyerProfile
+      profileId : pId, displayname, avatar, createdAt, bio, location, phone, lawyerProfile
      }    
     res.status(200).json(payload);
   } catch (error) {

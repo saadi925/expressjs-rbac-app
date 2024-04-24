@@ -63,6 +63,21 @@ export async function sendFriendRequest(req: RequestWithUser, res: Response) {
       return;
     }
     const receiverId = clientCase.clientId;
+    if (receiverId === userId) {
+      res.status(400).json({
+        error: 'You cannot send a friend request to yourself',
+      });
+      return;
+    }
+    //  if friend request already exists
+    const existingRequest = await friendRequest.checkIfFriendRequestExists(
+      userId,
+      receiverId,
+    );
+    if (existingRequest) {
+      res.status(400).json({error : 'Friend Request already exists'})
+      return;
+    }
     const request = await friendRequest.sendFriendRequest(userId, receiverId);
     await friendRequest.addToSent(userId, request.id);
     await friendRequest.addToReceived(receiverId, request.id);
@@ -75,6 +90,48 @@ export async function sendFriendRequest(req: RequestWithUser, res: Response) {
   }
 }
 
+
+// FriendRequest routes
+export async function sendFriendRequestToLawyer(req: RequestWithUser, res: Response) {
+  try {
+    const userId = req.userId as string;
+    const { profileId } = req.params;
+    const lawyerProfile = await prisma.lawyerProfile.findUnique({
+      where: { id : profileId },
+    });
+    if (!lawyerProfile) {
+      res.status(404).json({
+        error: 'Lawyer not found',
+      });
+      return;
+    }
+    const receiverId = lawyerProfile?.id;
+    if (receiverId === userId) {
+      res.status(400).json({
+        error: 'You cannot send a friend request to yourself',
+      });
+      return;
+    }
+    //  if friend request already exists
+    const existingRequest = await friendRequest.checkIfFriendRequestExists(
+      userId,
+      receiverId,
+    );
+    if (existingRequest) {
+      res.status(400).json({error : 'Friend Request already exists'})
+      return;
+    }
+    const request = await friendRequest.sendFriendRequest(userId, receiverId);
+    await friendRequest.addToSent(userId, request.id);
+    await friendRequest.addToReceived(receiverId, request.id);
+    res.status(200).json({ message: 'friend request sent' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+    });
+  }
+}
 export async function acceptFriendRequest(req: RequestWithUser, res: Response) {
   try {
     const { requestId } = req.params;
