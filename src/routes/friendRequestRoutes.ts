@@ -14,7 +14,7 @@ import {
 const router = express.Router();
 
 router.post('/:caseId', sendFriendRequest);
-router.post('/:profileId', sendFriendRequestToLawyer);
+router.post('/lawyer/:profileId', sendFriendRequestToLawyer);
 
 router.put('/:requestId/accept', acceptFriendRequest);
 

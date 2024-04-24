@@ -98,6 +98,9 @@ export async function sendFriendRequestToLawyer(req: RequestWithUser, res: Respo
     const { profileId } = req.params;
     const lawyerProfile = await prisma.lawyerProfile.findUnique({
       where: { id : profileId },
+      select :{
+        userId : true,
+      }
     });
     if (!lawyerProfile) {
       res.status(404).json({
@@ -105,7 +108,7 @@ export async function sendFriendRequestToLawyer(req: RequestWithUser, res: Respo
       });
       return;
     }
-    const receiverId = lawyerProfile?.id;
+    const receiverId = lawyerProfile?.userId;
     if (receiverId === userId) {
       res.status(400).json({
         error: 'You cannot send a friend request to yourself',

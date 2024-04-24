@@ -50,6 +50,7 @@ export class PrismaFriendRequest {
         where: { id: requestId, receiverId },
         data: { status: 'ACCEPTED' },
       });
+      this.removeFromReceived(receiverId, requestId);
       return friendRequest;
     } catch (error) {
       console.error('Error accepting friend request:', error);
@@ -66,6 +67,7 @@ export class PrismaFriendRequest {
         where: { id: requestId, receiverId },
         data: { status: 'REJECTED' },
       });
+      this.removeFromReceived(receiverId, requestId);
     } catch (error) {
       console.error('Error rejecting friend request:', error);
       throw new Error('Failed to reject friend request');
@@ -135,6 +137,7 @@ async checkIfFriendRequestExists(senderId : string , receiverId : string){
         status : "PENDING"
       }
     });
+
     return request;
   } catch (error) {
     console.error('Error checking if friend request exists:', error);
@@ -237,6 +240,7 @@ async checkIfFriendRequestExists(senderId : string , receiverId : string){
         where: { id: requestId, userId },
         data: { status: 'CANCELLED' },
       });
+      await this.removeFromSent(userId, requestId);
     } catch (error) {
       console.error('Error cancelling friend request:', error);
       throw new Error('Failed to cancelling friend request');
