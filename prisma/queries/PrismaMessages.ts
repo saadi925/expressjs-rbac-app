@@ -71,8 +71,6 @@ export class PrismaMessages {
   async getMessages(
     senderId: string,
     receiverId: string,
-    // limit: number,
-    // offset: number,
   ) {
     const messages = await this.#prisma.message.findMany({
       where: {
