@@ -32,7 +32,7 @@ class MessageHandler {
       throw new Error('User ID not found');
     }
     const messages = await this.prismaMessages.getMessages(userId,receiverId );
-    return messages;
+   this.io.to(userId).emit('messages', messages); 
   }
   sendMessage = async (socket: SocketWithUser, data: SendMessageData) => {
     try {
@@ -74,19 +74,21 @@ class MessageHandler {
         receiverId,
         sanitizedContent,type
       );
-      await Promise.all([
-        prisma.user.update({
-          where: { id: senderId },
-          data: { sentMessages: { connect: { id: message._id } } },
-        }),
+      // await Promise.all([
+      //   prisma.user.update({
+      //     where: { id: senderId },
+      //     data: { sentMessages: { connect: { id: message._id } } },
+      //   }),
 
-        prisma.user.update({
-          where: { id: receiverId },
-          data: { receivedMessages: { connect: { id: message._id } } },
-        }),
-      ]);
+      //   prisma.user.update({
+      //     where: { id: receiverId },
+      //     data: { receivedMessages: { connect: { id: message._id } } },
+      //   }),
+      // ]);
       console.log("message pass");
-      this.io.to(receiverId).emit('message', message)
+      // is this ok?
+      this.io.to(receiverId).emit('message', message);
+      this.io.to(senderId).emit('message', message);
       ;
       
     } catch (error) {
