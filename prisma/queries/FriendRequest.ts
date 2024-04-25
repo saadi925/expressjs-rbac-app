@@ -50,6 +50,7 @@ export class PrismaFriendRequest {
         where: { id: requestId, receiverId },
         data: { status: 'ACCEPTED' },
       });
+      this.removeFromReceived(receiverId, requestId);
       return friendRequest;
     } catch (error) {
       console.error('Error accepting friend request:', error);

@@ -24,7 +24,16 @@ class MessageHandler {
     this.prismaMessages = new PrismaMessages();
     this.io = io;
   }
-
+  getMessages = async (socket: SocketWithUser, receiverId : string) => {
+   console.log("getting messages");
+   
+    const userId = socket.userId;
+    if (!userId) {
+      throw new Error('User ID not found');
+    }
+    const messages = await this.prismaMessages.getMessages(userId,receiverId );
+    return messages;
+  }
   sendMessage = async (socket: SocketWithUser, data: SendMessageData) => {
     try {
       const { receiverId, content, type } = data;
@@ -68,12 +77,12 @@ class MessageHandler {
       await Promise.all([
         prisma.user.update({
           where: { id: senderId },
-          data: { sentMessages: { connect: { id: message.id } } },
+          data: { sentMessages: { connect: { id: message._id } } },
         }),
 
         prisma.user.update({
           where: { id: receiverId },
-          data: { receivedMessages: { connect: { id: message.id } } },
+          data: { receivedMessages: { connect: { id: message._id } } },
         }),
       ]);
       console.log("message pass");
@@ -107,19 +116,24 @@ export const socketHandler = (io: Server) => (socket: Socket) => {
     });
   });
 
-  // Apply isAuthorized middleware to specific socket events
-  socket.use((packet, next) => {
-    const authorizedEvents = ['sendMessage', 'markMessageAsSeen'];
-    if (authorizedEvents.includes(packet[0])) {
-      isAuthorizedSocket(socket, next);
-    } else {
-      next();
-    }
-  });
-
+  // // Apply isAuthorized middleware to specific socket events
+  // socket.use((packet, next) => {
+  //   const authorizedEvents = ['sendMessage', 'markMessageAsSeen'];
+  //   if (authorizedEvents.includes(packet[0])) {
+  //     isAuthorizedSocket(socket, next);
+  //   } else {
+  //     next();
+  //   }
+  // });
+ socket.on('getMessages', (receiverId : string) => {
+    console.log('getMessages', receiverId);
+    messageHandler.getMessages(socket as SocketWithUser, receiverId)
+  }
+)
   socket.on('sendMessage', (data: SendMessageData) =>
   {
     console.log('sendMessage', data);
+    console.log("sending message");
     
     messageHandler.sendMessage(socket as SocketWithUser, data)
   }

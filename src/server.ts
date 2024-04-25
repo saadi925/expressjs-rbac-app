@@ -2,6 +2,12 @@ import express, { NextFunction, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import http from 'http';
 import { Server } from 'socket.io';
+import { socketHandler } from './socketIO';
+
+const app = express();
+import { friendRequestRoutes } from './routes/friendRequestRoutes';
+import { getCities } from './utils/cities';
+import { authMiddleware } from './middleware';
 import {
   authRoutes,
   profileRoutes,
@@ -10,36 +16,38 @@ import {
   commonRoutes,
   notificationRoutes,
 } from './routes';
-import { socketHandler } from './socketIO';
 
-const app = express();
-
-import { friendRequestRoutes } from './routes/friendRequestRoutes';
-import { getCities } from './utils/cities';
-import { authorizeApi } from './routes/authorizeRoutes';
-import { authMiddleware } from './middleware';
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-  },
-});
+
 app.use(bodyParser.json({ limit: '35mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '35mb', parameterLimit: 50000 }));
 app.use(express.json());
-io.on('connection', socketHandler(io));
+
+const server = http.createServer(app);
+app.use('/uploads/avatars',express.static('uploads/avatars'));
+
 app.use('/auth', authRoutes);
-app.use('/api/user/authorize', authorizeApi);
 app.use('/user/profile', profileRoutes);
 app.use('/notifications', notificationRoutes);
 app.use('/client', clientRoutes);
 app.use('/lawyer', lawyerRoutes);
 app.use('/common', commonRoutes);
 app.use('/friend-requests', authMiddleware, friendRequestRoutes);
+
 app.use('/api/get-cities', getCities);
+
+
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+  },
+});
+
+io.on('connection', socketHandler(io));
+
+
 app.use((err: Error, _req: Request, res: Response) => {
   console.error('Error:', err);
   res.status(500).json({ error: 'Internal server error' });

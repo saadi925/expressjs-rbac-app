@@ -114,12 +114,14 @@ export const signinHandler = async (req: Request, res: Response) => {
     const token = generateToken(user);
     const profileDB = new PrismaDBProfile();
     const profile = await profileDB.getProfileWithRole(user.id);
+
     if (!profile) {
       res.status(201).json({
         token,
         success,
         role : user.role,
         redirectToProfile: true,
+        userId : user.id,
       });
     } else {
       const data = {
@@ -128,8 +130,9 @@ export const signinHandler = async (req: Request, res: Response) => {
         displayname : profile.displayname,
         role : user.role,
         avatar : profile.avatar,
+        
       }
-      res.status(201).json({ token, success, profile : data , role : user.role });
+      res.status(201).json({ token, success, profile : data , role : user.role, userId : user.id});
     }
   } catch (error) {
     console.error(error);

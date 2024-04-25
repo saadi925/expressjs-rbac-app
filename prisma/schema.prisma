@@ -163,8 +163,8 @@ model Message {
   id          String    @id @default(uuid())
   content     String
   senderId    String
+  type        String
   receiverId  String
-  type     String
   createdAt   DateTime  @default(now())
   seen Boolean @default(false)
   sender      User      @relation("SentMessages", fields: [senderId], references: [id])

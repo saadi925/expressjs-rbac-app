@@ -53,7 +53,7 @@ export async function getMessages(req: RequestWithUser, res: Response) {
       // offset,
     );
     
-    res.status(200).json({  });
+    res.status(200).json(messages);
   } catch (error) {
     console.error('Error getting messages:', error);
     res.status(500).json({ error: 'Internal server error' });

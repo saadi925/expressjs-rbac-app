@@ -94,6 +94,8 @@ export async function sendFriendRequest(req: RequestWithUser, res: Response) {
 // FriendRequest routes
 export async function sendFriendRequestToLawyer(req: RequestWithUser, res: Response) {
   try {
+    console.log("|sending to lawyer");
+    
     const userId = req.userId as string;
     const { profileId } = req.params;
     const lawyerProfile = await prisma.lawyerProfile.findUnique({
@@ -216,9 +218,18 @@ export async function getSentFriendRequests(
 }
 export async function cancelFriendRequest(req : RequestWithUser, res : Response) {
   try {
-    const userId = req.userId!
+    console.log('cancel friend request');
     const {requestId} = req.params
+    
+    const userId = req.userId
+    console.log("userId" , userId);
+    
+    if (!userId || typeof userId !== 'string') {
+      res.status(401).json({ error: 'UnAuthorized' });
+      return;
+    }
     const cancel = friendRequest.cancelFriendRequest(userId, BigInt(requestId))
+
     res.status(200).json({ message: 'request cancelled successfully' });
   } catch (error) {
     

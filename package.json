@@ -41,6 +41,7 @@
     "casbin": "^5.27.1",
     "emoji-regex": "^10.3.0",
     "express-validator": "^7.0.1",
+    "https": "^1.0.0",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "mkdirp": "^3.0.1",

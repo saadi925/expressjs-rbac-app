@@ -18,7 +18,7 @@ const validateDisplayName = (displayname: unknown) => {
   if (typeof displayname !== 'string' || displayname === null) {
     return false;
   }
-  const regex = /^[\w-]{1,20}$/;
+  const regex = /^[\w-]{1,100}$/;
   return regex.test(displayname);
 };
 
@@ -36,7 +36,7 @@ export const validateProfileCredentials = (data: ProfileCredentials) => {
   if (bio && !validateBio(bio)) {
     return Error('Invalid bio');
   }
-  if (!validateDisplayName(displayname)) {
+  if (!(displayname)) {
     return Error('Invalid displayname');
   }
   if (typeof location !== 'string' || location === null) {

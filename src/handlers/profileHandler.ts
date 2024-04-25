@@ -16,12 +16,16 @@ const primsaProfile = new PrismaDBProfile();
 //  req.body: { location, bio, avatar, displayname,phone }
 export const uploadAvatar = async (req : RequestWithUser, res : Response) => {
   try {
-
+    console.log("uploading avatar");
+    
     // Check if avatar data is provided in the request body
-    const base64Avatar = req.body.avatar;
+    const base64Avatar = req.body.avatar.base64;
     if (!base64Avatar) {
       return res.status(400).json({ error: 'No file uploaded or avatar data provided' });
     }
+
+    console.log("base64Avatar found", !!base64Avatar);
+    
 
     // Convert the base64 avatar data to a buffer
     const buffer = Buffer.from(base64Avatar, 'base64');
@@ -35,8 +39,8 @@ if (!fs.existsSync(uploadDir)) {
     const filename = 'avatar-' + Date.now() + '.png'; // You may want to generate a unique filename
     fs.writeFileSync(`uploads/avatars/${filename}`, buffer);
 
-    const avatarPath = `/uploads/avatars/${filename}`;
-    res.status(200).json({ message: 'Avatar uploaded successfully', avatarPath });
+    const avatar = `/uploads/avatars/${filename}`;
+    res.status(200).json({ message: 'Avatar uploaded successfully', avatar });
   } catch (err) {
     console.error('Error uploading avatar:', err);
     res.status(500).json({ error: 'Server error' });

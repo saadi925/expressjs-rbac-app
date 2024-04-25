@@ -1,16 +1,23 @@
 // PrismaMessages.ts
 import { PrismaClient } from '@prisma/client';
-export type MessageResponse = {
-  id: string;
-    content: string;
-    createdAt: Date;
-    type: string;
-    receiverId: string;
-    sender: {
-        userId: string;
-        avatar: string | null | undefined;
-        name: string | null | undefined;
-    };
+export interface User {
+  _id: string | number;
+  name?: string;
+  avatar?: string;
+}
+export type MessageResponse =  {
+  _id: string;
+  text: string;
+  createdAt: Date | number;
+  user: User;
+  image?: string;
+  video?: string;
+  audio?: string;
+  // system?: boolean;
+  sent?: boolean;
+  received?: boolean;
+  pending?: boolean;
+  // quickReplies?: QuickReplies;
 }
 export class PrismaMessages {
   #prisma;
@@ -41,16 +48,14 @@ export class PrismaMessages {
         }
       }
     });
-   const value = {
-    id : message.id,
-    content : message.content,
+   const value : MessageResponse = {
+    _id : message.id,
+    text : message.content,
     createdAt : message.createdAt,
-    type : message.type,
-    receiverId : message.receiverId,
-    sender :{
-      userId : message.senderId,
-      avatar : message.sender.profile?.avatar,
-      name : message.sender.profile?.displayname
+    user :{
+      _id : message.senderId,
+      avatar : message.sender.profile?.avatar || undefined,
+      name : message.sender.profile?.displayname || 'advoco user'
     }
    }
    return value
@@ -101,15 +106,13 @@ export class PrismaMessages {
     });
     const newMessages: MessageResponse[] = messages.map(message => {
       return {
-        id: message.id,
-        content: message.content,
+        _id: message.id,
+        text: message.content,
         createdAt: message.createdAt,
-        type: message.type,
-        receiverId: message.receiverId,
-        sender: {
-          userId: message.senderId,
-          avatar: message.sender.profile?.avatar,
-          name: message.sender.profile?.displayname,
+        user: {
+          _id: message.senderId,
+          avatar: message.sender.profile?.avatar || undefined,
+          name: message.sender.profile?.displayname || 'advoco user',
         },
       };
     });
