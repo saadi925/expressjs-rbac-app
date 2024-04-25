@@ -101,7 +101,7 @@ export class PrismaMessages {
        }
       },
       orderBy: {
-        createdAt: 'asc',
+        createdAt: 'desc',
       },
     });
     const newMessages: MessageResponse[] = messages.map(message => {
