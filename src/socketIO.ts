@@ -139,6 +139,9 @@ export const socketHandler = (io: Server) => (socket: Socket) => {
   }
   );
   socket.on('markMessageAsSeen', messageHandler.markMessageAsSeen);
+  socket.on('typing', (isTyping) => {
+    socket.broadcast.emit('typing', isTyping);
+  });
   socket.on('disconnect', () => {
     console.log('A user disconnected');
   });

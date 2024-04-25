@@ -4,10 +4,10 @@ import { RequestWithUser } from 'types/profile';
 
 const prisma = new PrismaClient();
 
-// Get lawyers based on reviews, location, availability, etc.
+// lawyers based on reviews, location, availability,
 export async function GetLawyers(req: RequestWithUser, res: Response) {
   try {
-    // Get user's location from the database based on the user ID
+    // user's location from the database based on the user ID
     const user = await prisma.user.findUnique({
       where: {
         id: req.userId,

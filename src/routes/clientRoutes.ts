@@ -21,7 +21,6 @@ import { GetLawyers } from '../../src/handlers/lawyers';
 const router = express.Router();
 // get a case by id
 router.get('/case/:id', authMiddleware, getCaseByID);
-
 router.put('/update-case-status/:id', authMiddleware, updateCaseStatus);
 // create a case
 router.post('/case', authMiddleware, RBACMiddleware, createCaseHandler);

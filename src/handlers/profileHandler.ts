@@ -36,7 +36,7 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 } 
     // Save the avatar data to a file
-    const filename = 'avatar-' + Date.now() + '.png'; // You may want to generate a unique filename
+    const filename =  Date.now() + '.png'; // You may want to generate a unique filename
     fs.writeFileSync(`uploads/avatars/${filename}`, buffer);
 
     const avatar = `/uploads/avatars/${filename}`;

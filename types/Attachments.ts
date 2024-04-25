@@ -1,4 +1,3 @@
-import { Request } from 'express';
 import { RequestWithUser } from './profile';
 
 // Define a type for the file object properties

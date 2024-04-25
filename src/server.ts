@@ -17,17 +17,18 @@ import {
   notificationRoutes,
 } from './routes';
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+const server = http.createServer(app);
+app.use('/uploads/avatars',express.static('uploads/avatars'))
 
 app.use(bodyParser.json({ limit: '35mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '35mb', parameterLimit: 50000 }));
 app.use(express.json());
 
-const server = http.createServer(app);
-app.use('/uploads/avatars',express.static('uploads/avatars'));
+// Place the static middleware before the routes
 
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
 app.use('/auth', authRoutes);
 app.use('/user/profile', profileRoutes);
 app.use('/notifications', notificationRoutes);
@@ -49,7 +50,7 @@ io.on('connection', socketHandler(io));
 
 
 app.use((err: Error, _req: Request, res: Response) => {
-  console.error('Error:', err);
+  console.error('Error:', err?.message);
   res.status(500).json({ error: 'Internal server error' });
 });
 
